@@ -1,0 +1,27 @@
+# Entorno virtual de Python
+venv/
+env/
+.venv/
+
+# Archivos de entorno y credenciales (¡NUNCA subir a GitHub!)
+.env
+*.env
+!.env.example
+
+# Bytecode y cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Carpetas de IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Archivos temporales de Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+create_shortcut.vbs

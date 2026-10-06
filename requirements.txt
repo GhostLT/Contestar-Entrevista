@@ -1,0 +1,8 @@
+# Dependencias para Asistente Copiloto de Entrevistas
+google-genai>=2.25.0
+SpeechRecognition>=3.17.0
+pyaudio>=0.2.14
+pyaudiowpatch>=0.2.12.8
+sounddevice>=0.5.0
+python-dotenv>=1.0.0
+colorama>=0.4.6
