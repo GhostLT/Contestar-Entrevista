@@ -401,12 +401,25 @@ class InterviewPrompterApp:
                     self._update_status(f"⚠️ {data[:35]}", self.accent_red)
                 elif kind == "SPEECH":
                     self._handle_detected_text(data)
+                elif kind == "STREAM_START":
+                    self.txt_answer.config(state=tk.NORMAL)
+                    self.txt_answer.delete("1.0", tk.END)
+                    self.txt_answer.config(state=tk.DISABLED)
                 elif kind == "STREAM_CHUNK":
                     self._append_answer_chunk(data)
+                elif kind == "STREAM_ERROR":
+                    self.txt_answer.config(state=tk.NORMAL)
+                    self.txt_answer.delete("1.0", tk.END)
+                    self.txt_answer.insert(tk.END, f"{data}\n\n💡 Si necesitas actualizar tu clave, haz clic en '🔑 API Key' arriba a la derecha.")
+                    self.txt_answer.config(state=tk.DISABLED)
+                    self._update_status("⚠️ Error consultando a Gemini", self.accent_red)
                 elif kind == "STREAM_DONE":
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
                 elif kind == "STREAM_IGNORED":
-                    # Frase casual ignorada silenciosamente
+                    self.txt_answer.config(state=tk.NORMAL)
+                    self.txt_answer.delete("1.0", tk.END)
+                    self.txt_answer.insert(tk.END, "🔇 Charla casual ignorada (saludo o ruido cotidiano).\nEsperando una pregunta técnica...")
+                    self.txt_answer.config(state=tk.DISABLED)
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
         except Exception as e:
             print(f"Error procesando cola: {e}")
@@ -420,9 +433,10 @@ class InterviewPrompterApp:
         self.txt_question.config(text=f"❓ \"{text}\"")
         self._update_status("⚡ Consultando a Gemini 3.8 Flash...", self.accent_blue)
 
-        # Preparar respuesta
+        # Preparar respuesta con indicador visible de carga inmediata
         self.txt_answer.config(state=tk.NORMAL)
         self.txt_answer.delete("1.0", tk.END)
+        self.txt_answer.insert(tk.END, "⚡ Generando respuesta con Gemini 3.8 Flash...")
         self.txt_answer.config(state=tk.DISABLED)
 
         # Disparar llamada a Gemini en hilo secundario para no congelar la GUI
@@ -442,16 +456,25 @@ class InterviewPrompterApp:
             nonlocal first_chunk
             if first_chunk:
                 first_chunk = False
+                self.msg_queue.put(("STREAM_START", None))
             self.msg_queue.put(("STREAM_CHUNK", chunk))
+
+        def _on_error(err):
+            self.msg_queue.put(("STREAM_ERROR", err))
 
         res = self.copilot.answer_question_stream(
             question=question,
             on_chunk=_on_chunk,
+            on_error=_on_error,
         )
 
         if res == "[IGNORAR]":
             self.msg_queue.put(("STREAM_IGNORED", None))
         else:
+            if first_chunk and res:
+                # Si no hubo streaming pero retornó un mensaje o error
+                self.msg_queue.put(("STREAM_START", None))
+                self.msg_queue.put(("STREAM_CHUNK", res))
             self.msg_queue.put(("STREAM_DONE", None))
 
     def _append_answer_chunk(self, chunk: str):

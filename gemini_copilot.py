@@ -36,7 +36,21 @@ class GeminiCopilot:
         self._init_client()
 
     def is_configured(self) -> bool:
-        return self.client is not None and bool(self.api_key)
+        if self.client is None or not self.api_key or self.api_key == "tu_clave_de_gemini_aqui":
+            # Recargar automáticamente desde .env si fue modificado
+            try:
+                import os
+                from dotenv import load_dotenv
+                env_file = config.BASE_DIR / ".env"
+                if env_file.exists():
+                    load_dotenv(dotenv_path=env_file, override=True)
+                    key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
+                    if key and key != "tu_clave_de_gemini_aqui":
+                        self.set_api_key(key)
+            except Exception as e:
+                print(f"Error recargando .env: {e}")
+
+        return self.client is not None and bool(self.api_key) and self.api_key != "tu_clave_de_gemini_aqui"
 
     def answer_question_stream(
         self,
