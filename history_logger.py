@@ -103,6 +103,44 @@ Este archivo contiene el historial completo de las preguntas detectadas y las re
         except Exception as e:
             print(f"Error escribiendo en log JSON: {e}")
 
+    def log_conversation_turn(
+        self,
+        original_text: str,
+        translated_text: str,
+        source_lang: str = "en",
+        target_lang: str = "es"
+    ):
+        """
+        Registra una intervención de la conversación y su traducción en tiempo real.
+        """
+        original_text = original_text.strip()
+        translated_text = translated_text.strip()
+        if not original_text:
+            return
+
+        hora = datetime.now().strftime("%H:%M:%S")
+        md_entry = f"**[{hora}] 🇬🇧 EN:** {original_text}  \n**[{hora}] 🇪🇸 ES:** {translated_text}\n\n"
+        try:
+            with open(self.session_md, "a", encoding="utf-8") as f:
+                f.write(md_entry)
+        except Exception as e:
+            print(f"Error escribiendo turno en log Markdown: {e}")
+
+        turn_record = {
+            "tipo": "conversacion_traducida",
+            "hora": hora,
+            "timestamp": datetime.now().isoformat(),
+            "original": original_text,
+            "traduccion": translated_text,
+            "idiomas": f"{source_lang}->{target_lang}"
+        }
+        self.records.append(turn_record)
+        try:
+            with open(self.session_json, "w", encoding="utf-8") as f:
+                json.dump(self.records, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Error escribiendo turno en log JSON: {e}")
+
     def get_session_file_path(self) -> Path:
         return self.session_md
 

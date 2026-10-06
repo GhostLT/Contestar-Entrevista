@@ -11,6 +11,15 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
+- 🌐 **Pantalla Dividida y Traductor de Conversación en Vivo (Inglés ➔ Español en Tiempo Real)**:
+  - **División Vertical Ergonómica (`ttk.PanedWindow`)**: La ventana principal del copiloto está dividida en dos secciones con un divisor ajustable:
+    - **Panel Superior (Teleprompter IA)**: Pregunta detectada/editable y la respuesta estructurada del copiloto IA en vivo.
+    - **Panel Inferior (Traductor Simultáneo)**: Muestra en tiempo real el diálogo continuo de la entrevista con columnas lado a lado:
+      - `🇬🇧 Audio Original Detectado (English)`: Transcribe cada frase o pregunta que dice el entrevistador en inglés con marca de tiempo `[HH:MM:SS]`.
+      - `🇪🇸 Traducción al Español (Tiempo Real)`: Muestra la traducción instantánea al español con ultra baja latencia (<250ms), sin consumir cuota ni tokens de tus APIs de IA.
+  - **Selector de Reconocimiento de Voz (`🎙️ Voz: 🇺🇸 Inglés (en-US) / 🇪🇸 Español (es-ES)`)**: Cambia al instante el idioma de captura del micrófono o audio loopback de la reunión.
+  - **Herramientas de Conversación**: Botón `📋 Copiar Conversación` (copia el diálogo bilingüe completo), `⏸️ Pausar/Reanudar` y `🗑️ Limpiar Conversación`.
+  - **Persistencia Completa**: Cada turno traducido se guarda automáticamente en los registros de sesión en `historial/`.
 - 🎯 **Pestaña de Pitch Personal y Formación (F2)**: Pestaña interactiva con guiones de presentación preparados para responder con total maestría cuando el entrevistador diga *"¿Háblame de ti?"*, *"¿Cuéntame sobre tu experiencia?"* o *"Walk me through your background"*:
   - **🇪🇸 Pitch Completo (60–90s)**: Presentación profesional profunda con trayectoria, arquitectura, vLLM en AWS GPU, RAG y PCoS.
   - **⚡ Elevator Pitch Rápido (30s)**: Resumen ejecutivo conciso y contundente.
@@ -48,13 +57,20 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ```mermaid
 flowchart TD
-    A["Audio de Reunión (Zoom / Meet / Teams)"] -->|Micrófono o WASAPI Loopback| B["audio_listener.py (VAD + SpeechRecognition)"]
-    B -->|Texto Transcrito| C["gemini_copilot.py (google-genai SDK)"]
-    C -->|Filtro Casual| D{"¿Es Pregunta Técnica?"}
-    D -->|No (Saludos/Ruidos)| E["[IGNORAR]"]
-    D -->|Sí| F["Gemini 3.8 Flash (Streaming Token-a-Token)"]
-    F --> G["gui_prompter.py (Teleprompter Flotante Always-on-Top)"]
-    F --> H["cli_prompter.py (Consola con Salida a Color)"]
+    A["Audio de Reunión (Zoom / Meet / Teams)"] -->|Micrófono o WASAPI Loopback| B["audio_listener.py (VAD + SpeechRecognition en-US / es-ES)"]
+    B -->|Texto Transcrito en Vivo| C{"Despacho Dual"}
+    
+    C -->|Flujo 1: Conversación en Vivo| D["realtime_translator.py (Ultra Rápido <250ms)"]
+    D -->|Audio EN + Traducción ES| E["Panel Inferior: Conversación & Traducción Simultánea"]
+    
+    C -->|Flujo 2: Copiloto Asistente| F["gemini_copilot.py (Gemini / DeepSeek)"]
+    F -->|Filtro Casual| G{"¿Pregunta Técnica?"}
+    G -->|No (Saludos/Ruidos)| H["[IGNORAR]"]
+    G -->|Sí| I["Generación Streaming (Token-a-Token)"]
+    I --> J["Panel Superior: Teleprompter de Respuestas"]
+    
+    E --> K["history_logger.py (Guardado en historial/ .md y .json)"]
+    J --> K
 ```
 
 ---

@@ -36,8 +36,8 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 # Usamos gemini-3.5-flash-lite por su estabilidad, velocidad ultra rápida y sin saturación 503
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
-# Idioma de reconocimiento de voz (español por defecto)
-AUDIO_LANGUAGE = os.getenv("AUDIO_LANGUAGE", "es-ES")
+# Idioma de reconocimiento de voz predeterminado (en-US para escuchar entrevistas en inglés, o es-ES)
+AUDIO_LANGUAGE = os.getenv("AUDIO_LANGUAGE", "en-US")
 
 # Umbral de energía para detección de voz (0 = autocalibración inteligente)
 ENERGY_THRESHOLD = int(os.getenv("ENERGY_THRESHOLD", "0"))

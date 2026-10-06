@@ -19,6 +19,7 @@ import candidate_profile
 from audio_listener import AudioListener, get_audio_devices, get_default_device_index
 from gemini_copilot import AICopilot
 from history_logger import HistoryLogger
+from realtime_translator import translate_en_to_es
 
 
 class InterviewPrompterApp:
@@ -29,8 +30,8 @@ class InterviewPrompterApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Copiloto de Entrevistas | Gemini & DeepSeek")
-        self.root.geometry("700x640+350+80")
-        self.root.minsize(500, 440)
+        self.root.geometry("780x780+280+40")
+        self.root.minsize(580, 520)
 
         # Configuración de apariencia
         self.bg_main = "#121214"
@@ -54,6 +55,16 @@ class InterviewPrompterApp:
         except Exception:
             pass
 
+        # Estilo para divisor y pestañas
+        self.style = ttk.Style()
+        try:
+            self.style.theme_use("clam")
+        except Exception:
+            pass
+        self.style.configure("TPanedwindow", background=self.bg_main)
+        self.style.configure("Vertical.TPanedwindow", background=self.bg_main)
+        self.style.configure("Sash", sashthickness=6, sashrelief="flat", background="#2d2d35")
+
         # Componentes lógicos
         self.copilot = AICopilot()
         self.logger = HistoryLogger()
@@ -74,6 +85,10 @@ class InterviewPrompterApp:
         self.active_tab = "copilot"
         self.active_pitch_key = "pitch_es_completo"
         self.pitch_buttons: Dict[str, tk.Button] = {}
+
+        # Estado del Traductor Simultáneo de Conversación (EN -> ES)
+        self.conv_translator_active = True
+        self.conv_history: List[Dict[str, Any]] = []
 
         # Construir interfaz
         self._setup_ui()
@@ -279,10 +294,19 @@ class InterviewPrompterApp:
         # 5. CONTENEDOR PESTAÑA 2: MI PITCH & FORMACIÓN
         self.frame_pitch = tk.Frame(self.root, bg=self.bg_main)
 
-        # --- CONTENIDO DE PESTAÑA 1 (COPILOTO) ---
+        # --- CONTENIDO DE PESTAÑA 1 (COPILOTO CON PANTALLA DIVIDIDA) ---
+        # Divisor vertical ajustable (PanedWindow)
+        self.paned_copilot = ttk.PanedWindow(self.frame_copilot, orient=tk.VERTICAL)
+        self.paned_copilot.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 2))
+
+        # ==============================================================
+        # SECCIÓN SUPERIOR: TELEPROMPTER DE RESPUESTA IA (PREGUNTA + PROMPTER)
+        # ==============================================================
+        pane_top = tk.Frame(self.paned_copilot, bg=self.bg_main)
+
         # 4.1 TARJETA DE PREGUNTA DETECTADA (EDITABLE DIRECTAMENTE)
-        q_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=8)
-        q_frame.pack(fill=tk.X, padx=12, pady=(4, 4))
+        q_frame = tk.Frame(pane_top, bg=self.bg_card, padx=12, pady=6)
+        q_frame.pack(fill=tk.X, pady=(0, 4))
 
         q_header = tk.Frame(q_frame, bg=self.bg_card)
         q_header.pack(fill=tk.X, pady=(0, 4))
@@ -337,8 +361,8 @@ class InterviewPrompterApp:
         self.txt_question.bind("<Return>", self._on_question_box_enter)
 
         # 4.2 TARJETA TELEPROMPTER DE RESPUESTA
-        ans_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=10)
-        ans_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
+        ans_frame = tk.Frame(pane_top, bg=self.bg_card, padx=12, pady=8)
+        ans_frame.pack(fill=tk.BOTH, expand=True, pady=(2, 0))
 
         ans_header = tk.Frame(ans_frame, bg=self.bg_card)
         ans_header.pack(fill=tk.X, pady=(0, 6))
@@ -402,29 +426,206 @@ class InterviewPrompterApp:
         )
         btn_clear.pack(side=tk.RIGHT, padx=6)
 
-        # Área de texto de respuesta con scroll
+        # Contenedor del área de respuesta con barra de desplazamiento
+        ans_box_frame = tk.Frame(ans_frame, bg=self.bg_card_inner)
+        ans_box_frame.pack(fill=tk.BOTH, expand=True)
+
+        sb_ans = ttk.Scrollbar(ans_box_frame)
+        sb_ans.pack(side=tk.RIGHT, fill=tk.Y)
+
         self.txt_answer = tk.Text(
-            ans_frame,
+            ans_box_frame,
             bg=self.bg_card_inner,
             fg=self.text_color,
             insertbackground=self.text_color,
             relief=tk.FLAT,
             padx=12,
-            pady=12,
+            pady=10,
             font=("Segoe UI", 12),
             wrap=tk.WORD,
             spacing1=3,
             spacing3=3,
+            yscrollcommand=sb_ans.set
         )
-        self.txt_answer.pack(fill=tk.BOTH, expand=True)
+        self.txt_answer.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_ans.config(command=self.txt_answer.yview)
         self.txt_answer.insert(
             tk.END,
             "💡 Tu respuesta aparecerá aquí en tiempo real de forma breve y concisa para que puedas leerla fluidamente en la reunión."
         )
         self.txt_answer.config(state=tk.DISABLED)
 
-        # 4.3 BARRA DE ENTRADA MANUAL (Por si escriben en el chat de la llamada)
-        input_bar = tk.Frame(self.frame_copilot, bg=self.bg_main, padx=12, pady=8)
+        # Agregar panel superior al divisor
+        self.paned_copilot.add(pane_top, weight=3)
+
+        # ==============================================================
+        # SECCIÓN INFERIOR: TRADUCTOR DE CONVERSACIÓN EN VIVO (EN -> ES)
+        # ==============================================================
+        pane_bottom = tk.Frame(self.paned_copilot, bg=self.bg_main)
+
+        conv_card = tk.Frame(pane_bottom, bg=self.bg_card, padx=10, pady=8)
+        conv_card.pack(fill=tk.BOTH, expand=True, pady=(2, 0))
+
+        conv_header = tk.Frame(conv_card, bg=self.bg_card)
+        conv_header.pack(fill=tk.X, pady=(0, 6))
+
+        lbl_conv_title = tk.Label(
+            conv_header,
+            text="🗣️ CONVERSACIÓN EN VIVO & TRADUCTOR SIMULTÁNEO (EN ➔ ES)",
+            bg=self.bg_card,
+            fg=self.accent_yellow,
+            font=("Segoe UI", 9, "bold")
+        )
+        lbl_conv_title.pack(side=tk.LEFT)
+
+        lbl_voice = tk.Label(conv_header, text="🎙️ Voz:", bg=self.bg_card, fg=self.text_dim, font=("Segoe UI", 8))
+        lbl_voice.pack(side=tk.LEFT, padx=(10, 2))
+
+        self.audio_lang_var = tk.StringVar(value="🇺🇸 Inglés (en-US)")
+        self.opt_audio_lang = ttk.Combobox(
+            conv_header,
+            textvariable=self.audio_lang_var,
+            values=["🇺🇸 Inglés (en-US)", "🇪🇸 Español (es-ES)"],
+            state="readonly",
+            width=16,
+            font=("Segoe UI", 8)
+        )
+        self.opt_audio_lang.pack(side=tk.LEFT, padx=(0, 8))
+        self.opt_audio_lang.bind("<<ComboboxSelected>>", self._on_audio_recognition_lang_changed)
+
+        self.lbl_conv_status = tk.Label(
+            conv_header,
+            text="🟢 Activo",
+            bg=self.bg_card_inner,
+            fg=self.accent_green,
+            font=("Segoe UI", 8, "bold"),
+            padx=6,
+            pady=1
+        )
+        self.lbl_conv_status.pack(side=tk.LEFT, padx=4)
+
+        btn_clear_conv = tk.Button(
+            conv_header,
+            text="🗑️ Limpiar",
+            command=self._clear_conversation,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8),
+            padx=6
+        )
+        btn_clear_conv.pack(side=tk.RIGHT)
+
+        self.btn_pause_conv = tk.Button(
+            conv_header,
+            text="⏸️ Pausar",
+            command=self._toggle_conv_translator,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8),
+            padx=6
+        )
+        self.btn_pause_conv.pack(side=tk.RIGHT, padx=4)
+
+        btn_copy_conv = tk.Button(
+            conv_header,
+            text="📋 Copiar",
+            command=self._copy_conversation,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8),
+            padx=6
+        )
+        btn_copy_conv.pack(side=tk.RIGHT, padx=4)
+
+        # Contenedor Lado a Lado (Side-by-Side Dual Columns)
+        conv_body = tk.Frame(conv_card, bg=self.bg_card)
+        conv_body.pack(fill=tk.BOTH, expand=True)
+
+        # Columna 1: Audio Original en Inglés
+        col_orig = tk.Frame(conv_body, bg=self.bg_card)
+        col_orig.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 3))
+
+        lbl_orig_head = tk.Label(
+            col_orig,
+            text="🇬🇧 Audio Original Detectado (English)",
+            bg=self.bg_card,
+            fg=self.accent_blue,
+            font=("Segoe UI", 8, "bold")
+        )
+        lbl_orig_head.pack(anchor="w", pady=(0, 2))
+
+        box_orig = tk.Frame(col_orig, bg=self.bg_card_inner)
+        box_orig.pack(fill=tk.BOTH, expand=True)
+
+        sb_orig = ttk.Scrollbar(box_orig)
+        sb_orig.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_conv_orig = tk.Text(
+            box_orig,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 10),
+            wrap=tk.WORD,
+            padx=8,
+            pady=6,
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=sb_orig.set
+        )
+        self.txt_conv_orig.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_orig.config(command=self.txt_conv_orig.yview)
+        self.txt_conv_orig.tag_configure("ts", foreground="#38bdf8", font=("Segoe UI", 8, "bold"))
+        self.txt_conv_orig.insert(tk.END, "💡 La conversación del entrevistador en inglés se transcribirá aquí en tiempo real...")
+        self.txt_conv_orig.config(state=tk.DISABLED)
+
+        # Columna 2: Traducción al Español en Tiempo Real
+        col_trans = tk.Frame(conv_body, bg=self.bg_card)
+        col_trans.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(3, 0))
+
+        lbl_trans_head = tk.Label(
+            col_trans,
+            text="🇪🇸 Traducción al Español (Tiempo Real)",
+            bg=self.bg_card,
+            fg=self.accent_green,
+            font=("Segoe UI", 8, "bold")
+        )
+        lbl_trans_head.pack(anchor="w", pady=(0, 2))
+
+        box_trans = tk.Frame(col_trans, bg=self.bg_card_inner)
+        box_trans.pack(fill=tk.BOTH, expand=True)
+
+        sb_trans = ttk.Scrollbar(box_trans)
+        sb_trans.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_conv_trans = tk.Text(
+            box_trans,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 10),
+            wrap=tk.WORD,
+            padx=8,
+            pady=6,
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=sb_trans.set
+        )
+        self.txt_conv_trans.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_trans.config(command=self.txt_conv_trans.yview)
+        self.txt_conv_trans.tag_configure("ts", foreground="#34d399", font=("Segoe UI", 8, "bold"))
+        self.txt_conv_trans.tag_configure("loading", foreground=self.accent_yellow, font=("Segoe UI", 9, "italic"))
+        self.txt_conv_trans.insert(tk.END, "💡 La traducción instantánea al español aparecerá aquí en tiempo real...")
+        self.txt_conv_trans.config(state=tk.DISABLED)
+
+        # Agregar panel inferior al divisor
+        self.paned_copilot.add(pane_bottom, weight=2)
+
+        # 4.3 BARRA DE ENTRADA MANUAL (Al pie de la ventana)
+        input_bar = tk.Frame(self.frame_copilot, bg=self.bg_main, padx=12, pady=6)
         input_bar.pack(fill=tk.X)
 
         self.entry_manual = tk.Entry(
@@ -760,17 +961,18 @@ class InterviewPrompterApp:
         # Si el texto actual está en español, traducir a inglés; si está en inglés, a español
         target_lang = "en" if self.current_answer_lang == "es" else "es"
         target_label = "Inglés" if target_lang == "en" else "Español"
+        q_text = self.txt_question.get("1.0", tk.END).strip()
 
         self.btn_translate.config(state=tk.DISABLED, text=f"🌐 Traduciendo...")
         self._update_status(f"🌐 Traduciendo respuesta a {target_label}...", self.accent_blue)
 
         threading.Thread(
             target=self._translate_worker,
-            args=(content, target_lang, target_label),
+            args=(content, target_lang, target_label, q_text),
             daemon=True
         ).start()
 
-    def _translate_worker(self, text: str, target_lang: str, target_label: str):
+    def _translate_worker(self, text: str, target_lang: str, target_label: str, q_text: str = ""):
         first_chunk = True
         collected_chunks = []
 
@@ -799,7 +1001,6 @@ class InterviewPrompterApp:
         final_text = "".join(collected_chunks) if collected_chunks else res
         if final_text and not final_text.startswith("❌") and not final_text.startswith("⚠️"):
             self.msg_queue.put(("TRANSLATE_SUCCESS", (target_lang, final_text)))
-            q_text = self.txt_question.get("1.0", tk.END).strip()
             self.logger.log_interaction(
                 question=f"[TRADUCCIÓN A {target_label.upper()}] {q_text}",
                 answer=final_text,
@@ -877,6 +1078,33 @@ class InterviewPrompterApp:
                     if hasattr(self, "btn_translate"):
                         self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
                     self._update_status("⚠️ No se pudo completar la traducción", self.accent_red)
+                elif kind == "CONV_TRANSLATION_DONE":
+                    turn_id, tag_name, timestamp, orig_text, trans_text = data
+                    for turn in self.conv_history:
+                        if turn["id"] == turn_id:
+                            turn["trans"] = trans_text
+                            break
+
+                    self.txt_conv_trans.config(state=tk.NORMAL)
+                    ranges = self.txt_conv_trans.tag_ranges(tag_name)
+                    if ranges:
+                        self.txt_conv_trans.delete(ranges[0], ranges[1])
+                        self.txt_conv_trans.insert(ranges[0], f"{trans_text}\n\n", tag_name)
+                    else:
+                        self.txt_conv_trans.insert(tk.END, f"{trans_text}\n\n", tag_name)
+                    self.txt_conv_trans.see(tk.END)
+                    self.txt_conv_trans.config(state=tk.DISABLED)
+
+                    if hasattr(self, "lbl_conv_status") and self.conv_translator_active:
+                        self.lbl_conv_status.config(text="🟢 Activo", fg=self.accent_green)
+
+                    # Persistir en historial permanente
+                    self.logger.log_conversation_turn(
+                        original_text=orig_text,
+                        translated_text=trans_text,
+                        source_lang="en",
+                        target_lang="es"
+                    )
                 elif kind == "STREAM_IGNORED":
                     self.txt_answer.config(state=tk.NORMAL)
                     self.txt_answer.delete("1.0", tk.END)
@@ -900,6 +1128,10 @@ class InterviewPrompterApp:
         self.entry_manual.delete(0, tk.END)
         self.entry_manual.insert(0, text)
 
+        # Registrar y traducir simultáneamente en el panel inferior si está activo
+        if getattr(self, "conv_translator_active", True):
+            self._add_conversation_turn(text, now)
+
         self._update_status("⚡ Consultando a IA...", self.accent_blue)
 
         self.txt_answer.config(state=tk.NORMAL)
@@ -907,7 +1139,115 @@ class InterviewPrompterApp:
         self.txt_answer.insert(tk.END, "⚡ Generando respuesta instantánea...")
         self.txt_answer.config(state=tk.DISABLED)
 
-        threading.Thread(target=self._ask_ai_worker, args=(text,), daemon=True).start()
+        # Obtener idioma seleccionado en el hilo principal
+        sel_lang = self.lang_var.get()
+        is_en = "English" in sel_lang or "en" in sel_lang.lower()
+        active_lang = "en" if is_en else "es"
+
+        threading.Thread(target=self._ask_ai_worker, args=(text, active_lang), daemon=True).start()
+
+    def _add_conversation_turn(self, text: str, timestamp: str):
+        turn_id = int(time.time() * 1000)
+        tag_name = f"turn_{turn_id}"
+
+        # Insertar audio original (limpiando placeholder inicial si existe)
+        self.txt_conv_orig.config(state=tk.NORMAL)
+        current_orig = self.txt_conv_orig.get("1.0", tk.END).strip()
+        if current_orig.startswith("💡 La conversación") or current_orig.startswith("💡 Conversación limpiada"):
+            self.txt_conv_orig.delete("1.0", tk.END)
+        self.txt_conv_orig.insert(tk.END, f"[{timestamp}] ", "ts")
+        self.txt_conv_orig.insert(tk.END, f"{text}\n\n", tag_name)
+        self.txt_conv_orig.see(tk.END)
+        self.txt_conv_orig.config(state=tk.DISABLED)
+
+        # Insertar placeholder temporal en la columna de traducción
+        self.txt_conv_trans.config(state=tk.NORMAL)
+        current_trans = self.txt_conv_trans.get("1.0", tk.END).strip()
+        if current_trans.startswith("💡 La traducción") or current_trans.startswith("💡 Traducciones aparecerán"):
+            self.txt_conv_trans.delete("1.0", tk.END)
+        self.txt_conv_trans.insert(tk.END, f"[{timestamp}] ", "ts")
+        self.txt_conv_trans.insert(tk.END, "⚡ Traduciendo...\n\n", tag_name)
+        self.txt_conv_trans.see(tk.END)
+        self.txt_conv_trans.config(state=tk.DISABLED)
+
+        if hasattr(self, "lbl_conv_status") and self.conv_translator_active:
+            self.lbl_conv_status.config(text="⚡ Traduciendo...", fg=self.accent_yellow)
+
+        self.conv_history.append({
+            "id": turn_id,
+            "tag": tag_name,
+            "time": timestamp,
+            "orig": text,
+            "trans": ""
+        })
+
+        # Disparar hilo de traducción en segundo plano
+        threading.Thread(
+            target=self._translate_conversation_worker,
+            args=(turn_id, tag_name, timestamp, text),
+            daemon=True
+        ).start()
+
+    def _translate_conversation_worker(self, turn_id: int, tag_name: str, timestamp: str, text: str):
+        try:
+            translated = translate_en_to_es(text, source_lang="auto", copilot_fallback=self.copilot)
+        except Exception:
+            translated = text
+
+        self.msg_queue.put(("CONV_TRANSLATION_DONE", (turn_id, tag_name, timestamp, text, translated)))
+
+    def _clear_conversation(self):
+        self.conv_history.clear()
+        self.txt_conv_orig.config(state=tk.NORMAL)
+        self.txt_conv_orig.delete("1.0", tk.END)
+        self.txt_conv_orig.insert(tk.END, "💡 Conversación limpiada. Esperando nuevo audio...\n\n")
+        self.txt_conv_orig.config(state=tk.DISABLED)
+
+        self.txt_conv_trans.config(state=tk.NORMAL)
+        self.txt_conv_trans.delete("1.0", tk.END)
+        self.txt_conv_trans.insert(tk.END, "💡 Traducciones aparecerán aquí en tiempo real...\n\n")
+        self.txt_conv_trans.config(state=tk.DISABLED)
+
+        self._update_status("🗑️ Historial de conversación en vivo limpiado", self.accent_blue)
+
+    def _copy_conversation(self):
+        if not self.conv_history:
+            self._update_status("⚠️ No hay conversación para copiar", self.accent_yellow)
+            return
+
+        lines = []
+        for turn in self.conv_history:
+            lines.append(f"[{turn['time']}]")
+            lines.append(f"🇬🇧 EN: {turn['orig']}")
+            lines.append(f"🇪🇸 ES: {turn.get('trans', '')}")
+            lines.append("-" * 35)
+
+        text_to_copy = "\n".join(lines)
+        self.root.clipboard_clear()
+        self.root.clipboard_append(text_to_copy)
+        self._update_status("📋 ¡Conversación completa copiada al portapapeles!", self.accent_green)
+
+    def _toggle_conv_translator(self):
+        self.conv_translator_active = not self.conv_translator_active
+        if self.conv_translator_active:
+            self.btn_pause_conv.config(text="⏸️ Pausar")
+            self.lbl_conv_status.config(text="🟢 Activo", fg=self.accent_green)
+            self._update_status("🟢 Traductor de conversación activado", self.accent_green)
+        else:
+            self.btn_pause_conv.config(text="▶️ Reanudar")
+            self.lbl_conv_status.config(text="⏸️ Pausado", fg=self.accent_yellow)
+            self._update_status("⏸️ Traductor de conversación pausado", self.accent_yellow)
+
+    def _on_audio_recognition_lang_changed(self, event=None):
+        sel = self.audio_lang_var.get()
+        if "Español" in sel:
+            new_lang = "es-ES"
+            label = "Español (es-ES)"
+        else:
+            new_lang = "en-US"
+            label = "Inglés (en-US)"
+        self.listener.set_language(new_lang)
+        self._update_status(f"🎙️ Reconocimiento de audio en: {label}", self.accent_blue)
 
     def _send_manual_question(self):
         query = self.entry_manual.get().strip()
@@ -920,14 +1260,9 @@ class InterviewPrompterApp:
         self.logger.open_history_folder()
         self._update_status("📂 Carpeta de historial abierta", self.accent_blue)
 
-    def _ask_ai_worker(self, question: str):
+    def _ask_ai_worker(self, question: str, active_lang: str = "es"):
         first_chunk = True
         collected_chunks = []
-
-        # Obtener idioma seleccionado en el combo
-        sel_lang = self.lang_var.get()
-        is_en = "English" in sel_lang or "en" in sel_lang.lower()
-        active_lang = "en" if is_en else "es"
 
         def _on_chunk(chunk):
             nonlocal first_chunk
