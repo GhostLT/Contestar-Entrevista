@@ -79,3 +79,48 @@ Este documento contiene la información oficial, trayectoria profesional, proyec
 
 ### 7. Expectativa económica y disponibilidad:
 - **Respuesta**: $2,500 USD mensuales bajo esquema de Contractor remoto a tiempo completo, con disponibilidad inmediata y apertura a evaluar la propuesta final en función del alcance del rol y beneficios.
+
+---
+
+## 🎙️ Guiones de Pitch Preparados (Disponibles en la Pestaña F2 de la App)
+
+### 1. 🇪🇸 Pitch Completo en Español (60–90 segundos)
+> *"Hola, mucho gusto. Soy Javier Viveros Huesca, Ingeniero Senior Full-Stack con IA. Cuento con más de 12 años de trayectoria profesional en diseño de arquitectura y desarrollo de software, con especialización los últimos 4 años en el stack de React, TypeScript, Python con FastAPI, PostgreSQL y Supabase; y más de 2 años y medio implementando soluciones de Inteligencia Artificial con modelos Open Source en entornos reales de producción.*
+>
+> *Mi formación de base es en Ingeniería en Electrónica y Sistemas Digitales por el Instituto Tecnológico de Reynosa, lo que me permite tener una comprensión profunda tanto de la infraestructura de cómputo en la nube (GPUs, vLLM, Docker, AWS) como del desarrollo de software de alto nivel.*
+>
+> *A lo largo de mi carrera he transitado desde liderar la arquitectura y disponibilidad de más de 120 plataformas críticas en telecomunicaciones en AT&T bajo estándares de 99.999% SLA, hasta mi experiencia reciente en Empire Engineering en Estados Unidos, donde lideré el desarrollo full-stack y el despliegue de modelos como Llama 3 y Mistral con vLLM sobre instancias AWS con aceleración GPU. Allí logramos reducir los costos de inferencia en más del 65% frente a APIs propietarias, e implementé sistemas RAG empresariales con pgvector y streaming en tiempo real vía Server-Sent Events.*
+>
+> *Me entusiasma profundamente la visión de PCoS: tomar ownership técnico de un asistente ejecutivo personal con IA, impulsar la soberanía de datos y la eficiencia de costos mediante modelos de código abierto, y prepararlo para escalar a sectores de alto impacto como salud y operaciones empresariales. Cuento con disponibilidad inmediata y la experiencia para aportar valor desde mi primera semana."*
+
+### 2. ⚡ Elevator Pitch Rápido (30 segundos)
+> *"Soy Javier Viveros, Ingeniero Senior Full-Stack con más de 12 años de experiencia en arquitectura de software y más de 2.5 años desplegando modelos de IA Open Source en producción.*
+>
+> *Mi especialidad combina React y TypeScript en frontend con Python (FastAPI), PostgreSQL y Supabase en backend. Recientemente en Empire Engineering lideré el pipeline de inferencia de Llama 3 y Mistral con vLLM en AWS GPU, reduciendo costos más del 65% e integrando RAG con pgvector (<2% alucinaciones) y streaming reactivo con SSE.*
+>
+> *Soy Ingeniero en Electrónica y Sistemas Digitales. Cuento con total autonomía, experiencia liderando equipos técnicos (4-7 desarrolladores) y la capacidad para tomar ownership técnico de PCoS y acelerar su producto de inmediato."*
+
+### 3. 🇺🇸 Elevator Pitch in English (60 seconds)
+> *"Hi, great to meet you. I'm Javier Viveros, a Senior Full-Stack & Applied AI Engineer with over 12 years of professional software engineering and systems architecture experience. Over the past 4+ years, I've specialized in modern full-stack development with React, TypeScript, Python (FastAPI), PostgreSQL, and Supabase; and for the past 2.5+ years, I've been deploying Open Source AI models directly into production environments.*
+>
+> *I hold a degree in Electronics and Digital Systems Engineering from Instituto Tecnológico de Reynosa, which gives me a strong foundation across low-level cloud infrastructure, GPU compute, and modern software design.*
+>
+> *In my recent role at Empire Engineering—working in a 100% English-speaking corporate environment—I led full-stack platforms and architected production AI pipelines using Llama 3 and Mistral served via vLLM on AWS GPU instances. This reduced our inference costs by over 65% compared to commercial APIs. I also built enterprise RAG systems with PostgreSQL and pgvector, and dynamic React interfaces with real-time SSE streaming. Prior to that, at AT&T, I led architectures for over 120 mission-critical network platforms maintaining 99.999% SLA availability.*
+>
+> *I am passionate about PCoS because building autonomous executive assistants with Open Source LLMs, strict data privacy, and cost efficiency is exactly what I've been executing in production. I'm ready to take full technical ownership and drive immediate results from day one."*
+
+### 4. 🎓 Formación Académica & Certificaciones
+> **Título Universitario**: Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa, 2004–2010).  
+> **Certificaciones y Especializaciones Clave**:
+> - Applied Generative AI & Open-Source LLMs (vLLM, TGI, PEFT/LoRA/QLoRA, RAG avanzado con Cross-Encoders).
+> - Modern Full-Stack Engineering (React 18/19, Next.js, TypeScript avanzado, Tailwind CSS, Zustand, SSE/WebSockets).
+> - Relational Databases & Vector Stores (PostgreSQL tuning, Supabase Auth/RLS/pgvector, SQLAlchemy, Alembic).
+> - Python Backend & Clean Architecture (FastAPI asíncrono, Pydantic, Instructor, Arquitectura Hexagonal, Pytest >85%).
+> - Cloud, Containers & DevOps (Docker, AWS EC2 GPU g5/g6, S3, RDS, Lambda, GitHub Actions CI/CD, Linux).
+> - ITIL v4 Foundation & Agile Frameworks (Scrum/Kanban, liderazgo técnico de equipos de 4-7 ingenieros).
+
+### 5. 🎯 Por qué PCoS y Fit Técnico Inmediato
+> 1. **Estrategia Open Source & Reducción de Costos**: Experiencia comprobada migrando de APIs comerciales a Llama 3/Mistral con vLLM en AWS GPU (-65% costos de inferencia).
+> 2. **Soberanía y Seguridad de Datos**: Dominio de Row Level Security (RLS) en Supabase y PostgreSQL para proteger datos y vectores en sectores regulados como salud y operaciones.
+> 3. **Asistentes Ejecutivos y Flujos Agénticos**: Experiencia construyendo arquitecturas de agentes con tool-calling para calendarización, resúmenes y extracción estructurada con Pydantic.
+
