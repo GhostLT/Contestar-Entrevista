@@ -83,7 +83,7 @@ class InterviewPrompterApp:
         self.msg_queue = queue.Queue()
         self.current_answer_lang = "es"
         self.active_tab = "copilot"
-        self.active_pitch_key = "pitch_es_completo"
+        self.active_pitch_key = "pitch_5g_en"
         self.pitch_buttons: Dict[str, tk.Button] = {}
 
         # Estado del Traductor Simultáneo de Conversación (EN -> ES)
@@ -659,30 +659,28 @@ class InterviewPrompterApp:
         self._setup_pitch_ui()
 
     def _setup_pitch_ui(self):
-        # 1. Sub-barra de selección de pitch y acciones
-        pitch_nav = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
-        pitch_nav.pack(fill=tk.X)
+        # 1. Fila 1 de Pitch: 5G Network Engineer (Speridian / Shubham) + Acciones
+        nav_row1 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=3)
+        nav_row1.pack(fill=tk.X)
 
-        lbl_select = tk.Label(
-            pitch_nav,
-            text="Pitch:",
+        lbl_5g = tk.Label(
+            nav_row1,
+            text="📡 5G Core (Speridian):",
             bg=self.bg_main,
-            fg=self.text_dim,
-            font=("Segoe UI", 9)
+            fg=self.accent_yellow,
+            font=("Segoe UI", 8, "bold")
         )
-        lbl_select.pack(side=tk.LEFT, padx=(0, 4))
+        lbl_5g.pack(side=tk.LEFT, padx=(0, 4))
 
-        pitch_options = [
-            ("pitch_es_completo", "🇪🇸 Completo (60-90s)"),
-            ("pitch_es_rapido", "⚡ Rápido (30s)"),
-            ("pitch_en", "🇺🇸 English (60s)"),
-            ("formacion_certs", "🎓 Formación & Certs"),
-            ("fit_pcos", "🎯 Por qué PCoS"),
+        options_5g = [
+            ("pitch_5g_en", "🇺🇸 5G Pitch (60s)"),
+            ("pitch_5g_tech", "⚙️ 5GC Call-Flows & AI"),
+            ("pitch_5g_es", "🇪🇸 5G Core Español"),
         ]
 
-        for key, label in pitch_options:
+        for key, label in options_5g:
             btn = tk.Button(
-                pitch_nav,
+                nav_row1,
                 text=label,
                 command=lambda k=key: self._load_pitch(k),
                 bg=self.accent_blue if key == self.active_pitch_key else self.bg_card_inner,
@@ -700,7 +698,7 @@ class InterviewPrompterApp:
 
         # Acciones a la derecha
         btn_copy_pitch = tk.Button(
-            pitch_nav,
+            nav_row1,
             text="📋 Copiar",
             command=self._copy_pitch,
             bg=self.bg_card_inner,
@@ -714,7 +712,7 @@ class InterviewPrompterApp:
         btn_copy_pitch.pack(side=tk.RIGHT, padx=(4, 0))
 
         btn_to_prompter = tk.Button(
-            pitch_nav,
+            nav_row1,
             text="⚡ Al Teleprompter",
             command=self._send_pitch_to_teleprompter,
             bg=self.accent_green,
@@ -728,13 +726,52 @@ class InterviewPrompterApp:
         )
         btn_to_prompter.pack(side=tk.RIGHT, padx=4)
 
-        # 2. Tarjeta contenedora de lectura
-        pitch_card = tk.Frame(self.frame_pitch, bg=self.bg_card, padx=12, pady=8)
+        # 2. Fila 2 de Pitch: Full-Stack IA (PCoS) y Formación
+        nav_row2 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=2)
+        nav_row2.pack(fill=tk.X)
+
+        lbl_fs = tk.Label(
+            nav_row2,
+            text="💻 Full-Stack IA (PCoS):",
+            bg=self.bg_main,
+            fg=self.accent_blue,
+            font=("Segoe UI", 8, "bold")
+        )
+        lbl_fs.pack(side=tk.LEFT, padx=(0, 4))
+
+        options_fs = [
+            ("pitch_es_completo", "🇪🇸 Completo (60s)"),
+            ("pitch_es_rapido", "⚡ Rápido (30s)"),
+            ("pitch_en", "🇺🇸 English (60s)"),
+            ("formacion_certs", "🎓 Formación & Certs"),
+            ("fit_pcos", "🎯 Fit PCoS"),
+        ]
+
+        for key, label in options_fs:
+            btn = tk.Button(
+                nav_row2,
+                text=label,
+                command=lambda k=key: self._load_pitch(k),
+                bg=self.accent_blue if key == self.active_pitch_key else self.bg_card_inner,
+                fg="#ffffff" if key == self.active_pitch_key else self.text_dim,
+                activebackground=self.bg_card,
+                activeforeground=self.text_color,
+                relief=tk.FLAT,
+                font=("Segoe UI", 8),
+                padx=6,
+                pady=1,
+                cursor="hand2"
+            )
+            btn.pack(side=tk.LEFT, padx=2)
+            self.pitch_buttons[key] = btn
+
+        # 3. Tarjeta contenedora de lectura
+        pitch_card = tk.Frame(self.frame_pitch, bg=self.bg_card, padx=12, pady=6)
         pitch_card.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 4))
 
         # Encabezado de la tarjeta
         pitch_card_header = tk.Frame(pitch_card, bg=self.bg_card)
-        pitch_card_header.pack(fill=tk.X, pady=(0, 6))
+        pitch_card_header.pack(fill=tk.X, pady=(0, 4))
 
         self.lbl_pitch_title = tk.Label(
             pitch_card_header,
@@ -759,30 +796,31 @@ class InterviewPrompterApp:
             insertbackground=self.text_color,
             relief=tk.FLAT,
             padx=14,
-            pady=14,
-            font=("Segoe UI", 12),
+            pady=12,
+            font=("Segoe UI", 11),
             wrap=tk.WORD,
-            spacing1=4,
-            spacing3=4,
+            spacing1=3,
+            spacing3=3,
             yscrollcommand=scrollbar.set,
         )
         self.txt_pitch.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.config(command=self.txt_pitch.yview)
 
-        # Cargar pitch inicial
-        self._load_pitch("pitch_es_completo")
+        # Cargar pitch inicial (5G Network Engineer para Shubham por defecto)
+        self._load_pitch("pitch_5g_en")
 
-        # 3. Badges inferiores con métricas rápidas
+        # 4. Badges inferiores con métricas rápidas de 5G y FullStack
         badges_frame = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
         badges_frame.pack(fill=tk.X)
 
         badges = [
-            ("💼 +12 Años Exp Total", "#38bdf8"),
-            ("⚡ +4 Años Full-Stack", "#34d399"),
-            ("🤖 +2.5 Años Open Source", "#a78bfa"),
-            ("💰 $2,500 USD/mes", "#facc15"),
-            ("🚀 Disp. Inmediata", "#f472b6"),
-            ("🎓 Ing. Electrónica y Sistemas", "#94a3b8"),
+            ("📡 5G Core SA/NSA", "#38bdf8"),
+            ("📶 +9 Años AT&T (99.999%)", "#34d399"),
+            ("🤖 IA + Codex/Groq", "#a78bfa"),
+            ("💼 +12 Años Exp Total", "#facc15"),
+            ("🎓 Ing. Electrónica y Sistemas", "#f472b6"),
+            ("💰 $2,500 USD/mes", "#94a3b8"),
+            ("🚀 Disp. Inmediata", "#22c55e"),
         ]
         for b_text, b_color in badges:
             lbl = tk.Label(
@@ -791,7 +829,7 @@ class InterviewPrompterApp:
                 bg=self.bg_card,
                 fg=b_color,
                 font=("Segoe UI", 8, "bold"),
-                padx=8,
+                padx=6,
                 pady=2,
                 relief=tk.FLAT
             )
@@ -838,6 +876,9 @@ class InterviewPrompterApp:
         script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
         if script:
             titles = {
+                "pitch_5g_en": "🇺🇸 5G Network Engineer & AI Pitch (Speridian / Shubham)",
+                "pitch_5g_tech": "📡 5GC Architecture, Call Flows (N1-N12), SEPP & AI Coding",
+                "pitch_5g_es": "🇪🇸 Pitch 5G Network Engineer & Telecom (Javier Viveros)",
                 "pitch_es_completo": "🎙️ Pitch Completo de Presentación (Javier Viveros)",
                 "pitch_es_rapido": "⚡ Elevator Pitch Rápido de 30s (Javier Viveros)",
                 "pitch_en": "🇺🇸 Professional English Pitch (Javier Viveros)",

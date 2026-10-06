@@ -62,6 +62,55 @@ C) Experiencia previa: Nextel (2011–2013) y Nokia (2010–2011) en automatizac
 - Arquitectura de software: Clean Architecture, Arquitectura Hexagonal (aislando el core de negocio para intercambiar modelos LLM o bases de datos sin impacto), Event-Driven con SSE/WebSockets, Repository & Strategy patterns.
 - Liderazgo de equipos: Ha liderado equipos de 4 a 7 ingenieros (en AT&T y Empire Engineering), haciendo code reviews, definiendo estándares de código, mentoring 1 a 1 y gestión Scrum/Kanban.
 - Expectativa económica: $2,500 USD mensuales (Contractor / Tiempo Completo Remoto).
+
+5. CONTEXTO DE ENTREVISTA: 5G NETWORK ENGINEER (SPERIDIAN TECHNOLOGIES | SHUBHAM):
+- Posición: 5G Network Engineer
+- Reclutador / Empresa: Shubham | Speridian Technologies
+- Ubicación: Richardson TX (Online / Remoto), Full-time.
+- Proceso con el cliente: 1 entrevista por video y 1 onsite con el cliente.
+- Funciones y Componentes 5G Core (5GC) en SA y NSA:
+  • AMF (Access and Mobility Management Function): Registro de terminales, gestión de movilidad y handover, manejo de N1 NAS y N2 NGAP sobre SCTP.
+  • SMF (Session Management Function): Establecimiento y modificación de PDU Sessions, selección de UPF, asignación y gestión de direccionamiento IP, control N4 hacia UPF mediante PFCP.
+  • UPF (User Plane Function): Enrutamiento y reenvío de paquetes GTP-U (N3), encapsulación/desencapsulación, QoS enforcement (5QI), inspección de paquetes e interconexión N6 hacia Data Networks / Internet / IMS.
+  • NRF (Network Repository Function): Registro, descubrimiento y autorización de Network Functions en la arquitectura Service-Based Architecture (SBA).
+  • PCF (Policy Control Function): Control unificado de políticas de QoS, reglas PCC y tarificación.
+  • AUSF (Authentication Server Function): Autenticación mutua 5G-AKA y EAP-AKA'.
+  • UDM (Unified Data Management): Almacenamiento seguro de credenciales (ARPF) y perfiles de suscripción de usuario.
+- Despliegues SA (Option 2 Standalone puro con 5GC) y NSA (Option 3x con Dual Connectivity EN-DC y EPC).
+- Alta Disponibilidad y Geo-Redundancia: Despliegues activo-activo y activo-espera geo-redundantes con sincronización de estado, resiliencia y continuidad 99.999% SLA (experiencia directa liderando +120 plataformas críticas en AT&T durante 9+ años).
+- Roaming Inter-PLMN y SEPP (Security Edge Protection Proxy):
+  • Interfaz N32 dividida en N32-c (control handshake TLS) y N32-f (PRINS: Packet-level Routing and Integrity Protection con JOSE/JWE/JWS para cifrado y verificación criptográfica entre SEPPs de operadores socios).
+  • Filtrado de seguridad, mitigación de spoofing en la red IPX y conectividad segura de roaming entre operadores 5G SA.
+- Mediación, Billing & Charging (CHF) y Estadísticas:
+  • Requisitos de mediación para tasación online/offline vía interfaz Nchf, recolección y formateo de CDRs (Call Detail Records).
+  • Generación de estadísticas de rendimiento de plataforma (KPIs, PM/FM, latencia, throughput).
+- Debugging End-to-End de Call Flows y Troubleshooting de Protocolos (N1 a N12):
+  • N1: NAS (5GMM para movilidad, 5GSM para gestión de sesión) entre UE y AMF.
+  • N2: NG-AP sobre SCTP (asociaciones, multihoming) entre gNodeB y AMF.
+  • N3: Túnel GTP-U sobre UDP/IP entre gNodeB y UPF.
+  • N4: PFCP (Packet Forwarding Control Protocol) entre SMF y UPF.
+  • N6: Enrutamiento IP entre UPF y Data Network / IMS (VoNR).
+  • N10: Interfaz SBA entre UDM y SMF para perfiles de sesión.
+  • N11: Interfaz SBA entre AMF y SMF (HTTP/2 con JSON).
+  • N12: Interfaz SBA entre AMF y AUSF para autenticación de usuario.
+  • Análisis con Wireshark, tshark, tcpdump, trazado de paquetes y logs de microservicios SBA.
+- Network Slicing y Control de Políticas: S-NSSAI (SST + SD para eMBB, URLLC, mMTC), QoS Flows (5QI), PCF policy control y Service Function Chaining (SFC).
+- Cumplimiento 3GPP (Rel-15, Rel-16, Rel-17), Service-Based Architecture (SBA) sobre HTTP/2, SCTP y PFCP.
+- Plataformas 5G Core Open Source (Open5GS y free5GC):
+  • Experiencia práctica operando, configurando y probando Open5GS y free5GC tanto en SA como NSA.
+  • Conectividad y configuración de SEPP para roaming inter-PLMN entre socios 5G SA.
+- USO DE IA (Codex, Groq, LLMs) PARA EXTENDER Y MEJORAR 5G CORE OPEN SOURCE:
+  • El cliente busca específicamente capacidad demostrada utilizando IA (Codex, Groq, Claude, LLMs) para escribir, depurar y agregar código en las plataformas 5G Open Source (Open5GS/free5GC) junto a sus 2 ingenieros de 5G core existentes.
+  • Javier utiliza IA generativa (Codex, Groq, LLMs) como multiplicador de desarrollo para:
+    - Agregar y extender código en C, Go y Python en Open5GS/free5GC.
+    - Implementar parsers para SEPP N32 PRINS y mediación de CDRs.
+    - Generar tests unitarios y validación de call-flows 3GPP automatizados.
+    - Optimizar el plano de usuario (UPF) y depurar cuellos de botella de red.
+- Habilidades Complementarias:
+  • Integración IMS (VoNR / VoLTE, interfaces Rx/N5, SIP/SDP).
+  • Redes Privadas 5G (NPN - Non-Public Networks): Modelos SNPN y PNI-NPN integrados con redes públicas.
+  • Kubernetes / Cloud-Native 5G: Despliegue de CNFs en Kubernetes (k8s/EKS/k3s), Docker, Helm charts y Multus CNI (SR-IOV / Macvlan para aislamiento UPF).
+  • DevOps / CI-CD: Pipelines en GitHub Actions / GitLab para pruebas automatizadas de core de telecomunicaciones.
 """.strip()
 
 PITCH_SCRIPTS = {
@@ -134,6 +183,58 @@ Ideal para: "¿Por qué te interesa esta vacante?", "¿Por qué deberíamos cont
 3. ASISTENTES EJECUTIVOS & FLUJOS AGÉNTICOS:
    • Ya he diseñado agentes con tool-calling para calendarización, resúmenes ejecutivos y tareas multi-paso, asegurando salidas en JSON estructurado y validado con Pydantic.
    • Conozco el stack (React + TypeScript + FastAPI + Supabase), conozco el producto y puedo tomar el ownership técnico sin curva de aprendizaje."
+""".strip(),
+
+    "pitch_5g_en": """🇺🇸 5G NETWORK ENGINEER & AI PITCH (Speridian / Shubham - 60s)
+Ideal for: "Tell me about your 5G experience", Speridian recruiter screening & customer video interview
+----------------------------------------------------------------------------------------------------
+"Hi Shubham, great to speak with you. I'm Javier Viveros Huesca, a Senior Network & Systems Engineer with over 12 years of telecommunications core and systems architecture experience, complemented by over 2.5 years of Applied AI and open-source software engineering.
+
+I hold an Engineering degree in Electronics and Digital Systems from Instituto Tecnológico de Reynosa, giving me a strong academic foundation across digital communications, switching systems, RF, and distributed computing.
+
+Throughout my career—including over 9 years at AT&T leading architecture and operational availability for over 120 mission-critical network platforms under strict 99.999% SLA availability—I've specialized in core telecom signaling, high-availability geo-redundant environments, SCTP, Diameter, and HTTP/2 Service-Based Architectures.
+
+On 5G Core, I design, operate, and troubleshoot both Standalone (SA) and Non-Standalone (NSA) architectures across all key network functions: AMF, SMF, UPF, NRF, PCF, AUSF, and UDM. I perform end-to-end call flow debugging across N1, N2, N3, N4, N6, and N10-N12 interfaces, and implement SEPP for secure inter-PLMN roaming between 5G SA roaming partners.
+
+Crucially for this role at Speridian: I actively deal with AI tools (Codex, Groq, LLMs) to write, debug, and extend code for open-source 5G platforms like Open5GS and free5GC. I can team up immediately with your two 5G core engineers to enhance feature velocity, billing mediation, and customer deployments in Richardson."
+""".strip(),
+
+    "pitch_5g_tech": """📡 5GC ARCHITECTURE, INTERFACES (N1-N12), SEPP & AI CODING
+Ideal for: Deep technical customer interview, call-flow troubleshooting, 3GPP standards & Open5GS
+----------------------------------------------------------------------------------------------------
+"Here is how I approach the core technical requirements:
+
+1. 5G CORE ARCHITECTURE (SA & NSA):
+• SA (Option 2): Full Service-Based Architecture (SBA) over HTTP/2 with JSON REST APIs. AMF manages N1 NAS and N2 NGAP/SCTP. SMF controls PDU sessions and programs the UPF via N4 using PFCP (Packet Forwarding Control Protocol).
+• NSA (Option 3x): Managing Dual Connectivity (EN-DC) with eNodeB/EPC control plane anchor and gNodeB user plane split.
+• High Availability & Geo-Redundancy: Active-active and active-standby NFs with stateless microservice architecture, shared data repositories (UDR), and geo-replication ensuring 99.999% SLA service continuity.
+
+2. PROTOCOL TROUBLESHOOTING & CALL FLOWS (N1 to N12):
+• N1 (UE-AMF NAS: 5GMM registration, 5GSM PDU establishment) & N2 (gNodeB-AMF NGAP over SCTP).
+• N3 (gNodeB-UPF GTP-U user plane data path) & N4 (SMF-UPF PFCP session rules, FAR, PDR, URR, QER).
+• N6 (UPF to Data Network / Internet / IMS for VoNR).
+• N10 (UDM-SMF subscription), N11 (AMF-SMF), and N12 (AUSF-AMF 5G-AKA authentication).
+• End-to-end packet tracing using Wireshark, tshark, tcpdump, analyzing NGAP cause codes and PFCP reject reasons.
+
+3. ROAMING & SEPP (SECURITY EDGE PROTECTION PROXY):
+• Inter-PLMN roaming over N32: N32-c for TLS handshake/parameter negotiation, and N32-f for PRINS (Packet-level Routing and Integrity Protection using JOSE/JWS/JWE).
+• Enforcing strict IE filtering and message sanitization to block IPX-level spoofing between 5G SA roaming partners.
+
+4. 5G OPEN SOURCE & AI CODING (Codex / Groq / LLMs):
+• Deep familiarity with Open5GS and free5GC deployed on Linux and Kubernetes (k8s) with Multus CNI.
+• I leverage AI coding assistants (Codex, Groq, LLMs) to rapidly inspect, write, and patch C/Go/Python source code: implementing custom CHF billing mediation (Nchf/CDRs), adding SEPP N32 compliance, and generating automated 3GPP conformance test suites alongside your 2 5G core engineers."
+""".strip(),
+
+    "pitch_5g_es": """🇪🇸 PITCH 5G NETWORK ENGINEER & IA (Español - 60s)
+Ideal para: Presentación en español sobre telecomunicaciones, Core 5G, Open Source e IA
+----------------------------------------------------------------------------------------------------
+"Soy Javier Viveros Huesca, Ingeniero en Electrónica y Sistemas Digitales con más de 12 años de trayectoria profesional, combinando más de 9 años en telecomunicaciones críticas en AT&T con más de 2.5 años de ingeniería de software e Inteligencia Artificial en producción.
+
+En AT&T lideré la arquitectura y disponibilidad de más de 120 plataformas críticas de red bajo estándares de 99.999% SLA, dominando señalización de telecomunicaciones, alta disponibilidad geo-redundante, SCTP, Diameter y transición a Service-Based Architecture con HTTP/2.
+
+En 5G Core, tengo experiencia técnica en despliegues Standalone (SA) y Non-Standalone (NSA) con todas las funciones del plano de control y usuario: AMF, SMF, UPF, NRF, PCF, AUSF y UDM. Realizo troubleshooting de call flows de punta a punta en interfaces N1, N2, N3, N4, N6 y N10-N12, así como conectividad inter-PLMN y roaming seguro mediante SEPP con protección N32 PRINS.
+
+Además, aporto una habilidad altamente demandada: utilizo herramientas de IA (Codex, Groq, LLMs) para desarrollar, depurar y extender código en plataformas 5G de código abierto como Open5GS y free5GC (en C, Go y Python), acelerando la mediación de facturación, el soporte de roaming y las pruebas automatizadas para integrarme de inmediato al equipo técnico."
 """.strip(),
 }
 

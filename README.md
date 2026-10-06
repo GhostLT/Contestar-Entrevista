@@ -20,15 +20,20 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
   - **Selector de Reconocimiento de Voz (`🎙️ Voz: 🇺🇸 Inglés (en-US) / 🇪🇸 Español (es-ES)`)**: Cambia al instante el idioma de captura del micrófono o audio loopback de la reunión.
   - **Herramientas de Conversación**: Botón `📋 Copiar Conversación` (copia el diálogo bilingüe completo), `⏸️ Pausar/Reanudar` y `🗑️ Limpiar Conversación`.
   - **Persistencia Completa**: Cada turno traducido se guarda automáticamente en los registros de sesión en `historial/`.
-- 🎯 **Pestaña de Pitch Personal y Formación (F2)**: Pestaña interactiva con guiones de presentación preparados para responder con total maestría cuando el entrevistador diga *"¿Háblame de ti?"*, *"¿Cuéntame sobre tu experiencia?"* o *"Walk me through your background"*:
-  - **🇪🇸 Pitch Completo (60–90s)**: Presentación profesional profunda con trayectoria, arquitectura, vLLM en AWS GPU, RAG y PCoS.
-  - **⚡ Elevator Pitch Rápido (30s)**: Resumen ejecutivo conciso y contundente.
-  - **🇺🇸 English Pitch (60s)**: Guión en inglés técnico senior para rondas bilingües o clientes internacionales.
-  - **🎓 Formación Académica & Certificaciones**: Título en Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa) y especializaciones continuas.
-  - **🎯 Por qué PCoS / Fit del Rol**: Argumentación técnica sobre modelos Open Source, soberanía de datos con RLS en Supabase y asistentes ejecutivos.
-  - **⚡ Botón "Al Teleprompter"**: Carga el pitch seleccionado en el teleprompter principal del copiloto al instante.
-  - **Teclas Rápidas**: `F1` para alternar al Copiloto en Vivo y `F2` para ir a tu Pitch.
-- 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado, experiencia de +12 años, proyectos reales (Empire Engineering, AT&T, vLLM en AWS GPU, Supabase pgvector con RLS), métricas y respuestas a preguntas de selección para PCoS / Hireline, respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
+- 🎯 **Pestaña de Pitch Personal y Formación Multi-Rol (F2)**: Pestaña interactiva organizada en 2 filas dedicadas para responder con total maestría según el tipo de entrevista técnica:
+  - **Fila 1: 📡 5G Network Engineer (Speridian Technologies | Shubham - Richardson TX)**:
+    - **`🇺🇸 5G Pitch (60s)`**: Guión de alto impacto para la llamada con el reclutador (Shubham) y la entrevista de video con el cliente en Richardson TX, integrando +12 años de experiencia, +9 años en AT&T (99.999% SLA), 5GC (SA/NSA), AMF/SMF/UPF, SEPP y desarrollo open source asistido por IA (Codex/Groq).
+    - **`⚙️ 5GC Call-Flows & AI`**: Deep dive técnico en call flows end-to-end (interfaces N1 a N12 con Wireshark/tshark), roaming inter-PLMN con SEPP sobre N32 (N32-c TLS y N32-f PRINS), y uso de IA generativa para agregar código a plataformas Open5GS y free5GC.
+    - **`🇪🇸 5G Core Español`**: Guión en español para presentar solvencia en redes móviles críticas, señalización SCTP/Diameter/HTTP-2 y arquitecturas cloud-native en Kubernetes.
+  - **Fila 2: 💻 Full-Stack con IA (PCoS / Hireline)**:
+    - **`🇪🇸 Completo (60–90s)`**: Presentación profesional profunda con trayectoria, vLLM en AWS GPU (-65% costos), RAG con pgvector y sinergia con PCoS.
+    - **`⚡ Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
+    - **`🇺🇸 English (60s)`**: Walkthrough en inglés profesional para clientes internacionales.
+    - **`🎓 Formación & Certs`**: Título en Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa) y especializaciones continuas.
+    - **`🎯 Por qué PCoS`**: Los 3 pilares técnicos de fit inmediato (estrategia Open Source, RLS en Supabase y flujos agénticos).
+  - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter principal del copiloto con 1 solo clic.
+  - **Teclas Rápidas**: `F1` para volver al Copiloto en Vivo y `F2` para abrir tu Pitch en cualquier momento.
+- 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado, titulación en Ingeniería en Electrónica y Sistemas Digitales, trayectoria en AT&T (+120 plataformas críticas de red, 99.999% SLA), Empire Engineering, modelos Open Source con vLLM y desarrollo en 5G Core Open Source (Open5GS/free5GC) con IA asistida (Codex/Groq), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
 - 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
   - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
   - **Botón de Traducción Instantánea (`🌐 Traducir a Inglés` / `🌐 Traducir a Español`)**: ¿La respuesta está en español pero necesitas leerla en inglés (o viceversa)? Con un solo clic, la IA la traduce en tiempo real mediante streaming, manteniendo intacta la estructura, viñetas y emojis (`🎯`, `⚡`, `💡`).
