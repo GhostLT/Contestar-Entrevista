@@ -17,6 +17,7 @@ from typing import Optional, List, Dict, Any
 import config
 from audio_listener import AudioListener, get_audio_devices, get_default_device_index
 from gemini_copilot import AICopilot
+from history_logger import HistoryLogger
 
 
 class InterviewPrompterApp:
@@ -54,6 +55,7 @@ class InterviewPrompterApp:
 
         # Componentes lógicos
         self.copilot = AICopilot()
+        self.logger = HistoryLogger()
         self.devices = get_audio_devices()
         default_dev = get_default_device_index(prefer_loopback=False)
 
@@ -293,6 +295,18 @@ class InterviewPrompterApp:
             padx=6
         )
         btn_copy.pack(side=tk.RIGHT)
+
+        btn_hist = tk.Button(
+            ans_header,
+            text="📜 Ver Historial",
+            command=self._open_history,
+            bg=self.bg_card_inner,
+            fg=self.accent_blue,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=6
+        )
+        btn_hist.pack(side=tk.RIGHT, padx=6)
 
         btn_clear = tk.Button(
             ans_header,
@@ -537,6 +551,25 @@ class InterviewPrompterApp:
         def _on_error(err):
             self.msg_queue.put(("STREAM_ERROR", err))
 
+    def _open_history(self):
+        self.logger.open_history_folder()
+        self._update_status("📂 Carpeta de historial abierta", self.accent_blue)
+
+    def _ask_ai_worker(self, question: str):
+        first_chunk = True
+        collected_chunks = []
+
+        def _on_chunk(chunk):
+            nonlocal first_chunk
+            collected_chunks.append(chunk)
+            if first_chunk:
+                first_chunk = False
+                self.msg_queue.put(("STREAM_START", None))
+            self.msg_queue.put(("STREAM_CHUNK", chunk))
+
+        def _on_error(err):
+            self.msg_queue.put(("STREAM_ERROR", err))
+
         res = self.copilot.answer_question_stream(
             question=question,
             on_chunk=_on_chunk,
@@ -550,6 +583,15 @@ class InterviewPrompterApp:
                 self.msg_queue.put(("STREAM_START", None))
                 self.msg_queue.put(("STREAM_CHUNK", res))
             self.msg_queue.put(("STREAM_DONE", None))
+
+            # Guardar en archivo de historial permanente (.md y .json)
+            final_text = "".join(collected_chunks) if collected_chunks else res
+            if final_text and not final_text.startswith("❌") and not final_text.startswith("⚠️"):
+                self.logger.log_interaction(
+                    question=question,
+                    answer=final_text,
+                    provider=self.copilot.provider
+                )
 
     def _append_answer_chunk(self, chunk: str):
         self.txt_answer.config(state=tk.NORMAL)

@@ -11,6 +11,7 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
+- 📜 **Logs y Registro Automático de Conversaciones**: Cada pregunta formulada y respuesta generada se guarda automáticamente en la carpeta `historial/` en formatos **Markdown (`.md`)** y **JSON (`.json`)** con marcas de tiempo para que puedas repasar lo que te preguntaron después de la entrevista. Incluye un botón **`📜 Ver Historial`** para abrir la carpeta con un solo clic.
 - ✏️ **Modificación Manual de Preguntas en Vivo**: Si el reconocimiento de voz malinterpreta un tecnicismo en inglés o audio ruidoso (por ejemplo: entendió *"ratón"* en vez de *"handover"*), el recuadro de pregunta es **100% editable directamente**. Puedes hacer clic, corregir la palabra y presionar **Enter** o el botón **`⚡ Corregir y Re-preguntar`** para obtener la respuesta correcta al instante.
 - 🤖 **Multi-Motor de IA con Respaldo Automático**:
   - **Google Gemini**: Con auto-conmutación a `gemini-3.5-flash-lite` para evitar errores 503 por alta demanda.
@@ -133,21 +134,34 @@ WINDOW_OPACITY=0.95
 
 ---
 
+## 📜 Historial y Registro Automático de Conversaciones
+
+Cada vez que el entrevistador hace una pregunta y se genera una respuesta, la sesión se guarda **automáticamente en segundo plano** dentro del directorio `historial/`:
+
+- **Formato Markdown (`.md`)**: Notas legibles con fecha, hora, pregunta formulada, motor de IA utilizado y la respuesta generada con viñetas. Ideal para abrir con Obsidian, Notion, VS Code o el Bloc de notas.
+- **Formato JSON (`.json`)**: Estructura de datos completa para análisis o integraciones futuras.
+- **Acceso Directo en 1 Clic**: En la cabecera de la respuesta dentro de la aplicación, haz clic en el botón azul **`📜 Ver Historial`** y se abrirá la carpeta de tus entrevistas en el Explorador de Windows.
+- **100% Privado**: Tus registros se almacenan exclusivamente en tu computadora local y están excluidos en `.gitignore` para no compartirse jamás en GitHub.
+
+---
+
 ## 📂 Estructura del Proyecto
 
 ```
 Contestar-Entrevista/
 ├── .env.example          # Plantilla para variables de entorno
-├── .gitignore            # Archivos excluidos del control de versiones
+├── .gitignore            # Archivos excluidos del control de versiones (protege .env y historial)
 ├── requirements.txt      # Dependencias oficiales de Python
 ├── iniciar.bat           # Lanzador rápido de la ventana flotante
 ├── iniciar_consola.bat   # Lanzador rápido del modo terminal
 ├── main.py               # Punto de entrada principal (GUI, CLI y Tests)
 ├── config.py             # Configuración centralizada y System Prompts
 ├── audio_listener.py     # Captura de audio y transcripción continua (Mic / Loopback)
-├── gemini_copilot.py     # Cliente de Gemini 3.8 Flash con streaming y filtros
-├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top en Tkinter
+├── gemini_copilot.py     # Cliente multi-IA (Gemini con auto-fallback, DeepSeek y OpenRouter)
+├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top con edición en vivo
 ├── cli_prompter.py       # Interfaz para terminal interactiva con Colorama
+├── history_logger.py     # Motor de guardado y persistencia en Markdown y JSON
+├── historial/            # Carpeta local privada con las notas de cada entrevista
 └── README.md             # Esta documentación
 ```
 

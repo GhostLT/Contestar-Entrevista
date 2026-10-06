@@ -25,3 +25,9 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 create_shortcut.vbs
+
+# Historial y logs de entrevistas personales (¡Privados, no subir a GitHub!)
+historial/*.md
+historial/*.json
+!historial/.gitkeep
+logs/

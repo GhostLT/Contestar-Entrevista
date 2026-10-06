@@ -24,15 +24,21 @@ def main():
 
     if args.test_question:
         from gemini_copilot import GeminiCopilot
+        from history_logger import HistoryLogger
         copilot = GeminiCopilot()
+        logger = HistoryLogger()
         print(f"\nProbando pregunta: '{args.test_question}'\n")
         
+        chunks = []
         def _stream(chunk):
+            chunks.append(chunk)
             sys.stdout.write(chunk)
             sys.stdout.flush()
 
         res = copilot.answer_question_stream(args.test_question, on_chunk=_stream)
-        print("\n\nPrueba finalizada con éxito.")
+        full_ans = "".join(chunks) if chunks else res
+        logger.log_interaction(args.test_question, full_ans, provider=copilot.provider)
+        print(f"\n\nPrueba finalizada con éxito. (Registrado en historial/{logger.get_session_file_path().name})")
         return
 
     if args.cli:
