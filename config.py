@@ -17,6 +17,9 @@ if env_path.exists():
 else:
     load_dotenv()
 
+# Proveedor de IA activo: 'gemini', 'deepseek', o 'openrouter'
+AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini").lower()
+
 # Clave de API de Gemini
 GEMINI_API_KEY = (
     os.getenv("GEMINI_API_KEY")
@@ -24,9 +27,13 @@ GEMINI_API_KEY = (
     or ""
 )
 
+# Claves de DeepSeek y OpenRouter
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+
 # Modelo recomendado de Gemini
-# Usamos gemini-3.8-flash por su rapidez y alta calidad en razonamiento conciso
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+# Usamos gemini-3.5-flash-lite por su estabilidad, velocidad ultra rápida y sin saturación 503
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 # Idioma de reconocimiento de voz (español por defecto)
 AUDIO_LANGUAGE = os.getenv("AUDIO_LANGUAGE", "es-ES")

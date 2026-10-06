@@ -1,11 +1,14 @@
 """
 Interfaz Gráfica Flotante (Teleprompter / Copiloto de Entrevistas)
-Desarrollada con Tkinter nativo para máximo rendimiento, 0% consumo de CPU,
-soporte Always-on-Top (siempre visible sobre Zoom/Teams/Meet) y modo oscuro elegante.
+Soporta:
+- Conexión con Google Gemini (con conmutación automática anti-503)
+- Conexión con DeepSeek (oficial)
+- Conexión con OpenRouter (DeepSeek R1 Gratis)
+- Always-on-Top, soporte para micrófono y loopback de reuniones.
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox, font
+from tkinter import ttk, messagebox
 import threading
 import queue
 import time
@@ -13,7 +16,7 @@ from typing import Optional, List, Dict, Any
 
 import config
 from audio_listener import AudioListener, get_audio_devices, get_default_device_index
-from gemini_copilot import GeminiCopilot
+from gemini_copilot import AICopilot
 
 
 class InterviewPrompterApp:
@@ -23,9 +26,9 @@ class InterviewPrompterApp:
 
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("Copiloto de Entrevistas | Gemini 3.8 Flash")
-        self.root.geometry("680x620+350+80")
-        self.root.minsize(480, 420)
+        self.root.title("Copiloto de Entrevistas | Gemini & DeepSeek")
+        self.root.geometry("700x640+350+80")
+        self.root.minsize(500, 440)
 
         # Configuración de apariencia
         self.bg_main = "#121214"
@@ -50,7 +53,7 @@ class InterviewPrompterApp:
             pass
 
         # Componentes lógicos
-        self.copilot = GeminiCopilot()
+        self.copilot = AICopilot()
         self.devices = get_audio_devices()
         default_dev = get_default_device_index(prefer_loopback=False)
 
@@ -65,10 +68,6 @@ class InterviewPrompterApp:
         # Cola para comunicación entre hilos y Tkinter
         self.msg_queue = queue.Queue()
 
-        # Historial de preguntas
-        self.history = []
-        self.history_index = -1
-
         # Construir interfaz
         self._setup_ui()
 
@@ -79,7 +78,7 @@ class InterviewPrompterApp:
         if self.copilot.is_configured():
             self.listener.start()
         else:
-            self._update_status("⚠️ Configura tu API Key de Gemini para comenzar", self.accent_yellow)
+            self._update_status("⚠️ Configura tu API Key para comenzar", self.accent_yellow)
 
     def _setup_ui(self):
         # 1. BARRA SUPERIOR (Estado y controles de ventana)
@@ -129,10 +128,10 @@ class InterviewPrompterApp:
         )
         self.btn_topmost.pack(side=tk.RIGHT)
 
-        # Botón de Configuración de API Key
+        # Botón de Configuración de API Keys
         self.btn_apikey = tk.Button(
             top_bar,
-            text="🔑 API Key",
+            text="🔑 API Keys / Modelos",
             command=self._open_apikey_dialog,
             bg=self.bg_card,
             fg=self.text_color,
@@ -143,23 +142,44 @@ class InterviewPrompterApp:
         )
         self.btn_apikey.pack(side=tk.RIGHT, padx=6)
 
-        # 2. SELECTOR DE DISPOSITIVOS DE AUDIO
-        dev_bar = tk.Frame(self.root, bg=self.bg_main, padx=12, pady=4)
-        dev_bar.pack(fill=tk.X)
+        # 2. SELECTORES DE AUDIO Y MOTOR IA
+        control_bar = tk.Frame(self.root, bg=self.bg_main, padx=12, pady=4)
+        control_bar.pack(fill=tk.X)
 
-        lbl_dev = tk.Label(
-            dev_bar,
-            text="Dispositivo:",
-            bg=self.bg_main,
-            fg=self.text_dim,
-            font=("Segoe UI", 9)
+        # Selector de Proveedor IA
+        lbl_ai = tk.Label(control_bar, text="IA:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_ai.pack(side=tk.LEFT, padx=(0, 4))
+
+        self.ai_var = tk.StringVar()
+        ai_options = [
+            "Gemini (Ultra Rápido - Auto Respaldo)",
+            "DeepSeek Oficial (api.deepseek.com)",
+            "OpenRouter (DeepSeek R1 Gratis)"
+        ]
+        if self.copilot.provider == "deepseek":
+            self.ai_var.set(ai_options[1])
+        elif self.copilot.provider == "openrouter":
+            self.ai_var.set(ai_options[2])
+        else:
+            self.ai_var.set(ai_options[0])
+
+        self.opt_ai = ttk.Combobox(
+            control_bar,
+            textvariable=self.ai_var,
+            values=ai_options,
+            state="readonly",
+            width=28
         )
-        lbl_dev.pack(side=tk.LEFT, padx=(0, 6))
+        self.opt_ai.pack(side=tk.LEFT, padx=(0, 10))
+        self.opt_ai.bind("<<ComboboxSelected>>", self._on_ai_provider_changed)
+
+        # Selector de Dispositivo de Audio
+        lbl_dev = tk.Label(control_bar, text="Audio:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_dev.pack(side=tk.LEFT, padx=(0, 4))
 
         self.device_var = tk.StringVar()
         device_options = [d["label"] for d in self.devices] if self.devices else ["No se detectaron dispositivos"]
         
-        # Encontrar índice seleccionado
         selected_label = device_options[0] if device_options else ""
         if self.listener.device_index is not None:
             for d in self.devices:
@@ -169,17 +189,17 @@ class InterviewPrompterApp:
         self.device_var.set(selected_label)
 
         self.opt_devices = ttk.Combobox(
-            dev_bar,
+            control_bar,
             textvariable=self.device_var,
             values=device_options,
             state="readonly",
-            width=50
+            width=32
         )
         self.opt_devices.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.opt_devices.bind("<<ComboboxSelected>>", self._on_device_changed)
 
         btn_refresh = tk.Button(
-            dev_bar,
+            control_bar,
             text="🔄",
             command=self._refresh_devices,
             bg=self.bg_card,
@@ -192,7 +212,7 @@ class InterviewPrompterApp:
 
         # 3. TARJETA DE PREGUNTA DETECTADA
         q_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=10)
-        q_frame.pack(fill=tk.X, padx=12, pady=(8, 4))
+        q_frame.pack(fill=tk.X, padx=12, pady=(6, 4))
 
         q_header = tk.Frame(q_frame, bg=self.bg_card)
         q_header.pack(fill=tk.X)
@@ -223,11 +243,11 @@ class InterviewPrompterApp:
             font=("Segoe UI", 11, "bold"),
             anchor="w",
             justify=tk.LEFT,
-            wraplength=640
+            wraplength=660
         )
         self.txt_question.pack(fill=tk.X, pady=(6, 0))
 
-        # 4. TARJETA TELEPROMPTER DE RESPUESTA GEMINI
+        # 4. TARJETA TELEPROMPTER DE RESPUESTA
         ans_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=10)
         ans_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
 
@@ -236,7 +256,7 @@ class InterviewPrompterApp:
 
         lbl_ans_title = tk.Label(
             ans_header,
-            text="RESPUESTA DIRECTA (GEMINI 3.8 FLASH)",
+            text="RESPUESTA DIRECTA (COPILOTO IA - EN VIVO)",
             bg=self.bg_card,
             fg=self.accent_green,
             font=("Segoe UI", 9, "bold")
@@ -342,6 +362,20 @@ class InterviewPrompterApp:
             self.btn_pause.config(text="⏸️ Pausar")
             self._update_status("🟢 Escuchando la reunión...", self.accent_green)
 
+    def _on_ai_provider_changed(self, event):
+        sel = self.ai_var.get()
+        if "DeepSeek Oficial" in sel:
+            self.copilot.set_provider("deepseek")
+            prov_text = "DeepSeek Oficial"
+        elif "OpenRouter" in sel:
+            self.copilot.set_provider("openrouter")
+            prov_text = "OpenRouter (DeepSeek R1 Gratis)"
+        else:
+            self.copilot.set_provider("gemini")
+            prov_text = "Gemini (Auto-Respaldo Anti-503)"
+
+        self._update_status(f"Motor activo: {prov_text}", self.accent_blue)
+
     def _on_device_changed(self, event):
         selection = self.device_var.get()
         for dev in self.devices:
@@ -368,7 +402,7 @@ class InterviewPrompterApp:
         if content:
             self.root.clipboard_clear()
             self.root.clipboard_append(content)
-            self._update_status("📋 ¡Respuesta copiada al portapapeles!", self.accent_blue)
+            self._update_status("📋 ¡Respuesta copiada!", self.accent_blue)
 
     def _clear_screen(self):
         self.txt_question.config(text="Esperando que el entrevistador haga una pregunta...")
@@ -410,9 +444,9 @@ class InterviewPrompterApp:
                 elif kind == "STREAM_ERROR":
                     self.txt_answer.config(state=tk.NORMAL)
                     self.txt_answer.delete("1.0", tk.END)
-                    self.txt_answer.insert(tk.END, f"{data}\n\n💡 Si necesitas actualizar tu clave, haz clic en '🔑 API Key' arriba a la derecha.")
+                    self.txt_answer.insert(tk.END, f"{data}\n\n💡 Tip: Puedes cambiar a DeepSeek o configurar tus claves en '🔑 API Keys / Modelos' arriba.")
                     self.txt_answer.config(state=tk.DISABLED)
-                    self._update_status("⚠️ Error consultando a Gemini", self.accent_red)
+                    self._update_status("⚠️ Error consultando IA", self.accent_red)
                 elif kind == "STREAM_DONE":
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
                 elif kind == "STREAM_IGNORED":
@@ -427,20 +461,17 @@ class InterviewPrompterApp:
         self.root.after(80, self._process_queue)
 
     def _handle_detected_text(self, text: str):
-        # Actualizar tarjeta de pregunta
         now = time.strftime("%H:%M:%S")
         self.lbl_time.config(text=now)
         self.txt_question.config(text=f"❓ \"{text}\"")
-        self._update_status("⚡ Consultando a Gemini 3.8 Flash...", self.accent_blue)
+        self._update_status("⚡ Consultando a IA...", self.accent_blue)
 
-        # Preparar respuesta con indicador visible de carga inmediata
         self.txt_answer.config(state=tk.NORMAL)
         self.txt_answer.delete("1.0", tk.END)
-        self.txt_answer.insert(tk.END, "⚡ Generando respuesta con Gemini 3.8 Flash...")
+        self.txt_answer.insert(tk.END, "⚡ Generando respuesta instantánea...")
         self.txt_answer.config(state=tk.DISABLED)
 
-        # Disparar llamada a Gemini en hilo secundario para no congelar la GUI
-        threading.Thread(target=self._ask_gemini_worker, args=(text,), daemon=True).start()
+        threading.Thread(target=self._ask_ai_worker, args=(text,), daemon=True).start()
 
     def _send_manual_question(self):
         query = self.entry_manual.get().strip()
@@ -449,7 +480,7 @@ class InterviewPrompterApp:
         self.entry_manual.delete(0, tk.END)
         self._handle_detected_text(query)
 
-    def _ask_gemini_worker(self, question: str):
+    def _ask_ai_worker(self, question: str):
         first_chunk = True
 
         def _on_chunk(chunk):
@@ -472,7 +503,6 @@ class InterviewPrompterApp:
             self.msg_queue.put(("STREAM_IGNORED", None))
         else:
             if first_chunk and res:
-                # Si no hubo streaming pero retornó un mensaje o error
                 self.msg_queue.put(("STREAM_START", None))
                 self.msg_queue.put(("STREAM_CHUNK", res))
             self.msg_queue.put(("STREAM_DONE", None))
@@ -483,46 +513,62 @@ class InterviewPrompterApp:
         self.txt_answer.see(tk.END)
         self.txt_answer.config(state=tk.DISABLED)
 
-    # ------------------ CONFIGURACIÓN DE API KEY ------------------
+    # ------------------ CONFIGURACIÓN DE CLAVES ------------------
 
     def _open_apikey_dialog(self):
         dialog = tk.Toplevel(self.root)
-        dialog.title("Configuración de Gemini API Key")
-        dialog.geometry("480x220")
+        dialog.title("Configuración de Motores de IA y Claves")
+        dialog.geometry("540x360")
         dialog.configure(bg=self.bg_main)
         dialog.attributes("-topmost", True)
         dialog.transient(self.root)
         dialog.grab_set()
 
-        lbl_desc = tk.Label(
+        lbl_head = tk.Label(
             dialog,
-            text="Ingresa tu Google Gemini API Key:\n(Puedes obtener una gratis en https://aistudio.google.com/)",
+            text="Configura tus claves de API para no quedarte nunca sin respuesta:",
             bg=self.bg_main,
             fg=self.text_color,
-            font=("Segoe UI", 9),
-            justify=tk.LEFT
+            font=("Segoe UI", 10, "bold")
         )
-        lbl_desc.pack(padx=16, pady=(16, 8), anchor="w")
+        lbl_head.pack(padx=16, pady=(14, 10), anchor="w")
 
-        entry_key = tk.Entry(
-            dialog,
-            bg=self.bg_card,
-            fg=self.text_color,
-            insertbackground=self.text_color,
-            font=("Segoe UI", 10),
-            width=50
-        )
-        entry_key.pack(padx=16, pady=8, fill=tk.X)
-        if self.copilot.api_key:
-            entry_key.insert(0, self.copilot.api_key)
+        # 1. Gemini
+        lbl_g = tk.Label(dialog, text="Google Gemini API Key (Gratis en aistudio.google.com):", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_g.pack(padx=16, anchor="w")
+        ent_gemini = tk.Entry(dialog, bg=self.bg_card, fg=self.text_color, insertbackground=self.text_color, font=("Segoe UI", 9))
+        ent_gemini.pack(padx=16, pady=(2, 8), fill=tk.X)
+        if self.copilot.gemini_key:
+            ent_gemini.insert(0, self.copilot.gemini_key)
+
+        # 2. DeepSeek
+        lbl_d = tk.Label(dialog, text="DeepSeek API Key (platform.deepseek.com):", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_d.pack(padx=16, anchor="w")
+        ent_deepseek = tk.Entry(dialog, bg=self.bg_card, fg=self.text_color, insertbackground=self.text_color, font=("Segoe UI", 9))
+        ent_deepseek.pack(padx=16, pady=(2, 8), fill=tk.X)
+        if self.copilot.deepseek_key:
+            ent_deepseek.insert(0, self.copilot.deepseek_key)
+
+        # 3. OpenRouter (DeepSeek Gratis)
+        lbl_o = tk.Label(dialog, text="OpenRouter API Key (openrouter.ai/keys - DeepSeek R1 Gratis):", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_o.pack(padx=16, anchor="w")
+        ent_openrouter = tk.Entry(dialog, bg=self.bg_card, fg=self.text_color, insertbackground=self.text_color, font=("Segoe UI", 9))
+        ent_openrouter.pack(padx=16, pady=(2, 14), fill=tk.X)
+        if self.copilot.openrouter_key:
+            ent_openrouter.insert(0, self.copilot.openrouter_key)
 
         def _save():
-            new_key = entry_key.get().strip()
-            if not new_key:
-                messagebox.showwarning("Aviso", "Por favor ingresa una API Key válida.", parent=dialog)
-                return
+            g_key = ent_gemini.get().strip()
+            d_key = ent_deepseek.get().strip()
+            o_key = ent_openrouter.get().strip()
 
-            self.copilot.set_api_key(new_key)
+            if g_key:
+                self.copilot.set_gemini_key(g_key)
+            if d_key:
+                self.copilot.set_deepseek_key(d_key)
+            if o_key:
+                self.copilot.set_openrouter_key(o_key)
+
             # Guardar en archivo .env
             try:
                 env_file = config.BASE_DIR / ".env"
@@ -530,36 +576,45 @@ class InterviewPrompterApp:
                 if env_file.exists():
                     lines = env_file.read_text(encoding="utf-8").splitlines()
                 
-                updated = False
-                for i, line in enumerate(lines):
-                    if line.startswith("GEMINI_API_KEY="):
-                        lines[i] = f"GEMINI_API_KEY={new_key}"
-                        updated = True
-                        break
-                if not updated:
-                    lines.append(f"GEMINI_API_KEY={new_key}")
+                def set_env_val(key, val):
+                    nonlocal lines
+                    updated = False
+                    for i, l in enumerate(lines):
+                        if l.startswith(f"{key}="):
+                            lines[i] = f"{key}={val}"
+                            updated = True
+                            break
+                    if not updated:
+                        lines.append(f"{key}={val}")
+
+                if g_key:
+                    set_env_val("GEMINI_API_KEY", g_key)
+                if d_key:
+                    set_env_val("DEEPSEEK_API_KEY", d_key)
+                if o_key:
+                    set_env_val("OPENROUTER_API_KEY", o_key)
 
                 env_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
             except Exception as e:
                 print(f"Error guardando .env: {e}")
 
-            self._update_status("🟢 API Key guardada y lista", self.accent_green)
-            if not self.listener._running:
+            self._update_status("🟢 Configuración guardada", self.accent_green)
+            if not self.listener._running and self.copilot.is_configured():
                 self.listener.start()
             dialog.destroy()
 
         btn_save = tk.Button(
             dialog,
-            text="Guardar y Conectar",
+            text="Guardar y Aplicar",
             command=_save,
             bg=self.accent_green,
             fg="#000000",
             relief=tk.FLAT,
             font=("Segoe UI", 9, "bold"),
-            padx=12,
+            padx=16,
             pady=4
         )
-        btn_save.pack(pady=12)
+        btn_save.pack(pady=4)
 
 
 def run_gui():
