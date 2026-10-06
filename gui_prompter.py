@@ -15,6 +15,7 @@ import time
 from typing import Optional, List, Dict, Any
 
 import config
+import candidate_profile
 from audio_listener import AudioListener, get_audio_devices, get_default_device_index
 from gemini_copilot import AICopilot
 from history_logger import HistoryLogger
@@ -70,9 +71,16 @@ class InterviewPrompterApp:
         # Cola para comunicación entre hilos y Tkinter
         self.msg_queue = queue.Queue()
         self.current_answer_lang = "es"
+        self.active_tab = "copilot"
+        self.active_pitch_key = "pitch_es_completo"
+        self.pitch_buttons: Dict[str, tk.Button] = {}
 
         # Construir interfaz
         self._setup_ui()
+
+        # Teclas rápidas para alternar pestañas
+        self.root.bind("<F1>", lambda e: self._switch_tab("copilot"))
+        self.root.bind("<F2>", lambda e: self._switch_tab("pitch"))
 
         # Iniciar ciclo de mensajes de hilos
         self.root.after(100, self._process_queue)
@@ -228,8 +236,52 @@ class InterviewPrompterApp:
         )
         btn_refresh.pack(side=tk.LEFT, padx=(6, 0))
 
-        # 3. TARJETA DE PREGUNTA DETECTADA (EDITABLE DIRECTAMENTE)
-        q_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=8)
+        # 3. BARRA DE NAVEGACIÓN ENTRE PESTAÑAS (TABS)
+        tab_nav = tk.Frame(self.root, bg=self.bg_main, padx=12, pady=3)
+        tab_nav.pack(fill=tk.X)
+
+        self.btn_tab_copilot = tk.Button(
+            tab_nav,
+            text="🎙️ Copiloto en Vivo (F1)",
+            command=lambda: self._switch_tab("copilot"),
+            bg=self.accent_blue,
+            fg="#ffffff",
+            activebackground=self.accent_blue,
+            activeforeground="#ffffff",
+            relief=tk.FLAT,
+            font=("Segoe UI", 9, "bold"),
+            padx=12,
+            pady=3,
+            cursor="hand2"
+        )
+        self.btn_tab_copilot.pack(side=tk.LEFT, padx=(0, 6))
+
+        self.btn_tab_pitch = tk.Button(
+            tab_nav,
+            text="🎯 Mi Pitch & Formación (F2)",
+            command=lambda: self._switch_tab("pitch"),
+            bg=self.bg_card,
+            fg=self.text_dim,
+            activebackground=self.bg_card_inner,
+            activeforeground=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 9, "bold"),
+            padx=12,
+            pady=3,
+            cursor="hand2"
+        )
+        self.btn_tab_pitch.pack(side=tk.LEFT)
+
+        # 4. CONTENEDOR PESTAÑA 1: COPILOTO EN VIVO
+        self.frame_copilot = tk.Frame(self.root, bg=self.bg_main)
+        self.frame_copilot.pack(fill=tk.BOTH, expand=True)
+
+        # 5. CONTENEDOR PESTAÑA 2: MI PITCH & FORMACIÓN
+        self.frame_pitch = tk.Frame(self.root, bg=self.bg_main)
+
+        # --- CONTENIDO DE PESTAÑA 1 (COPILOTO) ---
+        # 4.1 TARJETA DE PREGUNTA DETECTADA (EDITABLE DIRECTAMENTE)
+        q_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=8)
         q_frame.pack(fill=tk.X, padx=12, pady=(4, 4))
 
         q_header = tk.Frame(q_frame, bg=self.bg_card)
@@ -284,8 +336,8 @@ class InterviewPrompterApp:
         self.txt_question.insert("1.0", "Esperando pregunta del entrevistador... (puedes hacer clic aquí y editar)")
         self.txt_question.bind("<Return>", self._on_question_box_enter)
 
-        # 4. TARJETA TELEPROMPTER DE RESPUESTA
-        ans_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=10)
+        # 4.2 TARJETA TELEPROMPTER DE RESPUESTA
+        ans_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=10)
         ans_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
 
         ans_header = tk.Frame(ans_frame, bg=self.bg_card)
@@ -371,8 +423,8 @@ class InterviewPrompterApp:
         )
         self.txt_answer.config(state=tk.DISABLED)
 
-        # 5. BARRA DE ENTRADA MANUAL (Por si escriben en el chat de la llamada)
-        input_bar = tk.Frame(self.root, bg=self.bg_main, padx=12, pady=8)
+        # 4.3 BARRA DE ENTRADA MANUAL (Por si escriben en el chat de la llamada)
+        input_bar = tk.Frame(self.frame_copilot, bg=self.bg_main, padx=12, pady=8)
         input_bar.pack(fill=tk.X)
 
         self.entry_manual = tk.Entry(
@@ -401,6 +453,206 @@ class InterviewPrompterApp:
             pady=3
         )
         self.btn_send.pack(side=tk.RIGHT)
+
+        # Construir contenido de Pestaña 2 (Pitch)
+        self._setup_pitch_ui()
+
+    def _setup_pitch_ui(self):
+        # 1. Sub-barra de selección de pitch y acciones
+        pitch_nav = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
+        pitch_nav.pack(fill=tk.X)
+
+        lbl_select = tk.Label(
+            pitch_nav,
+            text="Pitch:",
+            bg=self.bg_main,
+            fg=self.text_dim,
+            font=("Segoe UI", 9)
+        )
+        lbl_select.pack(side=tk.LEFT, padx=(0, 4))
+
+        pitch_options = [
+            ("pitch_es_completo", "🇪🇸 Completo (60-90s)"),
+            ("pitch_es_rapido", "⚡ Rápido (30s)"),
+            ("pitch_en", "🇺🇸 English (60s)"),
+            ("formacion_certs", "🎓 Formación & Certs"),
+            ("fit_pcos", "🎯 Por qué PCoS"),
+        ]
+
+        for key, label in pitch_options:
+            btn = tk.Button(
+                pitch_nav,
+                text=label,
+                command=lambda k=key: self._load_pitch(k),
+                bg=self.accent_blue if key == self.active_pitch_key else self.bg_card_inner,
+                fg="#ffffff" if key == self.active_pitch_key else self.text_dim,
+                activebackground=self.bg_card,
+                activeforeground=self.text_color,
+                relief=tk.FLAT,
+                font=("Segoe UI", 8, "bold"),
+                padx=8,
+                pady=2,
+                cursor="hand2"
+            )
+            btn.pack(side=tk.LEFT, padx=2)
+            self.pitch_buttons[key] = btn
+
+        # Acciones a la derecha
+        btn_copy_pitch = tk.Button(
+            pitch_nav,
+            text="📋 Copiar",
+            command=self._copy_pitch,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8),
+            padx=8,
+            pady=2,
+            cursor="hand2"
+        )
+        btn_copy_pitch.pack(side=tk.RIGHT, padx=(4, 0))
+
+        btn_to_prompter = tk.Button(
+            pitch_nav,
+            text="⚡ Al Teleprompter",
+            command=self._send_pitch_to_teleprompter,
+            bg=self.accent_green,
+            fg="#000000",
+            activebackground="#16a34a",
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=8,
+            pady=2,
+            cursor="hand2"
+        )
+        btn_to_prompter.pack(side=tk.RIGHT, padx=4)
+
+        # 2. Tarjeta contenedora de lectura
+        pitch_card = tk.Frame(self.frame_pitch, bg=self.bg_card, padx=12, pady=8)
+        pitch_card.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 4))
+
+        # Encabezado de la tarjeta
+        pitch_card_header = tk.Frame(pitch_card, bg=self.bg_card)
+        pitch_card_header.pack(fill=tk.X, pady=(0, 6))
+
+        self.lbl_pitch_title = tk.Label(
+            pitch_card_header,
+            text="GUIÓN DE PRESENTACIÓN | JAVIER VIVEROS HUESCA",
+            bg=self.bg_card,
+            fg=self.accent_yellow,
+            font=("Segoe UI", 9, "bold")
+        )
+        self.lbl_pitch_title.pack(side=tk.LEFT)
+
+        # Área de texto con scroll
+        txt_box_frame = tk.Frame(pitch_card, bg=self.bg_card_inner)
+        txt_box_frame.pack(fill=tk.BOTH, expand=True)
+
+        scrollbar = ttk.Scrollbar(txt_box_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_pitch = tk.Text(
+            txt_box_frame,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            insertbackground=self.text_color,
+            relief=tk.FLAT,
+            padx=14,
+            pady=14,
+            font=("Segoe UI", 12),
+            wrap=tk.WORD,
+            spacing1=4,
+            spacing3=4,
+            yscrollcommand=scrollbar.set,
+        )
+        self.txt_pitch.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=self.txt_pitch.yview)
+
+        # Cargar pitch inicial
+        self._load_pitch("pitch_es_completo")
+
+        # 3. Badges inferiores con métricas rápidas
+        badges_frame = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
+        badges_frame.pack(fill=tk.X)
+
+        badges = [
+            ("💼 +12 Años Exp Total", "#38bdf8"),
+            ("⚡ +4 Años Full-Stack", "#34d399"),
+            ("🤖 +2.5 Años Open Source", "#a78bfa"),
+            ("💰 $2,500 USD/mes", "#facc15"),
+            ("🚀 Disp. Inmediata", "#f472b6"),
+            ("🎓 Ing. Electrónica y Sistemas", "#94a3b8"),
+        ]
+        for b_text, b_color in badges:
+            lbl = tk.Label(
+                badges_frame,
+                text=b_text,
+                bg=self.bg_card,
+                fg=b_color,
+                font=("Segoe UI", 8, "bold"),
+                padx=8,
+                pady=2,
+                relief=tk.FLAT
+            )
+            lbl.pack(side=tk.LEFT, padx=2)
+
+    def _switch_tab(self, tab_name: str):
+        self.active_tab = tab_name
+        if tab_name == "copilot":
+            self.frame_pitch.pack_forget()
+            self.frame_copilot.pack(fill=tk.BOTH, expand=True)
+            self.btn_tab_copilot.config(bg=self.accent_blue, fg="#ffffff")
+            self.btn_tab_pitch.config(bg=self.bg_card, fg=self.text_dim)
+            self._update_status("🟢 Copiloto en Vivo activo (F2 para ver tu Pitch)", self.accent_green)
+        else:
+            self.frame_copilot.pack_forget()
+            self.frame_pitch.pack(fill=tk.BOTH, expand=True)
+            self.btn_tab_pitch.config(bg=self.accent_blue, fg="#ffffff")
+            self.btn_tab_copilot.config(bg=self.bg_card, fg=self.text_dim)
+            self._update_status("🎯 Viendo Pitch Personal (F1 para volver al Copiloto)", self.accent_blue)
+
+    def _load_pitch(self, key: str):
+        self.active_pitch_key = key
+        script = candidate_profile.PITCH_SCRIPTS.get(key, "")
+        self.txt_pitch.config(state=tk.NORMAL)
+        self.txt_pitch.delete("1.0", tk.END)
+        self.txt_pitch.insert(tk.END, script)
+        self.txt_pitch.config(state=tk.DISABLED)
+
+        # Actualizar estilo de botones del sub-selector
+        for k, btn in self.pitch_buttons.items():
+            if k == key:
+                btn.config(bg=self.accent_blue, fg="#ffffff")
+            else:
+                btn.config(bg=self.bg_card_inner, fg=self.text_dim)
+
+    def _copy_pitch(self):
+        script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
+        if script:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(script)
+            self._update_status("📋 ¡Pitch copiado al portapapeles!", self.accent_blue)
+
+    def _send_pitch_to_teleprompter(self):
+        script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
+        if script:
+            titles = {
+                "pitch_es_completo": "🎙️ Pitch Completo de Presentación (Javier Viveros)",
+                "pitch_es_rapido": "⚡ Elevator Pitch Rápido de 30s (Javier Viveros)",
+                "pitch_en": "🇺🇸 Professional English Pitch (Javier Viveros)",
+                "formacion_certs": "🎓 Formación Académica & Certificaciones (Javier Viveros)",
+                "fit_pcos": "🎯 Por qué PCoS & Fit Técnico (Javier Viveros)",
+            }
+            self.txt_question.delete("1.0", tk.END)
+            self.txt_question.insert("1.0", titles.get(self.active_pitch_key, "Mi Pitch Personal"))
+
+            self.txt_answer.config(state=tk.NORMAL)
+            self.txt_answer.delete("1.0", tk.END)
+            self.txt_answer.insert(tk.END, script)
+            self.txt_answer.config(state=tk.DISABLED)
+
+            self._switch_tab("copilot")
+            self._update_status("⚡ Pitch cargado en el Teleprompter principal", self.accent_green)
 
     # ------------------ EVENTOS Y CALLBACKS ------------------
 

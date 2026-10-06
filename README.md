@@ -11,6 +11,14 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
+- 🎯 **Pestaña de Pitch Personal y Formación (F2)**: Pestaña interactiva con guiones de presentación preparados para responder con total maestría cuando el entrevistador diga *"¿Háblame de ti?"*, *"¿Cuéntame sobre tu experiencia?"* o *"Walk me through your background"*:
+  - **🇪🇸 Pitch Completo (60–90s)**: Presentación profesional profunda con trayectoria, arquitectura, vLLM en AWS GPU, RAG y PCoS.
+  - **⚡ Elevator Pitch Rápido (30s)**: Resumen ejecutivo conciso y contundente.
+  - **🇺🇸 English Pitch (60s)**: Guión en inglés técnico senior para rondas bilingües o clientes internacionales.
+  - **🎓 Formación Académica & Certificaciones**: Título en Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa) y especializaciones continuas.
+  - **🎯 Por qué PCoS / Fit del Rol**: Argumentación técnica sobre modelos Open Source, soberanía de datos con RLS en Supabase y asistentes ejecutivos.
+  - **⚡ Botón "Al Teleprompter"**: Carga el pitch seleccionado en el teleprompter principal del copiloto al instante.
+  - **Teclas Rápidas**: `F1` para alternar al Copiloto en Vivo y `F2` para ir a tu Pitch.
 - 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado, experiencia de +12 años, proyectos reales (Empire Engineering, AT&T, vLLM en AWS GPU, Supabase pgvector con RLS), métricas y respuestas a preguntas de selección para PCoS / Hireline, respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
 - 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
   - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
@@ -135,6 +143,24 @@ WINDOW_OPACITY=0.95
 3. **Flujo de Lectura Natural**:
    - En cuanto aparezca la primera frase en verde, empieza a leerla pausadamente en voz alta.
    - Mientras terminas de decir esa frase, tus ojos pueden escanear las viñetas técnicas para complementar tu respuesta con total naturalidad y autoridad.
+
+---
+
+## 🎯 Pestaña de Pitch de Presentación y Formación (F2)
+
+Para las preguntas abiertas donde el entrevistador te pide presentarte (*"Háblame de ti", "Cuéntame sobre tu trayectoria profesional", "Walk me through your background"*), la aplicación incluye una pestaña dedicada con guiones preparados listos para leer en voz alta con total fluidez:
+
+1. **Guiones Disponibles**:
+   - **`🇪🇸 Completo (60–90s)`**: Resumen profesional profundo con trayectoria de +12 años, stack moderno (React, TypeScript, FastAPI, Supabase), inferencia de modelos Open Source con vLLM en AWS GPU (-65% costos), RAG con pgvector y visión con PCoS.
+   - **`⚡ Rápido (30s)`**: Elevator pitch ultra conciso para respuestas directas o rondas de selección rápidas.
+   - **`🇺🇸 English (60s)`**: Walkthrough en inglés profesional de nivel senior para entrevistas internacionales o clientes de EE. UU.
+   - **`🎓 Formación & Certs`**: Detalle del título universitario en Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa) y credenciales especializadas (Generative AI, vLLM, Full-Stack, Supabase, AWS, Clean Architecture).
+   - **`🎯 Por qué PCoS`**: Los 3 argumentos técnicos definitivos de por qué eres el candidato ideal (estrategia Open Source, soberanía de datos con RLS en salud/operaciones y experiencia en asistentes ejecutivos con flujos agénticos).
+2. **Acciones y Navegación**:
+   - **`F1` / `F2`**: Alterna al instante entre el **Copiloto en Vivo (`F1`)** y tu **Pitch (`F2`)** con una sola tecla sin mover el cursor.
+   - **`⚡ Al Teleprompter`**: Carga el pitch seleccionado como respuesta activa en la ventana principal del copiloto y te regresa automáticamente a la vista de escucha.
+   - **`📋 Copiar`**: Copia el texto al portapapeles por si solicitan un resumen en el chat de la videollamada.
+   - **Métricas Rápidas al Pie**: Badges visuales con tus datos clave (+12 años exp, +4 años full-stack, +2.5 años IA Open Source, $2,500 USD/mes, disponibilidad inmediata) para responder cualquier duda en un parpadeo.
 
 ---
 
