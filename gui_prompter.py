@@ -69,6 +69,7 @@ class InterviewPrompterApp:
 
         # Cola para comunicación entre hilos y Tkinter
         self.msg_queue = queue.Queue()
+        self.current_answer_lang = "es"
 
         # Construir interfaz
         self._setup_ui()
@@ -170,10 +171,25 @@ class InterviewPrompterApp:
             textvariable=self.ai_var,
             values=ai_options,
             state="readonly",
-            width=28
+            width=24
         )
         self.opt_ai.pack(side=tk.LEFT, padx=(0, 10))
         self.opt_ai.bind("<<ComboboxSelected>>", self._on_ai_provider_changed)
+
+        # Selector de Idioma de Respuesta
+        lbl_lang = tk.Label(control_bar, text="Idioma:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_lang.pack(side=tk.LEFT, padx=(0, 4))
+
+        self.lang_var = tk.StringVar(value="🇪🇸 Español")
+        self.opt_lang = ttk.Combobox(
+            control_bar,
+            textvariable=self.lang_var,
+            values=["🇪🇸 Español", "🇺🇸 English"],
+            state="readonly",
+            width=11
+        )
+        self.opt_lang.pack(side=tk.LEFT, padx=(0, 10))
+        self.opt_lang.bind("<<ComboboxSelected>>", self._on_language_changed)
 
         # Selector de Dispositivo de Audio
         lbl_dev = tk.Label(control_bar, text="Audio:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
@@ -296,9 +312,23 @@ class InterviewPrompterApp:
         )
         btn_copy.pack(side=tk.RIGHT)
 
+        self.btn_translate = tk.Button(
+            ans_header,
+            text="🌐 Traducir a Inglés",
+            command=self._translate_current_answer,
+            bg=self.bg_card_inner,
+            fg=self.accent_yellow,
+            activebackground=self.bg_card,
+            activeforeground=self.accent_yellow,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=8
+        )
+        self.btn_translate.pack(side=tk.RIGHT, padx=6)
+
         btn_hist = tk.Button(
             ans_header,
-            text="📜 Ver Historial",
+            text="📜 Historial",
             command=self._open_history,
             bg=self.bg_card_inner,
             fg=self.accent_blue,
@@ -446,6 +476,85 @@ class InterviewPrompterApp:
         self.txt_answer.delete("1.0", tk.END)
         self.txt_answer.insert(tk.END, "Esperando nueva intervención...")
         self.txt_answer.config(state=tk.DISABLED)
+        self.current_answer_lang = "es"
+        if hasattr(self, "btn_translate"):
+            self.btn_translate.config(state=tk.NORMAL, text="🌐 Traducir a Inglés")
+
+    def _on_language_changed(self, event=None):
+        sel = self.lang_var.get()
+        is_en = "English" in sel or "en" in sel.lower()
+        lang_name = "Inglés (English)" if is_en else "Español"
+        self._update_status(f"🌐 Idioma de respuesta: {lang_name}", self.accent_blue)
+        next_target = "Español" if is_en else "Inglés"
+        if hasattr(self, "btn_translate"):
+            self.btn_translate.config(text=f"🌐 Traducir a {next_target}")
+
+    def _translate_current_answer(self):
+        content = self.txt_answer.get("1.0", tk.END).strip()
+        if not content:
+            return
+
+        placeholders = [
+            "💡 Tu respuesta aparecerá aquí",
+            "Esperando",
+            "🔇 Charla casual",
+            "⚡ Generando",
+            "🌐 Traduciendo"
+        ]
+        if any(content.startswith(p) for p in placeholders) or content.startswith("❌") or content.startswith("⚠️"):
+            self._update_status("⚠️ No hay una respuesta para traducir", self.accent_yellow)
+            return
+
+        # Si el texto actual está en español, traducir a inglés; si está en inglés, a español
+        target_lang = "en" if self.current_answer_lang == "es" else "es"
+        target_label = "Inglés" if target_lang == "en" else "Español"
+
+        self.btn_translate.config(state=tk.DISABLED, text=f"🌐 Traduciendo...")
+        self._update_status(f"🌐 Traduciendo respuesta a {target_label}...", self.accent_blue)
+
+        threading.Thread(
+            target=self._translate_worker,
+            args=(content, target_lang, target_label),
+            daemon=True
+        ).start()
+
+    def _translate_worker(self, text: str, target_lang: str, target_label: str):
+        first_chunk = True
+        collected_chunks = []
+
+        def _on_chunk(chunk):
+            nonlocal first_chunk
+            collected_chunks.append(chunk)
+            if first_chunk:
+                first_chunk = False
+                self.msg_queue.put(("STREAM_START", None))
+            self.msg_queue.put(("STREAM_CHUNK", chunk))
+
+        def _on_error(err):
+            self.msg_queue.put(("STREAM_ERROR", err))
+
+        res = self.copilot.translate_text_stream(
+            text=text,
+            target_lang=target_lang,
+            on_chunk=_on_chunk,
+            on_error=_on_error,
+        )
+
+        if first_chunk and res and not res.startswith("❌") and not res.startswith("⚠️"):
+            self.msg_queue.put(("STREAM_START", None))
+            self.msg_queue.put(("STREAM_CHUNK", res))
+
+        final_text = "".join(collected_chunks) if collected_chunks else res
+        if final_text and not final_text.startswith("❌") and not final_text.startswith("⚠️"):
+            self.msg_queue.put(("TRANSLATE_SUCCESS", (target_lang, final_text)))
+            q_text = self.txt_question.get("1.0", tk.END).strip()
+            self.logger.log_interaction(
+                question=f"[TRADUCCIÓN A {target_label.upper()}] {q_text}",
+                answer=final_text,
+                provider=f"{self.copilot.provider} (Traducción)"
+            )
+        else:
+            self.msg_queue.put(("TRANSLATE_FAIL", None))
 
     def _on_question_box_enter(self, event):
         if event.state & 0x0001:  # Shift presionado: salto de línea
@@ -498,7 +607,24 @@ class InterviewPrompterApp:
                     self.txt_answer.config(state=tk.DISABLED)
                     self._update_status("⚠️ Error consultando IA", self.accent_red)
                 elif kind == "STREAM_DONE":
+                    active_lang = data if data else "es"
+                    self.current_answer_lang = active_lang
+                    next_target = "Español" if active_lang == "en" else "Inglés"
+                    if hasattr(self, "btn_translate"):
+                        self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
+                elif kind == "TRANSLATE_SUCCESS":
+                    target_lang, _ = data
+                    self.current_answer_lang = target_lang
+                    next_target = "Español" if target_lang == "en" else "Inglés"
+                    if hasattr(self, "btn_translate"):
+                        self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
+                    self._update_status(f"🟢 Traducido con éxito a {'Inglés' if target_lang == 'en' else 'Español'}", self.accent_green)
+                elif kind == "TRANSLATE_FAIL":
+                    next_target = "Español" if self.current_answer_lang == "en" else "Inglés"
+                    if hasattr(self, "btn_translate"):
+                        self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
+                    self._update_status("⚠️ No se pudo completar la traducción", self.accent_red)
                 elif kind == "STREAM_IGNORED":
                     self.txt_answer.config(state=tk.NORMAL)
                     self.txt_answer.delete("1.0", tk.END)
@@ -538,19 +664,6 @@ class InterviewPrompterApp:
         self.entry_manual.delete(0, tk.END)
         self._handle_detected_text(query)
 
-    def _ask_ai_worker(self, question: str):
-        first_chunk = True
-
-        def _on_chunk(chunk):
-            nonlocal first_chunk
-            if first_chunk:
-                first_chunk = False
-                self.msg_queue.put(("STREAM_START", None))
-            self.msg_queue.put(("STREAM_CHUNK", chunk))
-
-        def _on_error(err):
-            self.msg_queue.put(("STREAM_ERROR", err))
-
     def _open_history(self):
         self.logger.open_history_folder()
         self._update_status("📂 Carpeta de historial abierta", self.accent_blue)
@@ -558,6 +671,11 @@ class InterviewPrompterApp:
     def _ask_ai_worker(self, question: str):
         first_chunk = True
         collected_chunks = []
+
+        # Obtener idioma seleccionado en el combo
+        sel_lang = self.lang_var.get()
+        is_en = "English" in sel_lang or "en" in sel_lang.lower()
+        active_lang = "en" if is_en else "es"
 
         def _on_chunk(chunk):
             nonlocal first_chunk
@@ -572,6 +690,7 @@ class InterviewPrompterApp:
 
         res = self.copilot.answer_question_stream(
             question=question,
+            language=active_lang,
             on_chunk=_on_chunk,
             on_error=_on_error,
         )
@@ -582,7 +701,7 @@ class InterviewPrompterApp:
             if first_chunk and res:
                 self.msg_queue.put(("STREAM_START", None))
                 self.msg_queue.put(("STREAM_CHUNK", res))
-            self.msg_queue.put(("STREAM_DONE", None))
+            self.msg_queue.put(("STREAM_DONE", active_lang))
 
             # Guardar en archivo de historial permanente (.md y .json)
             final_text = "".join(collected_chunks) if collected_chunks else res
@@ -590,7 +709,7 @@ class InterviewPrompterApp:
                 self.logger.log_interaction(
                     question=question,
                     answer=final_text,
-                    provider=self.copilot.provider
+                    provider=f"{self.copilot.provider} ({active_lang.upper()})"
                 )
 
     def _append_answer_chunk(self, chunk: str):

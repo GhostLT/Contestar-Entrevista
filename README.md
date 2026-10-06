@@ -11,6 +11,9 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
+- 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
+  - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
+  - **Botón de Traducción Instantánea (`🌐 Traducir a Inglés` / `🌐 Traducir a Español`)**: ¿La respuesta está en español pero necesitas leerla en inglés (o viceversa)? Con un solo clic, la IA la traduce en tiempo real mediante streaming, manteniendo intacta la estructura, viñetas y emojis (`🎯`, `⚡`, `💡`).
 - 📜 **Logs y Registro Automático de Conversaciones**: Cada pregunta formulada y respuesta generada se guarda automáticamente en la carpeta `historial/` en formatos **Markdown (`.md`)** y **JSON (`.json`)** con marcas de tiempo para que puedas repasar lo que te preguntaron después de la entrevista. Incluye un botón **`📜 Ver Historial`** para abrir la carpeta con un solo clic.
 - ✏️ **Modificación Manual de Preguntas en Vivo**: Si el reconocimiento de voz malinterpreta un tecnicismo en inglés o audio ruidoso (por ejemplo: entendió *"ratón"* en vez de *"handover"*), el recuadro de pregunta es **100% editable directamente**. Puedes hacer clic, corregir la palabra y presionar **Enter** o el botón **`⚡ Corregir y Re-preguntar`** para obtener la respuesta correcta al instante.
 - 🤖 **Multi-Motor de IA con Respaldo Automático**:
@@ -131,6 +134,20 @@ WINDOW_OPACITY=0.95
 3. **Flujo de Lectura Natural**:
    - En cuanto aparezca la primera frase en verde, empieza a leerla pausadamente en voz alta.
    - Mientras terminas de decir esa frase, tus ojos pueden escanear las viñetas técnicas para complementar tu respuesta con total naturalidad y autoridad.
+
+---
+
+## 🌐 Manejo Bilingüe (Español / Inglés) y Traducción en Vivo
+
+Diseñado especialmente para candidatos que aplican a empresas internacionales o vacantes con rondas técnicas mixtas:
+
+1. **Preselección de Idioma**:
+   - En la barra de controles, junto al selector de IA, dispones del selector **`Idioma:`** con las opciones **`🇪🇸 Español`** y **`🇺🇸 English`**.
+   - Si seleccionas `🇺🇸 English`, el copiloto generará todas las respuestas futuras en inglés técnico nativo con vocabulario y sintaxis senior.
+2. **Traducción Instantánea de Respuestas Existentes**:
+   - Si una respuesta se generó en español y necesitas decirla en inglés (o viceversa), presiona el botón **`🌐 Traducir a Inglés`** (o **`🌐 Traducir a Español`**) en la cabecera de la respuesta.
+   - La IA traducirá el texto en vivo vía streaming preservando intactas las viñetas, emojis (`🎯`, `⚡`, `💡`) y precisión técnica sin perder tiempo.
+   - Ambas versiones (original y traducción) quedan registradas en tu historial para repaso posterior.
 
 ---
 

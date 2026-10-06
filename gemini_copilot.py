@@ -96,27 +96,154 @@ class AICopilot:
         on_chunk: Optional[Callable[[str], None]] = None,
         on_complete: Optional[Callable[[str], None]] = None,
         on_error: Optional[Callable[[str], None]] = None,
+        language: str = "es",
     ) -> str:
         """
-        Enruta la pregunta al proveedor seleccionado con streaming continuo.
+        Enruta la pregunta al proveedor seleccionado con streaming continuo y soporte de idioma.
         """
         self._reload_env_if_needed()
+        is_en = str(language).lower().startswith("en")
+        system_instruction = config.get_system_instruction(language)
+        user_prompt = f"Interview question:\n\"{question}\"" if is_en else f"Pregunta o intervención del entrevistador:\n\"{question}\""
 
         if self.provider == "deepseek":
-            return self._stream_deepseek(question, on_chunk, on_complete, on_error)
+            if not self.deepseek_key:
+                msg = "⚠️ Falta la API Key de DeepSeek. Obtenla en https://platform.deepseek.com/"
+                if on_error:
+                    on_error(msg)
+                return msg
+            return self._stream_openai_compatible(
+                url="https://api.deepseek.com/chat/completions",
+                api_key=self.deepseek_key,
+                model="deepseek-chat",
+                system_instruction=system_instruction,
+                user_prompt=user_prompt,
+                provider_name="DeepSeek",
+                check_ignore=True,
+                on_chunk=on_chunk,
+                on_complete=on_complete,
+                on_error=on_error,
+            )
         elif self.provider == "openrouter":
-            return self._stream_openrouter(question, on_chunk, on_complete, on_error)
+            if not self.openrouter_key:
+                msg = "⚠️ Falta la API Key de OpenRouter. Obtenla gratis en https://openrouter.ai/keys"
+                if on_error:
+                    on_error(msg)
+                return msg
+            return self._stream_openai_compatible(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                api_key=self.openrouter_key,
+                model="deepseek/deepseek-chat:free",
+                system_instruction=system_instruction,
+                user_prompt=user_prompt,
+                provider_name="OpenRouter (DeepSeek)",
+                check_ignore=True,
+                on_chunk=on_chunk,
+                on_complete=on_complete,
+                on_error=on_error,
+            )
         else:
-            return self._stream_gemini_with_fallback(question, on_chunk, on_complete, on_error)
+            return self._stream_gemini_raw(
+                system_instruction=system_instruction,
+                user_prompt=user_prompt,
+                check_ignore=True,
+                on_chunk=on_chunk,
+                on_complete=on_complete,
+                on_error=on_error,
+            )
 
-    # ----------------- PROVEEDOR 1: GOOGLE GEMINI CON AUTO-FALLBACK -----------------
-
-    def _stream_gemini_with_fallback(
+    def translate_text_stream(
         self,
-        question: str,
-        on_chunk: Optional[Callable[[str], None]],
-        on_complete: Optional[Callable[[str], None]],
-        on_error: Optional[Callable[[str], None]],
+        text: str,
+        target_lang: str = "en",
+        on_chunk: Optional[Callable[[str], None]] = None,
+        on_complete: Optional[Callable[[str], None]] = None,
+        on_error: Optional[Callable[[str], None]] = None,
+    ) -> str:
+        """
+        Traduce en tiempo real la respuesta actual al idioma solicitado (inglés o español),
+        preservando viñetas, estructura y emojis (🎯, ⚡, 💡).
+        """
+        self._reload_env_if_needed()
+        is_en = str(target_lang).lower().startswith("en")
+
+        if is_en:
+            system_instruction = (
+                "You are an expert bilingual technical interview coach and translator. "
+                "Translate the following interview response into clear, professional, natural English. "
+                "Strict requirements:\n"
+                "1. Preserve the exact structure, bullet points, and emojis (🎯, ⚡, 💡).\n"
+                "2. Maintain technical precision (networking, software engineering, cloud terms).\n"
+                "3. Output ONLY the translated content with no intro, meta comments, or conversational greetings."
+            )
+            user_prompt = f"Interview answer to translate to English:\n\n{text}"
+        else:
+            system_instruction = (
+                "Eres un copiloto y traductor técnico experto en entrevistas laborales. "
+                "Traduce la siguiente respuesta de entrevista al español profesional y natural. "
+                "Reglas estrictas:\n"
+                "1. Conserva exactamente la estructura, viñetas y emojis (🎯, ⚡, 💡).\n"
+                "2. Mantén la precisión técnica en conceptos informáticos y de ingeniería.\n"
+                "3. Devuelve ÚNICAMENTE el contenido traducido, sin saludos, introducciones ni comentarios explicativos."
+            )
+            user_prompt = f"Respuesta de entrevista a traducir al español:\n\n{text}"
+
+        if self.provider == "deepseek":
+            if not self.deepseek_key:
+                msg = "⚠️ Falta la API Key de DeepSeek. Obtenla en https://platform.deepseek.com/"
+                if on_error:
+                    on_error(msg)
+                return msg
+            return self._stream_openai_compatible(
+                url="https://api.deepseek.com/chat/completions",
+                api_key=self.deepseek_key,
+                model="deepseek-chat",
+                system_instruction=system_instruction,
+                user_prompt=user_prompt,
+                provider_name="DeepSeek",
+                check_ignore=False,
+                on_chunk=on_chunk,
+                on_complete=on_complete,
+                on_error=on_error,
+            )
+        elif self.provider == "openrouter":
+            if not self.openrouter_key:
+                msg = "⚠️ Falta la API Key de OpenRouter. Obtenla gratis en https://openrouter.ai/keys"
+                if on_error:
+                    on_error(msg)
+                return msg
+            return self._stream_openai_compatible(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                api_key=self.openrouter_key,
+                model="deepseek/deepseek-chat:free",
+                system_instruction=system_instruction,
+                user_prompt=user_prompt,
+                provider_name="OpenRouter (DeepSeek)",
+                check_ignore=False,
+                on_chunk=on_chunk,
+                on_complete=on_complete,
+                on_error=on_error,
+            )
+        else:
+            return self._stream_gemini_raw(
+                system_instruction=system_instruction,
+                user_prompt=user_prompt,
+                check_ignore=False,
+                on_chunk=on_chunk,
+                on_complete=on_complete,
+                on_error=on_error,
+            )
+
+    # ----------------- MOTOR GEMINI CON AUTO-FALLBACK -----------------
+
+    def _stream_gemini_raw(
+        self,
+        system_instruction: str,
+        user_prompt: str,
+        check_ignore: bool = False,
+        on_chunk: Optional[Callable[[str], None]] = None,
+        on_complete: Optional[Callable[[str], None]] = None,
+        on_error: Optional[Callable[[str], None]] = None,
     ) -> str:
         if not self.gemini_client:
             msg = "⚠️ Falta la API Key de Gemini. Configúrala en la aplicación o archivo .env."
@@ -124,16 +251,13 @@ class AICopilot:
                 on_error(msg)
             return msg
 
-        prompt = f"Pregunta o intervención del entrevistador:\n\"{question}\""
         config_params = types.GenerateContentConfig(
-            system_instruction=config.SYSTEM_INSTRUCTION,
+            system_instruction=system_instruction,
             temperature=0.25,
-            max_output_tokens=500,
+            max_output_tokens=600,
         )
 
-        # Generar lista de modelos a probar (modelo configurado primero, luego respaldos)
         candidate_models = [config.GEMINI_MODEL] + GEMINI_FALLBACK_MODELS
-        # Deduplicar manteniendo orden
         seen = set()
         models_to_try = [m for m in candidate_models if not (m in seen or seen.add(m))]
 
@@ -147,7 +271,7 @@ class AICopilot:
             try:
                 response_stream = self.gemini_client.models.generate_content_stream(
                     model=model_name,
-                    contents=prompt,
+                    contents=user_prompt,
                     config=config_params,
                 )
 
@@ -156,14 +280,14 @@ class AICopilot:
                         received_any = True
                         full_text += chunk.text
 
-                        if "[IGNORAR]" in full_text:
+                        if check_ignore and "[IGNORAR]" in full_text:
                             is_ignorable = True
                             break
 
                         if on_chunk:
                             on_chunk(chunk.text)
 
-                if is_ignorable:
+                if check_ignore and is_ignorable:
                     return "[IGNORAR]"
 
                 if received_any:
@@ -175,15 +299,12 @@ class AICopilot:
                 err_str = str(e)
                 last_error = err_str
 
-                # Si es error 503 UNAVAILABLE (alta demanda temporal), cambiar de modelo de inmediato
                 if "503" in err_str or "UNAVAILABLE" in err_str or "high demand" in err_str:
                     print(f"Aviso: Modelo {model_name} con alta demanda (503). Cambiando a modelo alternativo...")
                     continue
                 else:
-                    # Si es error de credencial o formato, reportar de inmediato
                     break
 
-        # Si llegamos aquí, reportar el error final de forma limpia
         if "API_KEY_INVALID" in last_error or "API key not valid" in last_error:
             msg = "❌ Error: La API Key de Gemini no es válida. Revísala en https://aistudio.google.com/"
         elif "RESOURCE_EXHAUSTED" in last_error:
@@ -197,70 +318,20 @@ class AICopilot:
             on_error(msg)
         return msg
 
-    # ----------------- PROVEEDOR 2: DEEPSEEK (OFICIAL) -----------------
-
-    def _stream_deepseek(
-        self,
-        question: str,
-        on_chunk: Optional[Callable[[str], None]],
-        on_complete: Optional[Callable[[str], None]],
-        on_error: Optional[Callable[[str], None]],
-    ) -> str:
-        if not self.deepseek_key:
-            msg = "⚠️ Falta la API Key de DeepSeek. Obtenla en https://platform.deepseek.com/"
-            if on_error:
-                on_error(msg)
-            return msg
-
-        return self._stream_openai_compatible(
-            url="https://api.deepseek.com/chat/completions",
-            api_key=self.deepseek_key,
-            model="deepseek-chat",
-            question=question,
-            provider_name="DeepSeek",
-            on_chunk=on_chunk,
-            on_complete=on_complete,
-            on_error=on_error,
-        )
-
-    # ----------------- PROVEEDOR 3: OPENROUTER (DEEPSEEK R1 GRATIS) -----------------
-
-    def _stream_openrouter(
-        self,
-        question: str,
-        on_chunk: Optional[Callable[[str], None]],
-        on_complete: Optional[Callable[[str], None]],
-        on_error: Optional[Callable[[str], None]],
-    ) -> str:
-        if not self.openrouter_key:
-            msg = "⚠️ Falta la API Key de OpenRouter. Obtenla gratis en https://openrouter.ai/keys"
-            if on_error:
-                on_error(msg)
-            return msg
-
-        return self._stream_openai_compatible(
-            url="https://openrouter.ai/api/v1/chat/completions",
-            api_key=self.openrouter_key,
-            model="deepseek/deepseek-chat:free",
-            question=question,
-            provider_name="OpenRouter (DeepSeek)",
-            on_chunk=on_chunk,
-            on_complete=on_complete,
-            on_error=on_error,
-        )
-
-    # ----------------- HELPER STREAMING OPENAI-COMPATIBLE -----------------
+    # ----------------- MOTOR OPENAI COMPATIBLE (DEEPSEEK / OPENROUTER) -----------------
 
     def _stream_openai_compatible(
         self,
         url: str,
         api_key: str,
         model: str,
-        question: str,
+        system_instruction: str,
+        user_prompt: str,
         provider_name: str,
-        on_chunk: Optional[Callable[[str], None]],
-        on_complete: Optional[Callable[[str], None]],
-        on_error: Optional[Callable[[str], None]],
+        check_ignore: bool = False,
+        on_chunk: Optional[Callable[[str], None]] = None,
+        on_complete: Optional[Callable[[str], None]] = None,
+        on_error: Optional[Callable[[str], None]] = None,
     ) -> str:
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -272,11 +343,11 @@ class AICopilot:
         payload = {
             "model": model,
             "messages": [
-                {"role": "system", "content": config.SYSTEM_INSTRUCTION},
-                {"role": "user", "content": f"Pregunta de entrevista:\n\"{question}\""}
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": user_prompt}
             ],
             "temperature": 0.25,
-            "max_tokens": 500,
+            "max_tokens": 600,
             "stream": True,
         }
 
@@ -306,7 +377,7 @@ class AICopilot:
                                 content = delta.get("content", "")
                                 if content:
                                     full_text += content
-                                    if "[IGNORAR]" in full_text:
+                                    if check_ignore and "[IGNORAR]" in full_text:
                                         is_ignorable = True
                                         break
                                     if on_chunk:
@@ -314,7 +385,7 @@ class AICopilot:
                             except Exception:
                                 continue
 
-            if is_ignorable:
+            if check_ignore and is_ignorable:
                 return "[IGNORAR]"
 
             if on_complete:
@@ -327,10 +398,10 @@ class AICopilot:
                 on_error(msg)
             return msg
 
-    def answer_question(self, question: str) -> str:
+    def answer_question(self, question: str, language: str = "es") -> str:
         """Método sincrónico sin streaming."""
         chunks = []
-        self.answer_question_stream(question, on_chunk=lambda c: chunks.append(c))
+        self.answer_question_stream(question, on_chunk=lambda c: chunks.append(c), language=language)
         return "".join(chunks)
 
 
