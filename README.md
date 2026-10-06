@@ -11,6 +11,7 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
+- 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado, experiencia de +12 años, proyectos reales (Empire Engineering, AT&T, vLLM en AWS GPU, Supabase pgvector con RLS), métricas y respuestas a preguntas de selección para PCoS / Hireline, respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
 - 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
   - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
   - **Botón de Traducción Instantánea (`🌐 Traducir a Inglés` / `🌐 Traducir a Español`)**: ¿La respuesta está en español pero necesitas leerla en inglés (o viceversa)? Con un solo clic, la IA la traduce en tiempo real mediante streaming, manteniendo intacta la estructura, viñetas y emojis (`🎯`, `⚡`, `💡`).
@@ -173,6 +174,8 @@ Contestar-Entrevista/
 ├── iniciar_consola.bat   # Lanzador rápido del modo terminal
 ├── main.py               # Punto de entrada principal (GUI, CLI y Tests)
 ├── config.py             # Configuración centralizada y System Prompts
+├── candidate_profile.py  # Perfil y base de conocimiento técnico de Javier Viveros Huesca
+├── PERFIL_CANDIDATO.md   # Documento de referencia con las 7 respuestas para PCoS y CV
 ├── audio_listener.py     # Captura de audio y transcripción continua (Mic / Loopback)
 ├── gemini_copilot.py     # Cliente multi-IA (Gemini con auto-fallback, DeepSeek y OpenRouter)
 ├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top con edición en vivo
