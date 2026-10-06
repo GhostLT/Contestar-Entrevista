@@ -25,6 +25,7 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
     - **`🇺🇸 5G Pitch (60s)`**: Guión de alto impacto para la llamada con el reclutador (Shubham) y la entrevista de video con el cliente en Richardson TX, integrando +12 años de experiencia, +9 años en AT&T (99.999% SLA), 5GC (SA/NSA), AMF/SMF/UPF, SEPP y desarrollo open source asistido por IA (Codex/Groq).
     - **`⚙️ 5GC Call-Flows & AI`**: Deep dive técnico en call flows end-to-end (interfaces N1 a N12 con Wireshark/tshark), roaming inter-PLMN con SEPP sobre N32 (N32-c TLS y N32-f PRINS), y uso de IA generativa para agregar código a plataformas Open5GS y free5GC.
     - **`🇪🇸 5G Core Español`**: Guión en español para presentar solvencia en redes móviles críticas, señalización SCTP/Diameter/HTTP-2 y arquitecturas cloud-native en Kubernetes.
+    - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)**: Documento completo con preguntas de screening, call flows paso a paso N1-N12, filtros de Wireshark y respuestas para la prueba onsite.
   - **Fila 2: 💻 Full-Stack con IA (PCoS / Hireline)**:
     - **`🇪🇸 Completo (60–90s)`**: Presentación profesional profunda con trayectoria, vLLM en AWS GPU (-65% costos), RAG con pgvector y sinergia con PCoS.
     - **`⚡ Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
@@ -223,6 +224,7 @@ Contestar-Entrevista/
 ├── config.py             # Configuración centralizada y System Prompts
 ├── candidate_profile.py  # Perfil y base de conocimiento técnico de Javier Viveros Huesca
 ├── PERFIL_CANDIDATO.md   # Documento de referencia con las 7 respuestas para PCoS y CV
+├── GUIA_ENTREVISTA_5G.md   # Guía completa de preparación técnica para 5G Network Engineer (Speridian)
 ├── audio_listener.py     # Captura de audio y transcripción continua (Mic / Loopback)
 ├── gemini_copilot.py     # Cliente multi-IA (Gemini con auto-fallback, DeepSeek y OpenRouter)
 ├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top con edición en vivo
