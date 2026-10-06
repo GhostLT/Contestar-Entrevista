@@ -11,6 +11,11 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
+- ✏️ **Modificación Manual de Preguntas en Vivo**: Si el reconocimiento de voz malinterpreta un tecnicismo en inglés o audio ruidoso (por ejemplo: entendió *"ratón"* en vez de *"handover"*), el recuadro de pregunta es **100% editable directamente**. Puedes hacer clic, corregir la palabra y presionar **Enter** o el botón **`⚡ Corregir y Re-preguntar`** para obtener la respuesta correcta al instante.
+- 🤖 **Multi-Motor de IA con Respaldo Automático**:
+  - **Google Gemini**: Con auto-conmutación a `gemini-3.5-flash-lite` para evitar errores 503 por alta demanda.
+  - **DeepSeek Oficial**: Soporte nativo para `deepseek-chat` vía API oficial (`api.deepseek.com`).
+  - **OpenRouter (Gratis)**: Soporte para modelos `deepseek-r1` y `deepseek-chat` sin costo.
 - ⚡ **Respuestas en Tiempo Real (Streaming)**: Las palabras aparecen progresivamente en pantalla en menos de 1 segundo mediante streaming token a token.
 - 🎯 **Estructura Diseñada para Hablar en Voz Alta**:
   - **Definición Inmediata**: 1 o 2 oraciones concisas y directas para que empieces a hablar sin titubear.

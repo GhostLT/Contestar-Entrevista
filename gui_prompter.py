@@ -210,16 +210,16 @@ class InterviewPrompterApp:
         )
         btn_refresh.pack(side=tk.LEFT, padx=(6, 0))
 
-        # 3. TARJETA DE PREGUNTA DETECTADA
-        q_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=10)
-        q_frame.pack(fill=tk.X, padx=12, pady=(6, 4))
+        # 3. TARJETA DE PREGUNTA DETECTADA (EDITABLE DIRECTAMENTE)
+        q_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=8)
+        q_frame.pack(fill=tk.X, padx=12, pady=(4, 4))
 
         q_header = tk.Frame(q_frame, bg=self.bg_card)
-        q_header.pack(fill=tk.X)
+        q_header.pack(fill=tk.X, pady=(0, 4))
 
         lbl_q_title = tk.Label(
             q_header,
-            text="PREGUNTA DETECTADA EN LA REUNIÓN",
+            text="PREGUNTA (EDITABLE EN VIVO SI SE ENTENDIÓ MAL):",
             bg=self.bg_card,
             fg=self.accent_blue,
             font=("Segoe UI", 9, "bold")
@@ -235,17 +235,36 @@ class InterviewPrompterApp:
         )
         self.lbl_time.pack(side=tk.RIGHT)
 
-        self.txt_question = tk.Label(
-            q_frame,
-            text="Esperando que el entrevistador haga una pregunta...",
-            bg=self.bg_card,
-            fg=self.text_color,
-            font=("Segoe UI", 11, "bold"),
-            anchor="w",
-            justify=tk.LEFT,
-            wraplength=660
+        btn_requery = tk.Button(
+            q_header,
+            text="⚡ Corregir y Re-preguntar (Enter)",
+            command=self._requery_edited_question,
+            bg=self.accent_blue,
+            fg="#ffffff",
+            activebackground="#2563eb",
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=8,
+            pady=1
         )
-        self.txt_question.pack(fill=tk.X, pady=(6, 0))
+        btn_requery.pack(side=tk.RIGHT, padx=10)
+
+        # Campo de texto editable para modificar preguntas malinterpretadas
+        self.txt_question = tk.Text(
+            q_frame,
+            height=2,
+            bg=self.bg_card_inner,
+            fg="#ffffff",
+            insertbackground="#ffffff",
+            relief=tk.FLAT,
+            font=("Segoe UI", 11, "bold"),
+            wrap=tk.WORD,
+            padx=8,
+            pady=4
+        )
+        self.txt_question.pack(fill=tk.X, pady=(2, 0))
+        self.txt_question.insert("1.0", "Esperando pregunta del entrevistador... (puedes hacer clic aquí y editar)")
+        self.txt_question.bind("<Return>", self._on_question_box_enter)
 
         # 4. TARJETA TELEPROMPTER DE RESPUESTA
         ans_frame = tk.Frame(self.root, bg=self.bg_card, padx=12, pady=10)
@@ -405,11 +424,28 @@ class InterviewPrompterApp:
             self._update_status("📋 ¡Respuesta copiada!", self.accent_blue)
 
     def _clear_screen(self):
-        self.txt_question.config(text="Esperando que el entrevistador haga una pregunta...")
+        self.txt_question.delete("1.0", tk.END)
+        self.txt_question.insert("1.0", "Esperando que el entrevistador haga una pregunta...")
+        self.entry_manual.delete(0, tk.END)
+        self.entry_manual.insert(0, "O pega/escribe una pregunta del chat aquí...")
         self.txt_answer.config(state=tk.NORMAL)
         self.txt_answer.delete("1.0", tk.END)
         self.txt_answer.insert(tk.END, "Esperando nueva intervención...")
         self.txt_answer.config(state=tk.DISABLED)
+
+    def _on_question_box_enter(self, event):
+        if event.state & 0x0001:  # Shift presionado: salto de línea
+            return
+        self._requery_edited_question()
+        return "break"  # Evitar insertar el Enter en el recuadro
+
+    def _requery_edited_question(self):
+        edited_text = self.txt_question.get("1.0", tk.END).strip()
+        if not edited_text or edited_text.startswith("Esperando pregunta"):
+            return
+        if edited_text.startswith("❓"):
+            edited_text = edited_text.lstrip("❓").strip().strip('"')
+        self._handle_detected_text(edited_text)
 
     # ------------------ MANEJO DE COLA DE HILOS ------------------
 
@@ -463,7 +499,15 @@ class InterviewPrompterApp:
     def _handle_detected_text(self, text: str):
         now = time.strftime("%H:%M:%S")
         self.lbl_time.config(text=now)
-        self.txt_question.config(text=f"❓ \"{text}\"")
+
+        # Actualizar recuadro editable para que el usuario pueda modificar cualquier palabra en vivo
+        self.txt_question.delete("1.0", tk.END)
+        self.txt_question.insert("1.0", text)
+
+        # Sincronizar también con la barra inferior
+        self.entry_manual.delete(0, tk.END)
+        self.entry_manual.insert(0, text)
+
         self._update_status("⚡ Consultando a IA...", self.accent_blue)
 
         self.txt_answer.config(state=tk.NORMAL)
