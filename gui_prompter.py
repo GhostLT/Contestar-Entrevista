@@ -384,38 +384,20 @@ class InterviewPrompterApp:
         ans_header = tk.Frame(ans_frame, bg=self.bg_card)
         ans_header.pack(fill=tk.X, pady=(0, 4))
 
-        lbl_ans_title = tk.Label(
+        # Botones de acción reubicados al lado izquierdo (debajo de la pregunta / acceso rápido)
+        btn_clear = tk.Button(
             ans_header,
-            text="RESPUESTA DIRECTA TELEPROMPTER (DUAL ES / EN)",
-            bg=self.bg_card,
-            fg=self.accent_green,
-            font=("Segoe UI", 9, "bold")
-        )
-        lbl_ans_title.pack(side=tk.LEFT)
-
-        btn_copy_en = tk.Button(
-            ans_header,
-            text="📋 Copiar EN",
-            command=self._copy_answer_en,
+            text="🗑️ Limpiar",
+            command=self._clear_screen,
             bg=self.bg_card_inner,
-            fg=self.accent_blue,
+            fg=self.text_color,
             relief=tk.FLAT,
-            font=("Segoe UI", 8, "bold"),
-            padx=6
+            font=("Segoe UI", 8),
+            padx=8,
+            pady=2,
+            cursor="hand2"
         )
-        btn_copy_en.pack(side=tk.RIGHT)
-
-        btn_copy_es = tk.Button(
-            ans_header,
-            text="📋 Copiar ES",
-            command=self._copy_answer_es,
-            bg=self.bg_card_inner,
-            fg=self.accent_green,
-            relief=tk.FLAT,
-            font=("Segoe UI", 8, "bold"),
-            padx=6
-        )
-        btn_copy_es.pack(side=tk.RIGHT, padx=4)
+        btn_clear.pack(side=tk.LEFT, padx=(0, 4))
 
         btn_hist = tk.Button(
             ans_header,
@@ -425,21 +407,48 @@ class InterviewPrompterApp:
             fg=self.text_color,
             relief=tk.FLAT,
             font=("Segoe UI", 8),
-            padx=6
+            padx=8,
+            pady=2,
+            cursor="hand2"
         )
-        btn_hist.pack(side=tk.RIGHT, padx=4)
+        btn_hist.pack(side=tk.LEFT, padx=(0, 6))
 
-        btn_clear = tk.Button(
+        btn_copy_es = tk.Button(
             ans_header,
-            text="🗑️ Limpiar",
-            command=self._clear_screen,
+            text="📋 Copiar ES",
+            command=self._copy_answer_es,
             bg=self.bg_card_inner,
-            fg=self.text_color,
+            fg=self.accent_green,
             relief=tk.FLAT,
-            font=("Segoe UI", 8),
-            padx=6
+            font=("Segoe UI", 8, "bold"),
+            padx=8,
+            pady=2,
+            cursor="hand2"
         )
-        btn_clear.pack(side=tk.RIGHT, padx=4)
+        btn_copy_es.pack(side=tk.LEFT, padx=(0, 4))
+
+        btn_copy_en = tk.Button(
+            ans_header,
+            text="📋 Copiar EN",
+            command=self._copy_answer_en,
+            bg=self.bg_card_inner,
+            fg=self.accent_blue,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=8,
+            pady=2,
+            cursor="hand2"
+        )
+        btn_copy_en.pack(side=tk.LEFT, padx=(0, 10))
+
+        lbl_ans_title = tk.Label(
+            ans_header,
+            text="RESPUESTA DIRECTA TELEPROMPTER (DUAL ES / EN)",
+            bg=self.bg_card,
+            fg=self.accent_green,
+            font=("Segoe UI", 9, "bold")
+        )
+        lbl_ans_title.pack(side=tk.RIGHT)
 
         # Contenedor dividido en 2 paneles simétricos al 50% de altura cada uno
         self.ans_paned = ans_frame
