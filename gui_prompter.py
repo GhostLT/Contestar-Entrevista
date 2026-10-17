@@ -104,6 +104,11 @@ class InterviewPrompterApp:
         self.root.bind("<F2>", lambda e: self._switch_tab("pitch"))
         self.root.bind("<F3>", lambda e: self._switch_tab("word_guide"))
 
+        # Atajos globales de copia de texto seleccionado (Ctrl+C)
+        self.root.bind("<Control-c>", self._copy_selected_text)
+        self.root.bind("<Control-C>", self._copy_selected_text)
+        self.root.bind("<<Copy>>", self._copy_selected_text)
+
         # Iniciar ciclo de mensajes de hilos
         self.root.after(100, self._process_queue)
 
@@ -579,6 +584,9 @@ class InterviewPrompterApp:
         # Construir contenido de Pestaña 3 (Guía Word)
         self._setup_word_guide_ui()
 
+        # Configurar selección visual visible, atajo Ctrl+C, Ctrl+A y menú contextual
+        self._setup_text_selection_and_copy()
+
     def _setup_pitch_ui(self):
         # 1. Barra de Selección de Pitch RF (Ericsson RAN / Arturo Ramírez) + Acciones
         nav_row1 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
@@ -841,12 +849,14 @@ class InterviewPrompterApp:
         self.txt_pitch_es.config(state=tk.NORMAL)
         self.txt_pitch_es.delete("1.0", tk.END)
         self.txt_pitch_es.insert(tk.END, es_script)
+        self.txt_pitch_es.tag_raise("sel")
         self.txt_pitch_es.config(state=tk.DISABLED)
 
         # Cargar panel en inglés (abajo)
         self.txt_pitch_en.config(state=tk.NORMAL)
         self.txt_pitch_en.delete("1.0", tk.END)
         self.txt_pitch_en.insert(tk.END, en_script)
+        self.txt_pitch_en.tag_raise("sel")
         self.txt_pitch_en.config(state=tk.DISABLED)
 
         # Actualizar estilo de botones del sub-selector
@@ -1265,6 +1275,10 @@ class InterviewPrompterApp:
         txt_widget.tag_configure("code_block", font=("Consolas", 8), background="#F1F5F9", foreground="#0F172A", lmargin1=10, lmargin2=10, rmargin=10, spacing1=2, spacing3=3)
         txt_widget.tag_configure("footer", font=("Calibri", 8, "italic"), foreground="#94A3B8", justify="center", spacing1=6)
 
+        # Elevar la etiqueta de selección al nivel superior para que el resaltado sea visible sobre cualquier fondo
+        txt_widget.tag_configure("sel", background="#2563eb", foreground="#ffffff")
+        txt_widget.tag_raise("sel")
+
     def _on_word_scrollbar_scroll(self, *args):
         self.txt_word_doc_es.yview(*args)
         self.txt_word_doc_en.yview(*args)
@@ -1393,6 +1407,7 @@ class InterviewPrompterApp:
         if not q:
             msg = "⚠️ No hay versión disponible para esta pregunta en este idioma.\n" if lang == "es" else "⚠️ No English version available for this specific topic.\n"
             txt_widget.insert(tk.END, msg, "doc_meta")
+            txt_widget.tag_raise("sel")
             txt_widget.config(state=tk.DISABLED)
             return
 
@@ -1428,6 +1443,7 @@ class InterviewPrompterApp:
         txt_widget.insert(tk.END, "―" * 50 + "\n", "doc_meta")
         footer_text = "Preparación Entrevista Técnica – Javier Viveros Huesca | Formato Word Oficial (ES)\n" if lang == "es" else "Technical Interview Preparation – Javier Viveros Huesca | Official Word Format (EN)\n"
         txt_widget.insert(tk.END, footer_text, "footer")
+        txt_widget.tag_raise("sel")
         txt_widget.config(state=tk.DISABLED)
 
     def _load_word_module_questions(self, mod_idx: int):
@@ -1459,12 +1475,14 @@ class InterviewPrompterApp:
         self.txt_answer_es.config(state=tk.NORMAL)
         self.txt_answer_es.delete("1.0", tk.END)
         self.txt_answer_es.insert(tk.END, es_text)
+        self.txt_answer_es.tag_raise("sel")
         self.txt_answer_es.config(state=tk.DISABLED)
 
         # Cargar panel inferior (Inglés)
         self.txt_answer_en.config(state=tk.NORMAL)
         self.txt_answer_en.delete("1.0", tk.END)
         self.txt_answer_en.insert(tk.END, en_text)
+        self.txt_answer_en.tag_raise("sel")
         self.txt_answer_en.config(state=tk.DISABLED)
 
         self._switch_tab("copilot")
@@ -1618,6 +1636,175 @@ class InterviewPrompterApp:
             self.root.clipboard_clear()
             self.root.clipboard_append(content)
             self._update_status("📋 ¡Respuesta en Inglés copiada!", self.accent_blue)
+
+    def _setup_text_selection_and_copy(self):
+        """Habilita selección visible, atajo Ctrl+C, Ctrl+A y menú contextual en todos los cuadros de texto."""
+        text_widgets = [
+            getattr(self, "txt_question", None),
+            getattr(self, "txt_answer_es", None),
+            getattr(self, "txt_answer_en", None),
+            getattr(self, "txt_pitch_es", None),
+            getattr(self, "txt_pitch_en", None),
+            getattr(self, "txt_word_doc_es", None),
+            getattr(self, "txt_word_doc_en", None),
+        ]
+        for tw in text_widgets:
+            if tw is not None:
+                self._enable_text_copy_and_selection(tw)
+
+        entry_widgets = [
+            getattr(self, "entry_manual", None),
+            getattr(self, "entry_word_search", None),
+        ]
+        for ew in entry_widgets:
+            if ew is not None:
+                self._enable_entry_copy_and_selection(ew)
+
+    def _enable_text_copy_and_selection(self, widget: tk.Text):
+        """Habilita selección de texto visible, atajo Ctrl+C, Ctrl+A y menú contextual con clic derecho."""
+        widget.config(
+            selectbackground="#2563eb",
+            selectforeground="#ffffff",
+            inactiveselectbackground="#1d4ed8",
+            exportselection=False
+        )
+        widget.tag_configure("sel", background="#2563eb", foreground="#ffffff")
+        widget.tag_raise("sel")
+
+        # Asegurar foco al hacer clic para que los atajos respondan inmediatamente
+        widget.bind("<Button-1>", lambda e: widget.focus_set(), add="+")
+
+        # Atajos directos de copia
+        widget.bind("<Control-c>", self._copy_selected_text)
+        widget.bind("<Control-C>", self._copy_selected_text)
+        widget.bind("<<Copy>>", self._copy_selected_text)
+
+        # Atajo para seleccionar todo
+        widget.bind("<Control-a>", lambda e: self._select_all_text(widget))
+        widget.bind("<Control-A>", lambda e: self._select_all_text(widget))
+
+        # Menú contextual con clic derecho
+        widget.bind("<Button-3>", lambda e: self._show_text_context_menu(e, widget))
+
+    def _enable_entry_copy_and_selection(self, entry_widget):
+        entry_widget.config(
+            selectbackground="#2563eb",
+            selectforeground="#ffffff",
+            exportselection=False
+        )
+        entry_widget.bind("<Control-a>", lambda e: (entry_widget.select_range(0, tk.END), "break")[1])
+        entry_widget.bind("<Control-A>", lambda e: (entry_widget.select_range(0, tk.END), "break")[1])
+        entry_widget.bind("<Button-3>", lambda e: self._show_entry_context_menu(e, entry_widget))
+
+    def _show_text_context_menu(self, event, widget: tk.Text):
+        menu = tk.Menu(self.root, tearoff=0, bg=self.bg_card, fg=self.text_color, activebackground="#2563eb", activeforeground="#ffffff")
+        has_sel = False
+        try:
+            has_sel = bool(widget.tag_ranges("sel"))
+        except Exception:
+            pass
+
+        if has_sel:
+            menu.add_command(label="📋 Copiar selección  (Ctrl+C)", command=lambda: self._copy_selected_text(event=None, target_widget=widget))
+        else:
+            menu.add_command(label="📋 Copiar todo el texto", command=lambda: self._copy_full_widget_text(widget))
+
+        menu.add_command(label="✨ Seleccionar todo  (Ctrl+A)", command=lambda: self._select_all_text(widget))
+        menu.tk_popup(event.x_root, event.y_root)
+
+    def _show_entry_context_menu(self, event, entry_widget):
+        menu = tk.Menu(self.root, tearoff=0, bg=self.bg_card, fg=self.text_color, activebackground="#2563eb", activeforeground="#ffffff")
+        if entry_widget.selection_present():
+            menu.add_command(label="📋 Copiar selección  (Ctrl+C)", command=lambda: self._copy_selected_text(event=None, target_widget=entry_widget))
+        else:
+            menu.add_command(label="📋 Copiar todo", command=lambda: self._copy_full_entry_text(entry_widget))
+        menu.add_command(label="✨ Seleccionar todo  (Ctrl+A)", command=lambda: entry_widget.select_range(0, tk.END))
+        menu.tk_popup(event.x_root, event.y_root)
+
+    def _select_all_text(self, widget: tk.Text):
+        try:
+            widget.tag_add("sel", "1.0", "end-1c")
+            widget.tag_raise("sel")
+            widget.focus_set()
+        except Exception:
+            pass
+        return "break"
+
+    def _copy_full_widget_text(self, widget: tk.Text):
+        try:
+            txt = widget.get("1.0", tk.END).strip()
+            if txt:
+                self.root.clipboard_clear()
+                self.root.clipboard_append(txt)
+                self._update_status(f"📋 Texto copiado al portapapeles ({len(txt)} caracteres)", self.accent_green)
+        except Exception:
+            pass
+
+    def _copy_full_entry_text(self, entry_widget):
+        try:
+            txt = entry_widget.get().strip()
+            if txt:
+                self.root.clipboard_clear()
+                self.root.clipboard_append(txt)
+                self._update_status("📋 Texto copiado al portapapeles", self.accent_green)
+        except Exception:
+            pass
+
+    def _copy_selected_text(self, event=None, target_widget=None):
+        focused = target_widget or getattr(event, "widget", None) or self.root.focus_get()
+        widgets_to_check = []
+        if focused and hasattr(focused, "get"):
+            widgets_to_check.append(focused)
+
+        # Widgets de texto prioritarios en la aplicación
+        candidates = [
+            getattr(self, "txt_word_doc_es", None),
+            getattr(self, "txt_word_doc_en", None),
+            getattr(self, "txt_answer_es", None),
+            getattr(self, "txt_answer_en", None),
+            getattr(self, "txt_pitch_es", None),
+            getattr(self, "txt_pitch_en", None),
+            getattr(self, "txt_question", None),
+            getattr(self, "entry_manual", None),
+            getattr(self, "entry_word_search", None),
+        ]
+        for c in candidates:
+            if c and c not in widgets_to_check:
+                widgets_to_check.append(c)
+
+        for w in widgets_to_check:
+            try:
+                if isinstance(w, tk.Text):
+                    ranges = w.tag_ranges("sel")
+                    if ranges:
+                        sel = w.get(tk.SEL_FIRST, tk.SEL_LAST)
+                        if sel:
+                            self.root.clipboard_clear()
+                            self.root.clipboard_append(sel)
+                            self._update_status(f"📋 Texto copiado ({len(sel)} caracteres)", self.accent_green)
+                            return "break"
+                elif isinstance(w, (tk.Entry, ttk.Entry)):
+                    if w.selection_present():
+                        sel = w.selection_get()
+                        if sel:
+                            self.root.clipboard_clear()
+                            self.root.clipboard_append(sel)
+                            self._update_status("📋 Texto copiado", self.accent_green)
+                            return "break"
+            except (tk.TclError, AttributeError):
+                continue
+
+        # Intento de selección nativa del sistema
+        try:
+            sel = self.root.selection_get()
+            if sel:
+                self.root.clipboard_clear()
+                self.root.clipboard_append(sel)
+                self._update_status("📋 Texto copiado", self.accent_green)
+                return "break"
+        except (tk.TclError, AttributeError):
+            pass
+        return None
 
     def _clear_screen(self):
         self.txt_question.delete("1.0", tk.END)
@@ -1903,6 +2090,7 @@ class InterviewPrompterApp:
         self.txt_answer_es.delete("1.0", tk.END)
         self.txt_answer_es.insert(tk.END, es_text)
         self.txt_answer_es.see(tk.END)
+        self.txt_answer_es.tag_raise("sel")
         self.txt_answer_es.config(state=tk.DISABLED)
 
         if en_text:
@@ -1910,6 +2098,7 @@ class InterviewPrompterApp:
             self.txt_answer_en.delete("1.0", tk.END)
             self.txt_answer_en.insert(tk.END, en_text)
             self.txt_answer_en.see(tk.END)
+            self.txt_answer_en.tag_raise("sel")
             self.txt_answer_en.config(state=tk.DISABLED)
 
     def _auto_translate_to_en(self, es_text: str):
@@ -1925,6 +2114,7 @@ class InterviewPrompterApp:
                         self.txt_answer_en.delete("1.0", tk.END)
                         self.txt_answer_en.insert(tk.END, res)
                         self.txt_answer_en.see(tk.END)
+                        self.txt_answer_en.tag_raise("sel")
                         self.txt_answer_en.config(state=tk.DISABLED)
                     self.root.after(0, _update_ui)
             except Exception as e:
