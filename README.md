@@ -23,21 +23,18 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
   - **`3`**: Ir a **📖 Guía Entrevista Word (31 temas ES / 33 temas EN)**.
   - **Salvaguarda Inteligente de Escritura**: Si estás editando una pregunta en el recuadro editable, buscando en la guía Word o pegando texto en la barra manual, presionar `1`, `2` o `3` escribe el número normalmente sin cambiar de pestaña.
   - *(Se mantiene también compatibilidad con las teclas `F1`, `F2`, `F3` y teclado numérico `KP_1`, `KP_2`, `KP_3`)*.
-- 🎯 **Pestaña de Pitch Personal y Formación Multi-Rol (2)**: Pestaña interactiva organizada en 2 filas dedicadas para responder con total maestría según el tipo de entrevista técnica:
-  - **Fila 1: 📡 RF Optimization Engineer (Ericsson RAN | Arturo Ramírez - México / Remoto)**:
-    - **`🇪🇸 RF Pitch (60–90s)`**: Pitch principal en español con +15 años de experiencia en RAN, optimización de LTE L15, Baseband 5212/5216/6630, Radio Dot, NodeB/eNodeB/gNodeB y auditoría de KPIs críticos (RTWP, PIM, DCR, Handover).
-    - **`🇺🇸 RF Pitch (60s)`**: Guión en inglés para clientes globales y fabricantes con terminología técnica estándar 3GPP.
-    - **`⚙️ Deep Dive Ericsson & KPIs`**: Análisis técnico profundo de resolución de interferencias, pilot pollution, colisiones/confusiones PCI mod 3/mod 30, eventos de handover A1-A5/B1-B2 y Layer 3 signaling.
+- 🎯 **Pestaña de Pitch Personal Dual (2)**: Vista interactiva dividida horizontalmente en 2 paneles simétricos al 50%:
+  - **Panel Superior (🇪🇸 Español)**: Muestra el pitch principal en español para lectura inmediata, con +15 años de experiencia en RAN, optimización de LTE L15, Baseband 5212/5216/6630, Radio Dot, NodeB/eNodeB/gNodeB y auditoría de KPIs críticos (RTWP, PIM, DCR, Handover).
+  - **Panel Inferior (🇺🇸 English)**: Muestra simultáneamente la versión en inglés técnico (60s) con terminología estándar 3GPP, ideal para entrevistas en video o clientes internacionales.
+  - **Opciones de Guión RF**:
+    - **`📡 RF Pitch (Dual ES / EN)`**: Carga el pitch principal en español arriba y el pitch profesional en inglés abajo.
+    - **`⚙️ KPIs & Ericsson Tech`**: Análisis técnico profundo de resolución de interferencias, pilot pollution, colisiones/confusiones PCI mod 3/mod 30, eventos de handover A1-A5/B1-B2 y Layer 3 signaling.
     - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
-    - **`🎓 Formación & Certs`**: Ingeniería en Electrónica (IT Reynosa) + MBA (Tecmilenio) + Certificación Oficial Ericsson LTE Configuration.
+    - **`🎓 Formación & MBA`**: Ingeniería en Electrónica (IT Reynosa) + MBA (Tecmilenio) + Certificación Oficial Ericsson LTE Configuration.
     - 📖 **[Guía Maestra RF Ericsson](GUIA_ENTREVISTA_RF_ERICSSON.md)**: Banco completo con 8 preguntas y respuestas técnicas avanzadas y matriz de parámetros Ericsson LTE.
-  - **Fila 2: 🌐 Telecom & 5G Core (Speridian Technologies - Richardson TX)**:
-    - **`📡 5G Core Speridian (60s)`**: Guión en inglés para la posición de 5G Network Engineer con call-flows N1-N12, roaming SEPP y desarrollo open source asistido por IA.
-    - **`⚙️ 5GC Call-Flows`**: Deep dive en interfaces 5G Core, N32-c/f, SCTP y Kubernetes.
-    - **`🇪🇸 5G Core Español (60s)`**: Pitch en español de telecomunicaciones críticas, Core 5G (SA/NSA) y herramientas de IA.
-    - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)** y **[Guía Perfil Candidato](PERFIL_CANDIDATO.md)**.
-  - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter dual del copiloto (Español arriba, Inglés abajo) con 1 solo clic.
-  - **Teclas Rápidas**: `1` para volver al Copiloto en Vivo, `2` para abrir tu Pitch y `3` para la Guía Word.
+  - **⚡ Botón "Al Teleprompter"**: Inyecta instantáneamente el pitch seleccionado en el teleprompter dual del copiloto (`1`) con 1 solo clic.
+  - **Botones de Copiado**: `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos`.
+  - **Teclas Rápidas**: `1` (Copiloto en Vivo), `2` (Mi Pitch Dual), `3` (Guía Word).
 - 📖 **Pestaña de Guía Maestra de Entrevista en Formato Word (3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, integrando los 10 módulos en español y 11 en inglés:
   - **Diseño Estilo Microsoft Word**: Página en blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), márgenes ejecutivos, cajas de estrategia verde (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques monospace en `Consolas` para comandos Moshell y tablas de parámetros.
   - **Selector Bilingüe**: Alterna al instante entre `🇪🇸 Español (10 Módulos - 31 Temas)` y `🇺🇸 English (11 Modules - 33 Topics)`.

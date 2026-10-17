@@ -571,8 +571,8 @@ class InterviewPrompterApp:
         self._setup_word_guide_ui()
 
     def _setup_pitch_ui(self):
-        # 1. Fila 1 de Pitch: RF Optimization Engineer (Ericsson RAN / Arturo Ramírez) + Acciones
-        nav_row1 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=3)
+        # 1. Barra de Selección de Pitch RF (Ericsson RAN / Arturo Ramírez) + Acciones
+        nav_row1 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
         nav_row1.pack(fill=tk.X)
 
         lbl_rf = tk.Label(
@@ -585,8 +585,7 @@ class InterviewPrompterApp:
         lbl_rf.pack(side=tk.LEFT, padx=(0, 4))
 
         options_rf = [
-            ("pitch_rf_es", "🇪🇸 RF Pitch (60-90s)"),
-            ("pitch_rf_en", "🇺🇸 RF Pitch English (60s)"),
+            ("pitch_rf_es", "📡 RF Pitch (Dual ES / EN)"),
             ("pitch_rf_tech", "⚙️ KPIs & Ericsson Tech"),
             ("pitch_rf_rapido", "⚡ RF Rápido (30s)"),
             ("formacion_rf", "🎓 Formación & MBA"),
@@ -603,17 +602,17 @@ class InterviewPrompterApp:
                 activeforeground=self.text_color,
                 relief=tk.FLAT,
                 font=("Segoe UI", 8, "bold"),
-                padx=7,
+                padx=8,
                 pady=2,
                 cursor="hand2"
             )
-            btn.pack(side=tk.LEFT, padx=2)
+            btn.pack(side=tk.LEFT, padx=3)
             self.pitch_buttons[key] = btn
 
         # Acciones a la derecha
         btn_copy_pitch = tk.Button(
             nav_row1,
-            text="📋 Copiar",
+            text="📋 Copiar Ambos",
             command=self._copy_pitch,
             bg=self.bg_card_inner,
             fg=self.text_color,
@@ -640,85 +639,124 @@ class InterviewPrompterApp:
         )
         btn_to_prompter.pack(side=tk.RIGHT, padx=4)
 
-        # 2. Fila 2 de Pitch: Otras Postulaciones (5G Core Speridian)
-        nav_row2 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=2)
-        nav_row2.pack(fill=tk.X)
-
-        lbl_other = tk.Label(
-            nav_row2,
-            text="💼 Otras Postulaciones (5G Core):",
-            bg=self.bg_main,
-            fg=self.text_dim,
-            font=("Segoe UI", 8, "bold")
-        )
-        lbl_other.pack(side=tk.LEFT, padx=(0, 4))
-
-        options_other = [
-            ("pitch_5g_en", "📡 5G Core Speridian (60s)"),
-            ("pitch_5g_tech", "⚙️ 5GC Call-Flows"),
-            ("pitch_5g_es", "🇪🇸 5G Core Español (60s)"),
-        ]
-
-        for key, label in options_other:
-            btn = tk.Button(
-                nav_row2,
-                text=label,
-                command=lambda k=key: self._load_pitch(k),
-                bg=self.accent_blue if key == self.active_pitch_key else self.bg_card_inner,
-                fg="#ffffff" if key == self.active_pitch_key else self.text_dim,
-                activebackground=self.bg_card,
-                activeforeground=self.text_color,
-                relief=tk.FLAT,
-                font=("Segoe UI", 8),
-                padx=6,
-                pady=1,
-                cursor="hand2"
-            )
-            btn.pack(side=tk.LEFT, padx=2)
-            self.pitch_buttons[key] = btn
-
-        # 3. Tarjeta contenedora de lectura
+        # 2. Tarjeta contenedora de lectura dividida en 2 paneles simétricos 50/50 (ES arriba / EN abajo)
         pitch_card = tk.Frame(self.frame_pitch, bg=self.bg_card, padx=12, pady=6)
         pitch_card.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 4))
 
-        # Encabezado de la tarjeta
-        pitch_card_header = tk.Frame(pitch_card, bg=self.bg_card)
-        pitch_card_header.pack(fill=tk.X, pady=(0, 4))
+        # ================= SECCIÓN SUPERIOR: PITCH EN ESPAÑOL (50% de altura) =================
+        pane_p_es = tk.Frame(pitch_card, bg=self.bg_card)
+        pane_p_es.pack(fill=tk.BOTH, expand=True, pady=(0, 3))
 
-        self.lbl_pitch_title = tk.Label(
-            pitch_card_header,
-            text="GUIÓN DE PRESENTACIÓN | JAVIER VIVEROS HUESCA",
+        hdr_p_es = tk.Frame(pane_p_es, bg=self.bg_card)
+        hdr_p_es.pack(fill=tk.X, pady=(0, 2))
+
+        self.lbl_pitch_es_title = tk.Label(
+            hdr_p_es,
+            text="🇪🇸 PITCH EN ESPAÑOL — Javier Viveros Huesca",
             bg=self.bg_card,
-            fg=self.accent_yellow,
+            fg=self.accent_green,
             font=("Segoe UI", 9, "bold")
         )
-        self.lbl_pitch_title.pack(side=tk.LEFT)
+        self.lbl_pitch_es_title.pack(side=tk.LEFT)
+        self.lbl_pitch_title = self.lbl_pitch_es_title
 
-        # Área de texto con scroll
-        txt_box_frame = tk.Frame(pitch_card, bg=self.bg_card_inner)
-        txt_box_frame.pack(fill=tk.BOTH, expand=True)
+        btn_copy_p_es = tk.Button(
+            hdr_p_es,
+            text="📋 Copiar ES",
+            command=self._copy_pitch_es,
+            bg=self.bg_card_inner,
+            fg=self.text_dim,
+            activebackground=self.bg_card,
+            activeforeground=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 7, "bold"),
+            padx=6,
+            pady=1,
+            cursor="hand2"
+        )
+        btn_copy_p_es.pack(side=tk.RIGHT)
 
-        scrollbar = ttk.Scrollbar(txt_box_frame)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        box_p_es = tk.Frame(pane_p_es, bg=self.bg_card_inner)
+        box_p_es.pack(fill=tk.BOTH, expand=True)
 
-        self.txt_pitch = tk.Text(
-            txt_box_frame,
+        scroll_p_es = ttk.Scrollbar(box_p_es)
+        scroll_p_es.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_pitch_es = tk.Text(
+            box_p_es,
+            height=5,
             bg=self.bg_card_inner,
             fg=self.text_color,
             insertbackground=self.text_color,
             relief=tk.FLAT,
-            padx=14,
-            pady=12,
-            font=("Segoe UI", 11),
+            padx=12,
+            pady=8,
+            font=("Segoe UI", 10),
             wrap=tk.WORD,
-            spacing1=3,
-            spacing3=3,
-            yscrollcommand=scrollbar.set,
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=scroll_p_es.set,
         )
-        self.txt_pitch.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.config(command=self.txt_pitch.yview)
+        self.txt_pitch_es.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scroll_p_es.config(command=self.txt_pitch_es.yview)
 
-        # Cargar pitch inicial (RF Optimization para Arturo por defecto)
+        # ================= SECCIÓN INFERIOR: PITCH EN INGLÉS (50% de altura) =================
+        pane_p_en = tk.Frame(pitch_card, bg=self.bg_card)
+        pane_p_en.pack(fill=tk.BOTH, expand=True, pady=(3, 0))
+
+        hdr_p_en = tk.Frame(pane_p_en, bg=self.bg_card)
+        hdr_p_en.pack(fill=tk.X, pady=(0, 2))
+
+        self.lbl_pitch_en_title = tk.Label(
+            hdr_p_en,
+            text="🇺🇸 PITCH IN ENGLISH (60s) — Technical & Professional",
+            bg=self.bg_card,
+            fg=self.accent_blue,
+            font=("Segoe UI", 9, "bold")
+        )
+        self.lbl_pitch_en_title.pack(side=tk.LEFT)
+
+        btn_copy_p_en = tk.Button(
+            hdr_p_en,
+            text="📋 Copiar EN",
+            command=self._copy_pitch_en,
+            bg=self.bg_card_inner,
+            fg=self.text_dim,
+            activebackground=self.bg_card,
+            activeforeground=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 7, "bold"),
+            padx=6,
+            pady=1,
+            cursor="hand2"
+        )
+        btn_copy_p_en.pack(side=tk.RIGHT)
+
+        box_p_en = tk.Frame(pane_p_en, bg=self.bg_card_inner)
+        box_p_en.pack(fill=tk.BOTH, expand=True)
+
+        scroll_p_en = ttk.Scrollbar(box_p_en)
+        scroll_p_en.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_pitch_en = tk.Text(
+            box_p_en,
+            height=5,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            insertbackground=self.text_color,
+            relief=tk.FLAT,
+            padx=12,
+            pady=8,
+            font=("Segoe UI", 10),
+            wrap=tk.WORD,
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=scroll_p_en.set,
+        )
+        self.txt_pitch_en.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scroll_p_en.config(command=self.txt_pitch_en.yview)
+
+        # Cargar pitch inicial (RF Optimization por defecto)
         self._load_pitch("pitch_rf_es")
 
         # 4. Badges inferiores con métricas rápidas de RF Optimization
@@ -770,13 +808,37 @@ class InterviewPrompterApp:
             self.btn_tab_word_guide.config(bg=self.accent_blue, fg="#ffffff")
             self._update_status("📖 Guía de Entrevista Word activa (Atajos: 1 Copiloto, 2 Pitch)", self.accent_yellow)
 
+    @property
+    def txt_pitch(self):
+        return self.txt_pitch_es
+
     def _load_pitch(self, key: str):
         self.active_pitch_key = key
-        script = candidate_profile.PITCH_SCRIPTS.get(key, "")
-        self.txt_pitch.config(state=tk.NORMAL)
-        self.txt_pitch.delete("1.0", tk.END)
-        self.txt_pitch.insert(tk.END, script)
-        self.txt_pitch.config(state=tk.DISABLED)
+        
+        # Obtener los scripts para español (arriba) e inglés (abajo)
+        es_script = candidate_profile.PITCH_SCRIPTS.get(key, "")
+        en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_en", "")
+
+        titles_es = {
+            "pitch_rf_es": "🇪🇸 PITCH PRINCIPAL RF (60–90s) — Javier Viveros Huesca",
+            "pitch_rf_tech": "⚙️ ERICSSON RAN & KPIS DEEP-DIVE — Arquitectura Técnica",
+            "pitch_rf_rapido": "⚡ ELEVATOR PITCH RF RÁPIDO (30s) — Resumen Ejecutivo",
+            "formacion_rf": "🎓 FORMACIÓN ACADÉMICA, MBA & CERTIFICACIONES ERICSSON",
+        }
+        if hasattr(self, 'lbl_pitch_es_title'):
+            self.lbl_pitch_es_title.config(text=titles_es.get(key, "🇪🇸 PITCH EN ESPAÑOL"))
+
+        # Cargar panel en español (arriba)
+        self.txt_pitch_es.config(state=tk.NORMAL)
+        self.txt_pitch_es.delete("1.0", tk.END)
+        self.txt_pitch_es.insert(tk.END, es_script)
+        self.txt_pitch_es.config(state=tk.DISABLED)
+
+        # Cargar panel en inglés (abajo)
+        self.txt_pitch_en.config(state=tk.NORMAL)
+        self.txt_pitch_en.delete("1.0", tk.END)
+        self.txt_pitch_en.insert(tk.END, en_script)
+        self.txt_pitch_en.config(state=tk.DISABLED)
 
         # Actualizar estilo de botones del sub-selector
         for k, btn in self.pitch_buttons.items():
@@ -785,45 +847,40 @@ class InterviewPrompterApp:
             else:
                 btn.config(bg=self.bg_card_inner, fg=self.text_dim)
 
-    def _copy_pitch(self):
-        script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
-        if script:
+    def _copy_pitch_es(self):
+        txt = self.txt_pitch_es.get("1.0", tk.END).strip()
+        if txt:
             self.root.clipboard_clear()
-            self.root.clipboard_append(script)
-            self._update_status("📋 ¡Pitch copiado al portapapeles!", self.accent_blue)
+            self.root.clipboard_append(txt)
+            self._update_status("📋 ¡Pitch en Español copiado al portapapeles!", self.accent_green)
+
+    def _copy_pitch_en(self):
+        txt = self.txt_pitch_en.get("1.0", tk.END).strip()
+        if txt:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(txt)
+            self._update_status("📋 ¡Pitch in English copiado al portapapeles!", self.accent_blue)
+
+    def _copy_pitch(self):
+        es_txt = self.txt_pitch_es.get("1.0", tk.END).strip()
+        en_txt = self.txt_pitch_en.get("1.0", tk.END).strip()
+        full_txt = f"{es_txt}\n\n{'='*50}\n\n{en_txt}" if en_txt else es_txt
+        if full_txt:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(full_txt)
+            self._update_status("📋 ¡Pitch bilingüe (ES + EN) copiado al portapapeles!", self.accent_blue)
 
     def _send_pitch_to_teleprompter(self):
-        script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
-        if script:
-            titles = {
-                "pitch_rf_es": "📡 RF Optimization Engineer (Arturo Ramírez / Ericsson RAN - ES)",
-                "pitch_rf_en": "🇺🇸 RF Optimization Engineer (Arturo Ramirez / Ericsson RAN - EN)",
-                "pitch_rf_tech": "⚙️ Ericsson RAN Architecture, KPIs & Layer 3 Deep-Dive",
-                "pitch_rf_rapido": "⚡ Elevator Pitch RF Optimization (30s)",
-                "formacion_rf": "🎓 Formación Académica, MBA & Certificaciones Oficiales",
-                "pitch_5g_en": "🇺🇸 5G Network Engineer & AI Pitch (Speridian / Shubham)",
-                "pitch_5g_tech": "📡 5GC Architecture, Call Flows (N1-N12), SEPP & AI Coding",
-                "pitch_5g_es": "🇪🇸 Pitch 5G Network Engineer & Telecom (Javier Viveros)",
-                "pitch_es_completo": "🎙️ Pitch Completo de Presentación (Javier Viveros)",
-                "pitch_es_rapido": "⚡ Elevator Pitch Rápido de 30s (Javier Viveros)",
-                "pitch_en": "🇺🇸 Professional English Pitch (Javier Viveros)",
-                "formacion_certs": "🎓 Formación Académica & Certificaciones (Javier Viveros)",
-                "fit_pcos": "🎯 Por qué PCoS & Fit Técnico (Javier Viveros)",
-            }
-            # Determinar pares español e inglés para el teleprompter dual
-            if self.active_pitch_key in ("pitch_rf_es", "pitch_rf_rapido", "pitch_rf_tech", "formacion_rf"):
-                es_script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
-                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_en", "")
-            elif self.active_pitch_key == "pitch_rf_en":
-                es_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_es", "")
-                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_en", "")
-            elif self.active_pitch_key in ("pitch_5g_es", "pitch_5g_en", "pitch_5g_tech"):
-                es_script = candidate_profile.PITCH_SCRIPTS.get("pitch_5g_es", "")
-                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_5g_en", candidate_profile.PITCH_SCRIPTS.get("pitch_5g_tech", ""))
-            else:
-                es_script = candidate_profile.PITCH_SCRIPTS.get("pitch_es_completo", script)
-                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_en", "")
+        titles = {
+            "pitch_rf_es": "📡 RF Optimization Engineer (Arturo Ramírez / Ericsson RAN - ES / EN)",
+            "pitch_rf_tech": "⚙️ Ericsson RAN Architecture, KPIs & Layer 3 Deep-Dive",
+            "pitch_rf_rapido": "⚡ Elevator Pitch RF Optimization (30s)",
+            "formacion_rf": "🎓 Formación Académica, MBA & Certificaciones Oficiales",
+        }
+        es_script = self.txt_pitch_es.get("1.0", tk.END).strip()
+        en_script = self.txt_pitch_en.get("1.0", tk.END).strip()
 
+        if es_script:
             self.txt_question.delete("1.0", tk.END)
             self.txt_question.insert("1.0", titles.get(self.active_pitch_key, "Mi Pitch Personal"))
 
