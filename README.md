@@ -35,14 +35,17 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
   - **⚡ Botón "Al Teleprompter"**: Inyecta instantáneamente el pitch seleccionado en el teleprompter dual del copiloto (`1`) con 1 solo clic.
   - **Botones de Copiado**: `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos`.
   - **Teclas Rápidas**: `1` (Copiloto en Vivo), `2` (Mi Pitch Dual), `3` (Guía Word).
-- 📖 **Pestaña de Guía Maestra de Entrevista en Formato Word (3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, integrando los 10 módulos en español y 11 en inglés:
-  - **Diseño Estilo Microsoft Word**: Página en blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), márgenes ejecutivos, cajas de estrategia verde (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques monospace en `Consolas` para comandos Moshell y tablas de parámetros.
-  - **Selector Bilingüe**: Alterna al instante entre `🇪🇸 Español (10 Módulos - 31 Temas)` y `🇺🇸 English (11 Modules - 33 Topics)`.
-  - **Navegador Lateral de Preguntas**: Índice interactivo con las 31 preguntas en español / 33 en inglés para saltar a cualquier tema en 1 clic.
+- 📖 **Pestaña de Guía Maestra de Entrevista Word Dividida Verticalmente al 50/50 (3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, dividido a la mitad verticalmente con sincronización exacta:
+  - **Lado Izquierdo (50% de ancho - 🇪🇸 Español)**: Muestra la hoja de Microsoft Word con la pregunta, estrategia de respuesta, respuesta modelo y tablas/comandos en **Español**.
+  - **Lado Derecho (50% de ancho - 🇺🇸 English)**: Muestra simultáneamente la misma pregunta y hoja de Microsoft Word traducida y adaptada profesionalmente en **Inglés**.
+  - **Diseño Estilo Microsoft Word**: Páginas en blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), márgenes ejecutivos, cajas de estrategia verde (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques monospace en `Consolas` para comandos Moshell y tablas de parámetros.
+  - **Índice Interactivo Lateral Colapsable**: Panel lateral con las 31 preguntas técnicas ordenadas por módulo, con botón **`📑 Ocultar / Mostrar Índice`** para expandir la lectura al ancho completo de la pantalla.
+  - **Navegación Rápida**: Botones **`◀ Ant`** y **`Sig ▶`** para avanzar o retroceder pregunta por pregunta sin perder el enfoque.
   - **Buscador en Tiempo Real**: Filtra preguntas por términos técnicos (`RTWP`, `PIM`, `Handover`, `A3`, `PRACH`, `DCR`, `VoLTE`, `MOM`, `Moshell`).
-  - **⚡ Botón "Al Teleprompter"**: Extrae la respuesta modelo seleccionada y carga simultáneamente la respuesta en español en el panel superior y la respuesta en inglés en el panel inferior (`1`).
+  - **⚡ Botón "Al Teleprompter"**: Inyecta simultáneamente la respuesta en español arriba y la respuesta en inglés abajo en el teleprompter del Copiloto (`1`).
+  - **Botones de Copiado**: `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos`.
   - **📄 Botón "Abrir Word"**: Abre directamente el archivo `.docx` oficial en Microsoft Word mediante integración nativa con Windows.
-  - **Teclas Rápidas**: `1` (Copiloto Dual), `2` (Mi Pitch & Formación), `3` (Guía Word).
+  - **Teclas Rápidas**: `1` (Copiloto Dual), `2` (Mi Pitch Dual), `3` (Guía Word Dual).
 - 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado: +15 años en optimización de radiofrecuencia (RF) y RAN en carriers Tier-1 (AT&T, Nextel, Empire), certificación oficial de Ericsson en LTE Configuration, MBA de Tecmilenio e Ing. en Electrónica (IT Reynosa), además de experiencia en 5G Core (Open5GS/free5GC) y Full-Stack con IA (FastAPI/vLLM), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
 - 🌐 **Soporte Bilingüe Simultáneo y Selector de Modo (Dual / ES / EN)**:
   - **Selector de Modo**: Permite elegir entre `⚡ Dual (ES + EN)`, `🇪🇸 Solo Español` o `🇺🇸 Only English`.
