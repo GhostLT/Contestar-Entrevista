@@ -640,13 +640,13 @@ class InterviewPrompterApp:
         )
         btn_to_prompter.pack(side=tk.RIGHT, padx=4)
 
-        # 2. Fila 2 de Pitch: Otras Postulaciones (5G Core Speridian & Full-Stack IA PCoS)
+        # 2. Fila 2 de Pitch: Otras Postulaciones (5G Core Speridian)
         nav_row2 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=2)
         nav_row2.pack(fill=tk.X)
 
         lbl_other = tk.Label(
             nav_row2,
-            text="💼 Otras Postulaciones:",
+            text="💼 Otras Postulaciones (5G Core):",
             bg=self.bg_main,
             fg=self.text_dim,
             font=("Segoe UI", 8, "bold")
@@ -656,8 +656,7 @@ class InterviewPrompterApp:
         options_other = [
             ("pitch_5g_en", "📡 5G Core Speridian (60s)"),
             ("pitch_5g_tech", "⚙️ 5GC Call-Flows"),
-            ("pitch_es_completo", "💻 Full-Stack IA (PCoS)"),
-            ("fit_pcos", "🎯 Fit PCoS"),
+            ("pitch_5g_es", "🇪🇸 5G Core Español (60s)"),
         ]
 
         for key, label in options_other:

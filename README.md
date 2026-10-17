@@ -31,11 +31,10 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
     - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
     - **`🎓 Formación & Certs`**: Ingeniería en Electrónica (IT Reynosa) + MBA (Tecmilenio) + Certificación Oficial Ericsson LTE Configuration.
     - 📖 **[Guía Maestra RF Ericsson](GUIA_ENTREVISTA_RF_ERICSSON.md)**: Banco completo con 8 preguntas y respuestas técnicas avanzadas y matriz de parámetros Ericsson LTE.
-  - **Fila 2: 🌐 Telecom (5G Core Speridian) & 💻 Full-Stack con IA (PCoS / Hireline)**:
-    - **`🇺🇸 5G Pitch (Speridian)`**: Guión en inglés para la posición de 5G Network Engineer con call-flows N1-N12, roaming SEPP y desarrollo open source asistido por IA.
+  - **Fila 2: 🌐 Telecom & 5G Core (Speridian Technologies - Richardson TX)**:
+    - **`📡 5G Core Speridian (60s)`**: Guión en inglés para la posición de 5G Network Engineer con call-flows N1-N12, roaming SEPP y desarrollo open source asistido por IA.
     - **`⚙️ 5GC Call-Flows`**: Deep dive en interfaces 5G Core, N32-c/f, SCTP y Kubernetes.
-    - **`💻 Full-Stack IA (PCoS)`**: Pitch de arquitectura Full-Stack con FastAPI, vLLM en AWS GPU (-65% costo) y RAG con pgvector.
-    - **`🎯 Fit PCoS`**: Los 3 pilares técnicos de fit inmediato (estrategia Open Source, RLS y flujos agénticos).
+    - **`🇪🇸 5G Core Español (60s)`**: Pitch en español de telecomunicaciones críticas, Core 5G (SA/NSA) y herramientas de IA.
     - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)** y **[Guía Perfil Candidato](PERFIL_CANDIDATO.md)**.
   - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter dual del copiloto (Español arriba, Inglés abajo) con 1 solo clic.
   - **Teclas Rápidas**: `1` para volver al Copiloto en Vivo, `2` para abrir tu Pitch y `3` para la Guía Word.
