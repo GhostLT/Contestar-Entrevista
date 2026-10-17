@@ -11,15 +11,6 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
-- 🌐 **Pantalla Dividida y Traductor de Conversación en Vivo (Inglés ➔ Español en Tiempo Real)**:
-  - **División Vertical Ergonómica (`ttk.PanedWindow`)**: La ventana principal del copiloto está dividida en dos secciones con un divisor ajustable:
-    - **Panel Superior (Teleprompter IA)**: Pregunta detectada/editable y la respuesta estructurada del copiloto IA en vivo.
-    - **Panel Inferior (Traductor Simultáneo)**: Muestra en tiempo real el diálogo continuo de la entrevista con columnas lado a lado:
-      - `🇬🇧 Audio Original Detectado (English)`: Transcribe cada frase o pregunta que dice el entrevistador en inglés con marca de tiempo `[HH:MM:SS]`.
-      - `🇪🇸 Traducción al Español (Tiempo Real)`: Muestra la traducción instantánea al español con ultra baja latencia (<250ms), sin consumir cuota ni tokens de tus APIs de IA.
-  - **Selector de Reconocimiento de Voz (`🎙️ Voz: 🇺🇸 Inglés (en-US) / 🇪🇸 Español (es-ES)`)**: Cambia al instante el idioma de captura del micrófono o audio loopback de la reunión.
-  - **Herramientas de Conversación**: Botón `📋 Copiar Conversación` (copia el diálogo bilingüe completo), `⏸️ Pausar/Reanudar` y `🗑️ Limpiar Conversación`.
-  - **Persistencia Completa**: Cada turno traducido se guarda automáticamente en los registros de sesión en `historial/`.
 - 🎯 **Pestaña de Pitch Personal y Formación Multi-Rol (F2)**: Pestaña interactiva organizada en 2 filas dedicadas para responder con total maestría según el tipo de entrevista técnica:
   - **Fila 1: 📡 5G Network Engineer (Speridian Technologies | Shubham - Richardson TX)**:
     - **`🇺🇸 5G Pitch (60s)`**: Guión de alto impacto para la llamada con el reclutador (Shubham) y la entrevista de video con el cliente en Richardson TX, integrando +12 años de experiencia, +9 años en AT&T (99.999% SLA), 5GC (SA/NSA), AMF/SMF/UPF, SEPP y desarrollo open source asistido por IA (Codex/Groq).
@@ -63,20 +54,13 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ```mermaid
 flowchart TD
-    A["Audio de Reunión (Zoom / Meet / Teams)"] -->|Micrófono o WASAPI Loopback| B["audio_listener.py (VAD + SpeechRecognition en-US / es-ES)"]
-    B -->|Texto Transcrito en Vivo| C{"Despacho Dual"}
-    
-    C -->|Flujo 1: Conversación en Vivo| D["realtime_translator.py (Ultra Rápido <250ms)"]
-    D -->|Audio EN + Traducción ES| E["Panel Inferior: Conversación & Traducción Simultánea"]
-    
-    C -->|Flujo 2: Copiloto Asistente| F["gemini_copilot.py (Gemini / DeepSeek)"]
-    F -->|Filtro Casual| G{"¿Pregunta Técnica?"}
-    G -->|No (Saludos/Ruidos)| H["[IGNORAR]"]
-    G -->|Sí| I["Generación Streaming (Token-a-Token)"]
-    I --> J["Panel Superior: Teleprompter de Respuestas"]
-    
-    E --> K["history_logger.py (Guardado en historial/ .md y .json)"]
-    J --> K
+    A["Audio de Reunión (Zoom / Meet / Teams)"] -->|Micrófono o WASAPI Loopback| B["audio_listener.py (VAD + SpeechRecognition)"]
+    B -->|Texto Transcrito en Vivo| C["gemini_copilot.py (Gemini / DeepSeek)"]
+    C -->|Filtro Casual| D{"¿Pregunta Técnica?"}
+    D -->|No (Saludos/Ruidos)| E["[IGNORAR]"]
+    D -->|Sí| F["Generación Streaming (Token-a-Token)"]
+    F --> G["Teleprompter Flotante (gui_prompter.py)"]
+    G --> H["history_logger.py (Guardado en historial/ .md y .json)"]
 ```
 
 ---
