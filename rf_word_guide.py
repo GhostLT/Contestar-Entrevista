@@ -334,7 +334,10 @@ class RFWordGuide:
                 })
 
         results.sort(key=lambda x: x["score"], reverse=True)
-        return results[:limit]
+        top_matches = results[:limit]
+        # Ordenar de menor a mayor por número de módulo y número de pregunta
+        top_matches.sort(key=lambda x: (x.get("module_num", 0), x.get("q_num", 0)))
+        return top_matches
 
     def match_question(self, query: str, min_threshold: int = 15) -> Optional[Dict[str, Any]]:
         """

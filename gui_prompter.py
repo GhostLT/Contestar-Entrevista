@@ -1889,8 +1889,10 @@ class InterviewPrompterApp:
 
         matches = self.rf_word_guide_es.find_all_matches(text, limit=4)
         if matches:
+            # Ordenar de menor a mayor por módulo y número de pregunta
+            matches.sort(key=lambda m: (m.get("module_num", 0), m.get("q_num", 0)))
             self.current_matched_word_list = matches
-            self.current_matched_word_q = matches[0]
+            self.current_matched_word_q = max(matches, key=lambda m: m.get("score", 0))
 
             # Limpiar botones/chips anteriores
             if hasattr(self, 'chips_word_container'):
@@ -1898,6 +1900,7 @@ class InterviewPrompterApp:
                     child.destroy()
 
             count = len(matches)
+            max_len = 22 if count >= 4 else (26 if count == 3 else 34)
             if count == 1:
                 self.lbl_word_match_header.config(
                     text="📖 COINCIDENCIA EN GUÍA WORD OFICIAL:"
@@ -1918,8 +1921,8 @@ class InterviewPrompterApp:
                 mod_num = m["module_num"]
                 title_clean = re.sub(r'^(Pregunta|Question)\s*\d+:\s*', '', m["title"], flags=re.IGNORECASE)
                 title_clean = title_clean.strip('"?¿!¡\' ')
-                if len(title_clean) > 34:
-                    title_clean = title_clean[:32] + "..."
+                if len(title_clean) > max_len:
+                    title_clean = title_clean[:max_len - 2] + "..."
 
                 btn_text = f"📖 Q{q_num}: {title_clean} (Mód {mod_num}) ➔"
 
