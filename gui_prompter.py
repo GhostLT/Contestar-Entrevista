@@ -79,7 +79,7 @@ class InterviewPrompterApp:
         self.msg_queue = queue.Queue()
         self.current_answer_lang = "es"
         self.active_tab = "copilot"
-        self.active_pitch_key = "pitch_5g_en"
+        self.active_pitch_key = "pitch_rf_es"
         self.pitch_buttons: Dict[str, tk.Button] = {}
 
         # Construir interfaz
@@ -473,26 +473,28 @@ class InterviewPrompterApp:
         self._setup_pitch_ui()
 
     def _setup_pitch_ui(self):
-        # 1. Fila 1 de Pitch: 5G Network Engineer (Speridian / Shubham) + Acciones
+        # 1. Fila 1 de Pitch: RF Optimization Engineer (Ericsson RAN / Arturo Ramírez) + Acciones
         nav_row1 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=3)
         nav_row1.pack(fill=tk.X)
 
-        lbl_5g = tk.Label(
+        lbl_rf = tk.Label(
             nav_row1,
-            text="📡 5G Core (Speridian):",
+            text="📡 RF Optimization (Ericsson):",
             bg=self.bg_main,
             fg=self.accent_yellow,
             font=("Segoe UI", 8, "bold")
         )
-        lbl_5g.pack(side=tk.LEFT, padx=(0, 4))
+        lbl_rf.pack(side=tk.LEFT, padx=(0, 4))
 
-        options_5g = [
-            ("pitch_5g_en", "🇺🇸 5G Pitch (60s)"),
-            ("pitch_5g_tech", "⚙️ 5GC Call-Flows & AI"),
-            ("pitch_5g_es", "🇪🇸 5G Core Español"),
+        options_rf = [
+            ("pitch_rf_es", "🇪🇸 RF Pitch (60-90s)"),
+            ("pitch_rf_en", "🇺🇸 RF Pitch English (60s)"),
+            ("pitch_rf_tech", "⚙️ KPIs & Ericsson Tech"),
+            ("pitch_rf_rapido", "⚡ RF Rápido (30s)"),
+            ("formacion_rf", "🎓 Formación & MBA"),
         ]
 
-        for key, label in options_5g:
+        for key, label in options_rf:
             btn = tk.Button(
                 nav_row1,
                 text=label,
@@ -503,7 +505,7 @@ class InterviewPrompterApp:
                 activeforeground=self.text_color,
                 relief=tk.FLAT,
                 font=("Segoe UI", 8, "bold"),
-                padx=8,
+                padx=7,
                 pady=2,
                 cursor="hand2"
             )
@@ -540,28 +542,27 @@ class InterviewPrompterApp:
         )
         btn_to_prompter.pack(side=tk.RIGHT, padx=4)
 
-        # 2. Fila 2 de Pitch: Full-Stack IA (PCoS) y Formación
+        # 2. Fila 2 de Pitch: Otras Postulaciones (5G Core Speridian & Full-Stack IA PCoS)
         nav_row2 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=2)
         nav_row2.pack(fill=tk.X)
 
-        lbl_fs = tk.Label(
+        lbl_other = tk.Label(
             nav_row2,
-            text="💻 Full-Stack IA (PCoS):",
+            text="💼 Otras Postulaciones:",
             bg=self.bg_main,
-            fg=self.accent_blue,
+            fg=self.text_dim,
             font=("Segoe UI", 8, "bold")
         )
-        lbl_fs.pack(side=tk.LEFT, padx=(0, 4))
+        lbl_other.pack(side=tk.LEFT, padx=(0, 4))
 
-        options_fs = [
-            ("pitch_es_completo", "🇪🇸 Completo (60s)"),
-            ("pitch_es_rapido", "⚡ Rápido (30s)"),
-            ("pitch_en", "🇺🇸 English (60s)"),
-            ("formacion_certs", "🎓 Formación & Certs"),
+        options_other = [
+            ("pitch_5g_en", "📡 5G Core Speridian (60s)"),
+            ("pitch_5g_tech", "⚙️ 5GC Call-Flows"),
+            ("pitch_es_completo", "💻 Full-Stack IA (PCoS)"),
             ("fit_pcos", "🎯 Fit PCoS"),
         ]
 
-        for key, label in options_fs:
+        for key, label in options_other:
             btn = tk.Button(
                 nav_row2,
                 text=label,
@@ -620,21 +621,21 @@ class InterviewPrompterApp:
         self.txt_pitch.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.config(command=self.txt_pitch.yview)
 
-        # Cargar pitch inicial (5G Network Engineer para Shubham por defecto)
-        self._load_pitch("pitch_5g_en")
+        # Cargar pitch inicial (RF Optimization para Arturo por defecto)
+        self._load_pitch("pitch_rf_es")
 
-        # 4. Badges inferiores con métricas rápidas de 5G y FullStack
+        # 4. Badges inferiores con métricas rápidas de RF Optimization
         badges_frame = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=4)
         badges_frame.pack(fill=tk.X)
 
         badges = [
-            ("📡 5G Core SA/NSA", "#38bdf8"),
-            ("📶 +9 Años AT&T (99.999%)", "#34d399"),
-            ("🤖 IA + Codex/Groq", "#a78bfa"),
-            ("💼 +12 Años Exp Total", "#facc15"),
-            ("🎓 Ing. Electrónica y Sistemas", "#f472b6"),
-            ("💰 $2,500 USD/mes", "#94a3b8"),
-            ("🚀 Disp. Inmediata", "#22c55e"),
+            ("📶 +15 Años RF & RAN", "#34d399"),
+            ("📡 Ericsson Specialist", "#38bdf8"),
+            ("📊 KPIs: RTWP/PIM/DCR", "#facc15"),
+            ("🛠️ TEMS / Nemo / Actix", "#a78bfa"),
+            ("🎓 Ing. Electrónica + MBA", "#f472b6"),
+            ("📜 Cert. Ericsson LTE", "#38bdf8"),
+            ("🚀 Disp. Inmediata (México)", "#22c55e"),
         ]
         for b_text, b_color in badges:
             lbl = tk.Label(

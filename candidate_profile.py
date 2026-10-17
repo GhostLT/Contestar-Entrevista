@@ -6,17 +6,17 @@ Postulación: PCoS (Asistente Ejecutivo con IA / Salud / Operaciones)
 
 CANDIDATE_DATA = {
     "nombre": "Javier Viveros Huesca",
-    "titulo": "Ingeniero Senior Full-Stack con IA",
+    "titulo": "Senior RF Optimization Engineer | 3G • 4G/LTE • VoLTE • 5G NR | Ericsson RAN Specialist",
     "email": "viverosjavier86@gmail.com",
     "telefono": "+52 (669) 533-0508",
-    "ubicacion": "Mazatlán, Sinaloa, México (Remoto, cobertura total horario US / CDMX)",
+    "ubicacion": "México (Disponible para proyectos Remoto / México)",
     "disponibilidad": "Inmediata, tiempo completo",
-    "idiomas": "Español nativo, Inglés avanzado (técnico y conversacional para entornos remotos internacionales)",
-    "expectativa_economica": "$2,500 USD mensuales (Contractor / Tiempo Completo Remoto, abierto a evaluación integral)",
-    "anos_experiencia_total": "Más de 12 años en ingeniería de software, arquitectura de sistemas y backend/full-stack",
-    "anos_experiencia_fullstack": "Más de 4 años continuos en desarrollo full-stack moderno (React, TypeScript, FastAPI, PostgreSQL, Supabase)",
-    "anos_experiencia_ia_open_source": "Más de 2 años y medio (30+ meses) prácticos continuos con modelos Open Source en producción",
-    "educacion": "Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa, 2004-2010)",
+    "idiomas": "Español nativo, Inglés profesional avanzado (C1, técnico y conversacional)",
+    "expectativa_economica": "Abierto a evaluación según el alcance del proyecto",
+    "anos_experiencia_total": "Más de 15 años en ingeniería de telecomunicaciones, Radio Access Networks (RAN) y optimización RF",
+    "anos_experiencia_rf": "Más de 15 años optimizando redes móviles 3G, 4G LTE, VoLTE y 5G NR con equipamiento Ericsson",
+    "educacion": "Ingeniería en Electrónica (Instituto Tecnológico de Reynosa, 2004-2010) + Maestría en Administración de Negocios (MBA, Tecmilenio, 2019-2020)",
+    "certificaciones": "LTE Configuration Certified by Ericsson • 5G Air Interface NSA & VoNR (Mpirical) • C-RAN for 5G • WCDMA RAN (Huawei) • Anritsu Certified",
 }
 
 PROFILE_KNOWLEDGE_BASE = """
@@ -24,9 +24,11 @@ DATOS VERIFICADOS DE JAVIER VIVEROS HUESCA:
 
 1. IDENTIDAD Y PERFIL:
 - Nombre: Javier Viveros Huesca
-- Rol: Ingeniero Senior Full-Stack con IA
-- Contacto: viverosjavier86@gmail.com | WhatsApp: +52 669 533 0508 | Mazatlán, México (Remoto)
-- Postulación actual: Posición de Ingeniero Senior Full-Stack con IA en Hireline / PCoS (contacto: Angélica).
+- Rol Principal: Senior RF Optimization Engineer | Ericsson RAN Specialist (3G/4G/VoLTE/5G NR)
+- Contacto: viverosjavier86@gmail.com | Tel/WhatsApp: +52 669 533 0508 | México (Remoto)
+- Postulación inmediata: RF Optimization Engineer (Senior / Semi-Senior) trabajando con tecnologías Ericsson en modalidad remota para proyectos en México (contacto: Arturo Ramírez / ARamirez).
+- Postulaciones paralelas: 5G Network Engineer (Speridian / Richardson TX), Ingeniero Senior Full-Stack con IA (Hireline / PCoS).
+- Disponibilidad: Inmediata, tiempo completo. Abierto a esquemas remoto en México.
 - Objetivo con PCoS: Tomar ownership técnico de PCoS (asistente ejecutivo personal con IA), potenciar su expansión a salud y operaciones empresariales, e implementar modelos Open Source para reducir costos de inferencia y garantizar soberanía de datos.
 - Expectativa económica: $2,500 USD mensuales (Contractor / Remoto tiempo completo). Disponibilidad inmediata.
 
@@ -111,9 +113,131 @@ C) Experiencia previa: Nextel (2011–2013) y Nokia (2010–2011) en automatizac
   • Redes Privadas 5G (NPN - Non-Public Networks): Modelos SNPN y PNI-NPN integrados con redes públicas.
   • Kubernetes / Cloud-Native 5G: Despliegue de CNFs en Kubernetes (k8s/EKS/k3s), Docker, Helm charts y Multus CNI (SR-IOV / Macvlan para aislamiento UPF).
   • DevOps / CI-CD: Pipelines en GitHub Actions / GitLab para pruebas automatizadas de core de telecomunicaciones.
+
+6. CONTEXTO DE ENTREVISTA: SENIOR RF OPTIMIZATION ENGINEER (ERICSSON RAN / ARTURO RAMÍREZ - ARAMIREZ):
+- Posición: RF Optimization Engineer (Senior / Semi-Senior) trabajando con tecnologías Ericsson en modalidad remota para proyectos en México.
+- Reclutador / Contacto: Arturo Ramírez (ARamirez).
+- Especialidad: Ericsson Radio Access Network (RAN) en 3G, 4G LTE, VoLTE y 5G NR.
+- Resumen de Perfil: Más de 15 años de experiencia práctica en optimización de radiofrecuencia (RF), redes de acceso de radio (RAN) e ingeniería de rendimiento en operadores Tier-1 (AT&T, Nextel).
+- Tecnologías Móviles:
+  • 5G NR: NSA (Option 3x con Dual Connectivity EN-DC), SA (Option 2), C-RAN, VoNR, Network Slicing.
+  • 4G LTE: FDD/TDD, VoLTE (QCI 1/2, SIP IMS), CSFB, Carrier Aggregation (CA), MIMO 2x2/4x4.
+  • 3G / UMTS / WCDMA: R99, HSPA+, control de potencia, RNC.
+  • 2G: GSM/EDGE.
+- Equipamiento y Vendor Ericsson:
+  • Plataformas Baseband de Ericsson (5212, 5216, 6630), Radio Dot System (DAS indoor), NodeB, eNodeB, gNodeB.
+  • Gestión y configuración mediante Element Manager (EM) y EMCLI, comandos MOSHELL/AMOS.
+  • Versiones de software de red LTE L15, WCDMA y 5G NR.
+  • Experiencia complementaria en vendors Huawei y Nokia.
+- Optimización RF y KPIs Clave:
+  • Accesibilidad: RRC Connection Setup Success Rate, E-RAB Setup Success Rate, congestión de PDCCH/PUCCH/PRACH.
+  • Retenibilidad & DCR: Drop Call Rate (DCR) en voz (VoLTE / CSFB) y datos, causas de caída (RLF, poor coverage, sync loss).
+  • Throughput & Eficiencia Espectral: CQI, MCS, uso de PRBs, MIMO layers, optimización de throughput de subida y bajada.
+  • Movilidad y Handover: Handover Success Rate (HOSR) intra-frecuencia, inter-frecuencia e IRAT (LTE -> 3G/WCDMA), ajuste de eventos RRC (A1, A2, A3, A5, B1, B2, histeresis, a3offset, timeToTrigger).
+  • Interferencia y Ruido: Monitoreo y remediación de RTWP (Received Total Wideband Power) en 3G/WCDMA y RSSI/SINR en LTE/5G.
+  • PIM (Passive Intermodulation) y VSWR: Detección y corrección de PIM interno en conectores/jumpers/antenas y barrido de pérdidas de retorno con Anritsu Site Master.
+  • Pilot Pollution y Overshooting: Identificación de sectores con interferencia de pilotos sin sector dominante, corrección mediante ajuste de tilt eléctrico (RET) y mecánico, y control de potencia PBCH/CRS.
+  • PCI Collision y PCI Confusion: Auditoría de matrices de vecinos (Neighbor Relations) y resolución de conflictos de Physical Cell Identity (mod 3, mod 30).
+  • Interference Hunting: Localización de fuentes de interferencia externa y espuria con analizadores de espectro (FieldFox, Anritsu).
+- Herramientas de Drive Test, Análisis y Post-Procesamiento:
+  • Recolección y diagnóstico: Nemo Outdoor, Nemo Analyze, TEMS Investigation, Actix Analyzer, MapInfo Professional, Atoll (planificación y propagación), Windcatcher, Arieso GEO, FieldFox, Anritsu Master, XCAL, Google Earth.
+- Automatización y Scripting:
+  • Python (pandas, numpy, scripts de análisis de logs y KPIs), Shell Scripting, consultas SQL/PostgreSQL/MySQL sobre bases de datos de red, Linux, Power BI, Git para control de versiones de parámetros RAN.
+- Experiencia Laboral en RF:
+  • AT&T México / Enterprise Deployments (2018 – Presente): Senior RF Optimization & Performance Engineer en 5G NR, 4G LTE, VoLTE y 3G. Mejoras sustanciales en KPIs, resolución de RTWP y PIM en sistemas Ericsson, auditoría de parámetros de clúster y RNC, análisis de logs de señalización Layer 3 (RRC/NAS) para eliminar pilot pollution y colisiones PCI, diseño y validación de DAS indoor y eventos de alta capacidad.
+  • Empire Engineering & Telecommunications Services (2013 – 2018): RF Optimization & Field Engineering Specialist. Monitoreo y troubleshooting de clústeres multi-tecnología, análisis de drive test con Nemo/TEMS, ajustes de tilt, azimut y potencia, automatización de extracción de reportes con Python y SQL reduciendo tiempos en 40%.
+  • Nextel / Nokia (2010 – 2013): RF & RAN Operations Engineer. Monitoreo de KPIs de mercado (EQS, NPI, CQI), análisis Layer 3 UMTS/LTE, auditorías de integración de sitios, configuración de RET/tilt eléctrico, pruebas de barrido VSWR, PIM y return loss.
+- Educación y Certificaciones:
+  • Ingeniero en Electrónica (Instituto Tecnológico de Reynosa, 2004–2010).
+  • Maestría en Administración de Negocios (MBA) – Tecmilenio (2019–2020).
+  • Certificación Oficial: LTE Configuration Certified by Ericsson (Activa).
+  • Certificaciones: 5G Air Interface NSA & VoNR (Mpirical), C-RAN for 5G, WCDMA RAN (Huawei), Anritsu Certified.
 """.strip()
 
 PITCH_SCRIPTS = {
+    "pitch_rf_es": """📡 PITCH RF OPTIMIZATION & ERICSSON RAN (Español - 60–90 segundos)
+Ideal para: "¿Háblame de ti?", Presentación técnica inicial con Arturo Ramírez (ARamirez)
+----------------------------------------------------------------------------------------------------
+"Hola Arturo, mucho gusto y gracias por la llamada. Soy Javier Viveros Huesca, Ingeniero Senior en Optimización RF y especialista en Radio Access Networks (RAN) de Ericsson, con más de 15 años de experiencia práctica en despliegues con operadores Tier-1 como AT&T y Nextel.
+
+Mi formación es en Ingeniería en Electrónica por el Instituto Tecnológico de Reynosa, complementada con un MBA por Tecmilenio y certificación oficial de Ericsson en Configuración LTE.
+
+A lo largo de mi trayectoria he liderado la optimización y performance de punta a punta en tecnologías 3G/WCDMA, 4G LTE, VoLTE y 5G NR (NSA/SA y C-RAN), operando directamente sobre equipamiento Ericsson: plataformas Baseband, Radio Dot, NodeB, eNodeB, gNodeB y gestión mediante EM/EMCLI y LTE L15.
+
+Mi trabajo se enfoca en 4 pilares fundamentales:
+1. Auditoría y mejora continua de KPIs: Accesibilidad (RRC/E-RAB), Retenibilidad y reducción drástica de Drop Call Rate (DCR), Throughput de usuario y Movilidad intra/inter-frecuencia e IRAT.
+2. Análisis de causa raíz y ajuste fino de parámetros: Corrección de listas de vecinos, mitigación de RTWP, control de interferencia pasiva (PIM), y solución de pilot pollution y colisiones de PCI.
+3. Diagnóstico avanzado con herramientas de Drive Test: Análisis de señalización capa 3 con Nemo Outdoor/Analyze, TEMS Investigation, Actix Analyzer, MapInfo y Atoll.
+4. Automatización: Desarrollo de scripts en Python y SQL para extracción de reportes de clúster y auditorías de red, reduciendo tiempos de diagnóstico en más de un 40%.
+
+Cuento con disponibilidad inmediata para proyectos remotos en México y aportar valor técnico desde el primer día."
+""".strip(),
+
+    "pitch_rf_en": """🇺🇸 RF OPTIMIZATION ENGINEER PITCH IN ENGLISH (Arturo / Ericsson - 60s)
+Ideal for: "Tell me about your RF & Ericsson background", English/Client technical interview
+----------------------------------------------------------------------------------------------------
+"Hi Arturo, thank you for the opportunity to speak today. I'm Javier Viveros Huesca, a Senior RF Optimization and Ericsson RAN Specialist with over 15 years of hands-on engineering experience across tier-1 carrier environments including AT&T and Nextel.
+
+I hold a Bachelor of Science in Electronic Engineering from Instituto Tecnológico de Reynosa, an MBA from Tecmilenio, and I am Ericsson Certified in LTE Configuration.
+
+My expertise covers end-to-end RF optimization, tuning, and troubleshooting across 3G/UMTS, 4G/LTE, VoLTE, and 5G NR (NSA/SA, C-RAN). I have extensive hands-on experience with Ericsson RAN hardware and software—including Baseband units, Radio Dot, NodeB, eNodeB, gNodeB, and EM/EMCLI management.
+
+I specialize in continuous network performance auditing: optimizing accessibility, retainability, throughput, mobility and handover success rate (intra/inter-frequency and IRAT), and aggressively driving down drop call rates (DCR). I perform root cause analysis on RTWP degradation, passive intermodulation (PIM), pilot pollution, and PCI collisions.
+
+My workflow is backed by in-depth drive test diagnostics using Nemo Outdoor, Nemo Analyze, TEMS Investigation, Actix Analyzer, MapInfo, and Atoll, accelerated by custom Python and SQL automation scripts that cut reporting turnaround by 40%. I am immediately available for remote Mexico projects and excited to contribute to your team."
+""".strip(),
+
+    "pitch_rf_tech": """⚙️ ERICSSON RAN OPTIMIZATION & KPIS DEEP DIVE (Technical Master)
+Ideal for: Preguntas técnicas profundas sobre parámetros de radio, Layer 3, RTWP, PIM y Handover
+----------------------------------------------------------------------------------------------------
+"1. ARQUITECTURA ERICSSON RAN Y PLATAFORMAS MULTI-TECNOLOGÍA:
+• Equipamiento: Baseband (5212/5216/6630), Radio Dot (DAS indoor), RBS 6000, NodeB, eNodeB y gNodeB.
+• Gestión: Element Manager (EM), EMCLI, comandos MOSHELL/AMOS, versiones de software LTE L15, WCDMA y 5G NR.
+• Tecnologías: 3G WCDMA, 4G LTE (FDD/TDD, VoLTE, CSFB), 5G NR (Option 3x NSA con EN-DC y Option 2 SA, C-RAN, VoNR).
+
+2. AUDITORÍA Y OPTIMIZACIÓN DE KPIS CLAVE:
+• Accesibilidad (RRC Setup SR, E-RAB Setup SR): Análisis de congestión en PDCCH/PUCCH/PRACH, interferencia de subida y rechazos por control de admisión.
+• Retenibilidad & Drop Call Rate (DCR): Análisis de caídas por Radio Link Failure (RLF), pérdidas de sincronismo (out-of-sync), huecos de cobertura y fallas de handover.
+• Rendimiento & Throughput: Optimización de CQI, MCS, asignación de PRBs, MIMO 2x2/4x4 y balanceo de carga entre portadoras (Carrier Aggregation CA).
+• Movilidad & Handover: Ajuste de eventos RRC (A1/A2 cobertura servidora, A3 intra/inter-frecuencia basado en a3offset, histeresis y timeToTrigger, A5/B1/B2 para IRAT hacia 3G/WCDMA).
+
+3. DIAGNÓSTICO DE INTERFERENCIAS Y CAUSA RAÍZ:
+• RTWP Degradation & PIM: Diagnóstico de interferencia externa vs. pasiva (PIM interno por conectores/antenas) mediante barrido de espectro, curvas de potencia y mediciones Anritsu Site Master.
+• Pilot Pollution & Overshooting: Identificación de sectores con interferencia de pilotos sin sector dominante; corrección mediante ajuste de tilt eléctrico (RET) y mecánico, y control de potencia PBCH/CRS.
+• PCI Collision & Confusion: Auditoría de matrices de vecinos (Neighbor Relations) y resolución de conflictos de Physical Cell Identity (mod 3, mod 30).
+• VoLTE Optimization: Configuración de QCI 1 (voz) y QCI 2 (video), optimización de RoHC, semi-persistent scheduling (SPS) y transiciones TTI bundling / SRVCC.
+
+4. HERRAMIENTAS DE DRIVE TEST Y DIAGNÓSTICO:
+• Análisis de señalización capa 3 (RRC Connection Request, Reconfiguration, Measurement Reports, Handover Command, SIP Invite/Bye) con Nemo Analyze, TEMS Investigation y Actix Analyzer.
+• Modelado y cobertura con MapInfo y Atoll; automatización de reportes de clúster con Python y SQL."
+""".strip(),
+
+    "pitch_rf_rapido": """⚡ ELEVATOR PITCH RF OPTIMIZATION (30 segundos)
+Ideal para: Respuestas directas, resumen ejecutivo de alto impacto
+----------------------------------------------------------------------------------------------------
+"Soy Javier Viveros Huesca, Ingeniero Senior en Optimización RF con más de 15 años de experiencia en redes móviles (3G, 4G LTE, VoLTE, 5G NR) y especialista en RAN de Ericsson (Baseband, eNodeB, gNodeB, EM/EMCLI).
+
+He liderado la optimización de clústeres, reducción drástica de drop call rates (DCR), resolución de degradación de RTWP y PIM, y afinación de handovers en operadores Tier-1 como AT&T y Nextel, utilizando TEMS, Nemo, Actix y automatización con Python y SQL. 
+
+Cuento con título en Ingeniería Electrónica, MBA y disponibilidad inmediata para proyectos remotos en México."
+""".strip(),
+
+    "formacion_rf": """🎓 FORMACIÓN ACADÉMICA, MBA Y CERTIFICACIONES ERICSSON
+Ideal para: Credenciales académicas, certificaciones oficiales de telecomunicaciones
+----------------------------------------------------------------------------------------------------
+🏛️ FORMACIÓN ACADÉMICA:
+• Licenciatura / Título: Ingeniería en Electrónica (Instituto Tecnológico de Reynosa, 2004 – 2010).
+• Posgrado: Maestría en Administración de Negocios (MBA) – Tecmilenio (2019 – 2020).
+
+📜 CERTIFICACIONES TÉCNICAS OFICIALES:
+• LTE Configuration Certified by Ericsson (Certificación Oficial Activa).
+• 5G Air Interface NSA & VoNR (Mpirical).
+• C-RAN for 5G.
+• WCDMA RAN (Huawei).
+• Anritsu Certified (RF sweep, VSWR, PIM, Return Loss con Anritsu Site Master).
+• Especializaciones en automatización de reportes RAN con Python, SQL y Linux.
+""".strip(),
+
     "pitch_es_completo": """🎙️ PITCH COMPLETO EN ESPAÑOL (60–90 segundos)
 Ideal para: "¿Háblame de ti?", "Cuéntame sobre tu trayectoria", "Presentación profesional inicial"
 ----------------------------------------------------------------------------------------------------

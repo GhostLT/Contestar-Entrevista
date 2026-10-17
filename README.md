@@ -12,20 +12,22 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 ## 🌟 Características Destacadas
 
 - 🎯 **Pestaña de Pitch Personal y Formación Multi-Rol (F2)**: Pestaña interactiva organizada en 2 filas dedicadas para responder con total maestría según el tipo de entrevista técnica:
-  - **Fila 1: 📡 5G Network Engineer (Speridian Technologies | Shubham - Richardson TX)**:
-    - **`🇺🇸 5G Pitch (60s)`**: Guión de alto impacto para la llamada con el reclutador (Shubham) y la entrevista de video con el cliente en Richardson TX, integrando +12 años de experiencia, +9 años en AT&T (99.999% SLA), 5GC (SA/NSA), AMF/SMF/UPF, SEPP y desarrollo open source asistido por IA (Codex/Groq).
-    - **`⚙️ 5GC Call-Flows & AI`**: Deep dive técnico en call flows end-to-end (interfaces N1 a N12 con Wireshark/tshark), roaming inter-PLMN con SEPP sobre N32 (N32-c TLS y N32-f PRINS), y uso de IA generativa para agregar código a plataformas Open5GS y free5GC.
-    - **`🇪🇸 5G Core Español`**: Guión en español para presentar solvencia en redes móviles críticas, señalización SCTP/Diameter/HTTP-2 y arquitecturas cloud-native en Kubernetes.
-    - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)**: Documento completo con preguntas de screening, call flows paso a paso N1-N12, filtros de Wireshark y respuestas para la prueba onsite.
-  - **Fila 2: 💻 Full-Stack con IA (PCoS / Hireline)**:
-    - **`🇪🇸 Completo (60–90s)`**: Presentación profesional profunda con trayectoria, vLLM en AWS GPU (-65% costos), RAG con pgvector y sinergia con PCoS.
-    - **`⚡ Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
-    - **`🇺🇸 English (60s)`**: Walkthrough en inglés profesional para clientes internacionales.
-    - **`🎓 Formación & Certs`**: Título en Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa) y especializaciones continuas.
-    - **`🎯 Por qué PCoS`**: Los 3 pilares técnicos de fit inmediato (estrategia Open Source, RLS en Supabase y flujos agénticos).
+  - **Fila 1: 📡 RF Optimization Engineer (Ericsson RAN | Arturo Ramírez - México / Remoto)**:
+    - **`🇪🇸 RF Pitch (60–90s)`**: Pitch principal en español con +15 años de experiencia en RAN, optimización de LTE L15, Baseband 5212/5216/6630, Radio Dot, NodeB/eNodeB/gNodeB y auditoría de KPIs críticos (RTWP, PIM, DCR, Handover).
+    - **`🇺🇸 RF Pitch (60s)`**: Guión en inglés para clientes globales y fabricantes con terminología técnica estándar 3GPP.
+    - **`⚙️ Deep Dive Ericsson & KPIs`**: Análisis técnico profundo de resolución de interferencias, pilot pollution, colisiones/confusiones PCI mod 3/mod 30, eventos de handover A1-A5/B1-B2 y Layer 3 signaling.
+    - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
+    - **`🎓 Formación & Certs`**: Ingeniería en Electrónica (IT Reynosa) + MBA (Tecmilenio) + Certificación Oficial Ericsson LTE Configuration.
+    - 📖 **[Guía Maestra RF Ericsson](GUIA_ENTREVISTA_RF_ERICSSON.md)**: Banco completo con 8 preguntas y respuestas técnicas avanzadas y matriz de parámetros Ericsson LTE.
+  - **Fila 2: 🌐 Telecom (5G Core Speridian) & 💻 Full-Stack con IA (PCoS / Hireline)**:
+    - **`🇺🇸 5G Pitch (Speridian)`**: Guión en inglés para la posición de 5G Network Engineer con call-flows N1-N12, roaming SEPP y desarrollo open source asistido por IA.
+    - **`⚙️ 5GC Call-Flows`**: Deep dive en interfaces 5G Core, N32-c/f, SCTP y Kubernetes.
+    - **`💻 Full-Stack IA (PCoS)`**: Pitch de arquitectura Full-Stack con FastAPI, vLLM en AWS GPU (-65% costo) y RAG con pgvector.
+    - **`🎯 Fit PCoS`**: Los 3 pilares técnicos de fit inmediato (estrategia Open Source, RLS y flujos agénticos).
+    - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)** y **[Guía Perfil Candidato](PERFIL_CANDIDATO.md)**.
   - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter principal del copiloto con 1 solo clic.
   - **Teclas Rápidas**: `F1` para volver al Copiloto en Vivo y `F2` para abrir tu Pitch en cualquier momento.
-- 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado, titulación en Ingeniería en Electrónica y Sistemas Digitales, trayectoria en AT&T (+120 plataformas críticas de red, 99.999% SLA), Empire Engineering, modelos Open Source con vLLM y desarrollo en 5G Core Open Source (Open5GS/free5GC) con IA asistida (Codex/Groq), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
+- 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado: +15 años en optimización de radiofrecuencia (RF) y RAN en carriers Tier-1 (AT&T, Nextel, Empire), certificación oficial de Ericsson en LTE Configuration, MBA de Tecmilenio e Ing. en Electrónica (IT Reynosa), además de experiencia en 5G Core (Open5GS/free5GC) y Full-Stack con IA (FastAPI/vLLM), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
 - 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
   - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
   - **Botón de Traducción Instantánea (`🌐 Traducir a Inglés` / `🌐 Traducir a Español`)**: ¿La respuesta está en español pero necesitas leerla en inglés (o viceversa)? Con un solo clic, la IA la traduce en tiempo real mediante streaming, manteniendo intacta la estructura, viñetas y emojis (`🎯`, `⚡`, `💡`).
@@ -154,19 +156,24 @@ WINDOW_OPACITY=0.95
 
 ## 🎯 Pestaña de Pitch de Presentación y Formación (F2)
 
-Para las preguntas abiertas donde el entrevistador te pide presentarte (*"Háblame de ti", "Cuéntame sobre tu trayectoria profesional", "Walk me through your background"*), la aplicación incluye una pestaña dedicada con guiones preparados listos para leer en voz alta con total fluidez:
+Para las preguntas abiertas donde el entrevistador te pide presentarte (*"Háblame de ti", "Cuéntame sobre tu trayectoria profesional", "Walk me through your background"*), la aplicación incluye una pestaña dedicada con guiones preparados organizados en dos filas temáticas para conmutar con un solo clic:
 
-1. **Guiones Disponibles**:
-   - **`🇪🇸 Completo (60–90s)`**: Resumen profesional profundo con trayectoria de +12 años, stack moderno (React, TypeScript, FastAPI, Supabase), inferencia de modelos Open Source con vLLM en AWS GPU (-65% costos), RAG con pgvector y visión con PCoS.
-   - **`⚡ Rápido (30s)`**: Elevator pitch ultra conciso para respuestas directas o rondas de selección rápidas.
-   - **`🇺🇸 English (60s)`**: Walkthrough en inglés profesional de nivel senior para entrevistas internacionales o clientes de EE. UU.
-   - **`🎓 Formación & Certs`**: Detalle del título universitario en Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa) y credenciales especializadas (Generative AI, vLLM, Full-Stack, Supabase, AWS, Clean Architecture).
-   - **`🎯 Por qué PCoS`**: Los 3 argumentos técnicos definitivos de por qué eres el candidato ideal (estrategia Open Source, soberanía de datos con RLS en salud/operaciones y experiencia en asistentes ejecutivos con flujos agénticos).
-2. **Acciones y Navegación**:
+1. **Fila 1: 📡 RF Optimization (Ericsson RAN / Arturo Ramírez)**:
+   - **`🇪🇸 RF Pitch (60–90s)`**: Resumen profesional de +15 años en optimización de radiofrecuencia en carriers Tier-1 (AT&T, Nextel, Empire), plataformas Ericsson Baseband 5212/5216/6630, Radio Dot, LTE L15, auditoría de KPIs (RTWP, PIM, DCR, Handover) y automatización con Python/SQL.
+   - **`🇺🇸 RF Pitch (60s)`**: Versión en inglés técnico para clientes internacionales o fabricantes de infraestructura celular.
+   - **`⚙️ Deep Dive Ericsson & KPIs`**: Análisis técnico profundo de troubleshooting L3, interferencias, pilot pollution, colisión/confusión PCI mod 3/30 y eventos A1-A5/B1-B2.
+   - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
+   - **`🎓 Formación & Certs`**: Título de Ing. en Electrónica (IT Reynosa), MBA (Tecmilenio) y Certificación Oficial Ericsson LTE Configuration.
+2. **Fila 2: 🌐 Telecom (5G Core Speridian) & 💻 Full-Stack con IA (PCoS)**:
+   - **`🇺🇸 5G Pitch (Speridian)`**: Pitch en inglés para 5G Core Network Engineer (SA/NSA, N1-N12, SEPP, Open5GS/free5GC con IA asistida).
+   - **`⚙️ 5GC Call-Flows`**: Deep dive en call-flows 5G, N32-c/N32-f, SCTP y Kubernetes.
+   - **`💻 Full-Stack IA (PCoS)`**: Pitch full-stack con FastAPI, vLLM en AWS GPU (-65% costos) y RAG con pgvector.
+   - **`🎯 Fit PCoS`**: Los 3 pilares técnicos de ajuste inmediato para PCoS.
+3. **Acciones y Navegación**:
    - **`F1` / `F2`**: Alterna al instante entre el **Copiloto en Vivo (`F1`)** y tu **Pitch (`F2`)** con una sola tecla sin mover el cursor.
    - **`⚡ Al Teleprompter`**: Carga el pitch seleccionado como respuesta activa en la ventana principal del copiloto y te regresa automáticamente a la vista de escucha.
    - **`📋 Copiar`**: Copia el texto al portapapeles por si solicitan un resumen en el chat de la videollamada.
-   - **Métricas Rápidas al Pie**: Badges visuales con tus datos clave (+12 años exp, +4 años full-stack, +2.5 años IA Open Source, $2,500 USD/mes, disponibilidad inmediata) para responder cualquier duda en un parpadeo.
+   - **Métricas Rápidas al Pie**: Badges visuales con tus datos clave (`📶 +15 Años RF & RAN`, `📡 Ericsson Specialist`, `📊 KPIs: RTWP/PIM/DCR`, `🛠️ TEMS / Nemo / Actix`, `🎓 Ing. Electrónica + MBA`, `📜 Cert. Ericsson LTE`, `🚀 Disp. Inmediata (México)`).
 
 ---
 
@@ -208,6 +215,7 @@ Contestar-Entrevista/
 ├── config.py             # Configuración centralizada y System Prompts
 ├── candidate_profile.py  # Perfil y base de conocimiento técnico de Javier Viveros Huesca
 ├── PERFIL_CANDIDATO.md   # Documento de referencia con las 7 respuestas para PCoS y CV
+├── GUIA_ENTREVISTA_RF_ERICSSON.md # Guía técnica de preparación para RF Optimization Engineer (Ericsson RAN)
 ├── GUIA_ENTREVISTA_5G.md   # Guía completa de preparación técnica para 5G Network Engineer (Speridian)
 ├── audio_listener.py     # Captura de audio y transcripción continua (Mic / Loopback)
 ├── gemini_copilot.py     # Cliente multi-IA (Gemini con auto-fallback, DeepSeek y OpenRouter)

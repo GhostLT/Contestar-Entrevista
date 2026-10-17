@@ -1,21 +1,33 @@
 # 👤 Perfil Profesional y Base de Conocimiento del Candidato
-## Javier Viveros Huesca | Ingeniero Senior Full-Stack con IA
+## Javier Viveros Huesca
+### Senior RF Optimization Engineer | 3G • 4G/LTE • VoLTE • 5G NR | Ericsson RAN Specialist
 
-Este documento contiene la información oficial, trayectoria profesional, proyectos destacados y respuestas preparadas para la postulación a la posición de **Ingeniero/a Senior Full-Stack con IA** en **PCoS** (Hireline / Angélica). Esta información está conectada directamente al motor de IA del copiloto para que responda en primera persona durante la entrevista.
+Este documento contiene la información oficial, trayectoria profesional, proyectos destacados y respuestas preparadas para las postulaciones de **Javier Viveros Huesca**:
+1. **POSTULACIÓN PRIORITARIA**: **RF Optimization Engineer (Senior / Semi-Senior)** con tecnologías **Ericsson** para proyectos en México en modalidad remota (contacto: **Arturo Ramírez / ARamirez**).
+2. **5G Network Engineer**: Core 5G SA/NSA, interfaces N1–N12, roaming SEPP con **Speridian Technologies** (Richardson, TX / Shubham).
+3. **Ingeniero Senior Full-Stack con IA**: Plataforma **PCoS** (Hireline / Angélica).
 
 ---
 
 ## 📌 Datos de Contacto y Disponibilidad
 
 - **Nombre**: Javier Viveros Huesca
-- **Título**: Ingeniero Senior Full-Stack con IA
+- **Título Profesional**: Senior RF Optimization Engineer | Ericsson RAN Specialist (3G/4G/VoLTE/5G NR)
 - **Email**: viverosjavier86@gmail.com
 - **Teléfono / WhatsApp**: +52 (669) 533-0508
-- **Ubicación**: Mazatlán, Sinaloa, México (100% Remoto, solapamiento total con horarios US / CDMX)
+- **Ubicación**: Mazatlán, Sinaloa, México (Disponible para proyectos Remoto / México)
 - **Idiomas**: Español (Nativo) | Inglés (Avanzado C1, técnico y conversacional)
 - **Disponibilidad**: Inmediata, tiempo completo
-- **Expectativa Económica**: **$2,500 USD mensuales** (Contractor / Remoto Tiempo Completo)
-- **Formación Académica**: Ingeniería en Electrónica y Sistemas Digitales (Instituto Tecnológico de Reynosa, 2004–2010)
+- **Años de Experiencia**: **Más de 15 años** en optimización RF, Radio Access Networks (RAN) y performance en operadores Tier-1 (AT&T, Nextel)
+- **Formación Académica**: 
+  - **Ingeniería en Electrónica y Sistemas Digitales** (Instituto Tecnológico de Reynosa, 2004–2010)
+  - **Maestría en Administración de Negocios (MBA)** (Universidad Tecmilenio, 2019–2020)
+- **Certificaciones Oficiales**:
+  - **LTE Configuration Certified by Ericsson** (Certificación Oficial Activa)
+  - **5G Air Interface NSA & VoNR** (Mpirical)
+  - **C-RAN for 5G**
+  - **WCDMA RAN** (Huawei)
+  - **Anritsu Certified** (RF sweep, VSWR, PIM, Return Loss con Site Master)
 
 ---
 
