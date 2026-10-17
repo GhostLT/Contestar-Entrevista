@@ -754,75 +754,80 @@ class InterviewPrompterApp:
     # ------------------ PESTAÑA 3: GUÍA DE ENTREVISTA EN FORMATO WORD ------------------
 
     def _setup_word_guide_ui(self):
-        # 1. Barra Ribbon Superior (Filtros, Selector de Módulo, Buscador y Botones de Acción)
+        # 1. Barra Ribbon Superior (Organizada en 2 filas ergonómicas)
         ribbon_frame = tk.Frame(self.frame_word_guide, bg=self.bg_main, padx=12, pady=4)
         ribbon_frame.pack(fill=tk.X)
 
-        # Selector de Idioma de Guía
-        lbl_w_lang = tk.Label(ribbon_frame, text="📄 Idioma:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
+        # Fila 1: Idioma y Selector de Módulo (Módulo expandido a todo el ancho)
+        ribbon_row1 = tk.Frame(ribbon_frame, bg=self.bg_main)
+        ribbon_row1.pack(fill=tk.X, pady=(0, 4))
+
+        lbl_w_lang = tk.Label(ribbon_row1, text="📄 Idioma:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
         lbl_w_lang.pack(side=tk.LEFT, padx=(0, 3))
 
         self.var_word_lang = tk.StringVar(value="🇪🇸 Español (10 Módulos)")
         self.combo_word_lang = ttk.Combobox(
-            ribbon_frame,
+            ribbon_row1,
             textvariable=self.var_word_lang,
             values=["🇪🇸 Español (10 Módulos)", "🇺🇸 English (11 Modules)"],
             state="readonly",
-            width=20
+            width=18
         )
-        self.combo_word_lang.pack(side=tk.LEFT, padx=(0, 8))
+        self.combo_word_lang.pack(side=tk.LEFT, padx=(0, 10))
         self.combo_word_lang.bind("<<ComboboxSelected>>", self._on_word_lang_changed)
 
-        # Selector de Módulo
-        lbl_w_mod = tk.Label(ribbon_frame, text="📚 Módulo:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
-        lbl_w_mod.pack(side=tk.LEFT, padx=(0, 3))
+        lbl_w_mod = tk.Label(ribbon_row1, text="📚 Módulo:", bg=self.bg_main, fg=self.accent_yellow, font=("Segoe UI", 8, "bold"))
+        lbl_w_mod.pack(side=tk.LEFT, padx=(0, 4))
 
         self.var_word_module = tk.StringVar()
         self.combo_word_module = ttk.Combobox(
-            ribbon_frame,
+            ribbon_row1,
             textvariable=self.var_word_module,
             state="readonly",
-            width=26
+            width=50
         )
-        self.combo_word_module.pack(side=tk.LEFT, padx=(0, 8))
+        self.combo_word_module.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.combo_word_module.bind("<<ComboboxSelected>>", self._on_word_module_changed)
 
-        # Buscador dinámico en tiempo real
-        lbl_w_search = tk.Label(ribbon_frame, text="🔍:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
-        lbl_w_search.pack(side=tk.LEFT, padx=(0, 2))
+        # Fila 2: Buscador dinámico y Botones de acción
+        ribbon_row2 = tk.Frame(ribbon_frame, bg=self.bg_main)
+        ribbon_row2.pack(fill=tk.X)
+
+        lbl_w_search = tk.Label(ribbon_row2, text="🔍 Buscar tema / comando:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
+        lbl_w_search.pack(side=tk.LEFT, padx=(0, 4))
 
         self.var_word_search = tk.StringVar()
         self.entry_word_search = tk.Entry(
-            ribbon_frame,
+            ribbon_row2,
             textvariable=self.var_word_search,
             bg=self.bg_card,
             fg=self.text_color,
             insertbackground=self.text_color,
             relief=tk.FLAT,
             font=("Segoe UI", 9),
-            width=18
+            width=24
         )
-        self.entry_word_search.pack(side=tk.LEFT, padx=(0, 6), ipady=2)
+        self.entry_word_search.pack(side=tk.LEFT, padx=(0, 8), ipady=2)
         self.entry_word_search.bind("<KeyRelease>", self._on_word_search_changed)
 
         # Botones de Acción (Lado Derecho)
         btn_open_docx = tk.Button(
-            ribbon_frame,
-            text="📄 Abrir Word",
+            ribbon_row2,
+            text="📄 Abrir Word (.docx)",
             command=self._open_word_docx,
             bg="#1d4ed8",
             fg="#ffffff",
             activebackground="#2563eb",
             relief=tk.FLAT,
             font=("Segoe UI", 8, "bold"),
-            padx=7,
+            padx=8,
             pady=2,
             cursor="hand2"
         )
         btn_open_docx.pack(side=tk.RIGHT, padx=2)
 
         btn_copy_w = tk.Button(
-            ribbon_frame,
+            ribbon_row2,
             text="📋 Copiar",
             command=self._copy_word_answer,
             bg=self.bg_card_inner,
@@ -836,7 +841,7 @@ class InterviewPrompterApp:
         btn_copy_w.pack(side=tk.RIGHT, padx=2)
 
         btn_to_prompt = tk.Button(
-            ribbon_frame,
+            ribbon_row2,
             text="⚡ Al Teleprompter",
             command=self._send_word_answer_to_teleprompter,
             bg=self.accent_green,
@@ -992,7 +997,7 @@ class InterviewPrompterApp:
     def _populate_word_modules(self):
         mod_titles = ["📖 [Todos los Módulos / All]"]
         for m in self.rf_word_guide.modules:
-            mod_titles.append(f"M{m.num}: {m.title[:38]}...")
+            mod_titles.append(m.title.strip())
         self.combo_word_module.config(values=mod_titles)
         self.combo_word_module.current(1 if len(mod_titles) > 1 else 0)
 
