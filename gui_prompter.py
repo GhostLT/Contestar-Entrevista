@@ -374,7 +374,6 @@ class InterviewPrompterApp:
             pady=4
         )
         self.txt_question.pack(fill=tk.X, pady=(2, 0))
-        self.txt_question.insert("1.0", "Esperando pregunta del entrevistador... (puedes hacer clic aquí y editar)")
         self.txt_question.bind("<Return>", self._on_question_box_enter)
 
         # 4.2 TARJETA TELEPROMPTER DE RESPUESTA DIVIDIDA EN 2 HORIZONTALMENTE
@@ -1622,7 +1621,6 @@ class InterviewPrompterApp:
 
     def _clear_screen(self):
         self.txt_question.delete("1.0", tk.END)
-        self.txt_question.insert("1.0", "Esperando que el entrevistador haga una pregunta...")
         self.entry_manual.delete(0, tk.END)
         self.entry_manual.insert(0, "O pega/escribe una pregunta del chat aquí...")
 
@@ -1721,7 +1719,7 @@ class InterviewPrompterApp:
 
     def _requery_edited_question(self):
         edited_text = self.txt_question.get("1.0", tk.END).strip()
-        if not edited_text or edited_text.startswith("Esperando pregunta"):
+        if not edited_text or edited_text.startswith("Esperando"):
             return
         if edited_text.startswith("❓"):
             edited_text = edited_text.lstrip("❓").strip().strip('"')
