@@ -11,7 +11,19 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
 
 ## 🌟 Características Destacadas
 
-- 🎯 **Pestaña de Pitch Personal y Formación Multi-Rol (F2)**: Pestaña interactiva organizada en 2 filas dedicadas para responder con total maestría según el tipo de entrevista técnica:
+- ⚡ **Teleprompter Dual Dividido Horizontalmente (🇪🇸 Español Arriba / 🇺🇸 Inglés Abajo)**:
+  - **Pantalla Superior**: Muestra la respuesta directa y sintetizada en **Español** (`🇪🇸`), lista para leer en voz alta de inmediato con viñetas técnicas, parámetros y casos reales.
+  - **Pantalla Inferior**: Muestra la respuesta correspondiente en **Inglés** (`🇺🇸`), ideal para entrevistas técnicas en video o cuando el cliente internacional realiza la llamada en inglés.
+  - **Generación en Vivo Simultánea**: En llamadas con el entrevistador, los motores de IA (Gemini / DeepSeek) generan y transmiten en tiempo real ambos bloques de idioma a sus paneles respectivos sin demora.
+  - **Inyección Bilingüe desde Cualquier Pestaña**: Al hacer clic en *"Al Teleprompter"* desde la pestaña de Pitch (`2`) o la Guía Word (`3`), la aplicación carga automáticamente la versión en español arriba y la versión en inglés abajo.
+  - **Acciones Rápidas en Cabecera**: Botones independientes `📋 Copiar ES`, `📋 Copiar EN`, `📜 Historial` y `🗑️ Limpiar`.
+- ⌨️ **Nuevos Atajos Rápidos Ergonómicos (`1`, `2`, `3`)**:
+  - **`1`**: Ir a **🎙️ Copiloto en Vivo (Teleprompter Dual)**.
+  - **`2`**: Ir a **🎯 Mi Pitch & Formación (Javier Viveros Huesca)**.
+  - **`3`**: Ir a **📖 Guía Entrevista Word (31 temas ES / 33 temas EN)**.
+  - **Salvaguarda Inteligente de Escritura**: Si estás editando una pregunta en el recuadro editable, buscando en la guía Word o pegando texto en la barra manual, presionar `1`, `2` o `3` escribe el número normalmente sin cambiar de pestaña.
+  - *(Se mantiene también compatibilidad con las teclas `F1`, `F2`, `F3` y teclado numérico `KP_1`, `KP_2`, `KP_3`)*.
+- 🎯 **Pestaña de Pitch Personal y Formación Multi-Rol (2)**: Pestaña interactiva organizada en 2 filas dedicadas para responder con total maestría según el tipo de entrevista técnica:
   - **Fila 1: 📡 RF Optimization Engineer (Ericsson RAN | Arturo Ramírez - México / Remoto)**:
     - **`🇪🇸 RF Pitch (60–90s)`**: Pitch principal en español con +15 años de experiencia en RAN, optimización de LTE L15, Baseband 5212/5216/6630, Radio Dot, NodeB/eNodeB/gNodeB y auditoría de KPIs críticos (RTWP, PIM, DCR, Handover).
     - **`🇺🇸 RF Pitch (60s)`**: Guión en inglés para clientes globales y fabricantes con terminología técnica estándar 3GPP.
@@ -25,20 +37,19 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
     - **`💻 Full-Stack IA (PCoS)`**: Pitch de arquitectura Full-Stack con FastAPI, vLLM en AWS GPU (-65% costo) y RAG con pgvector.
     - **`🎯 Fit PCoS`**: Los 3 pilares técnicos de fit inmediato (estrategia Open Source, RLS y flujos agénticos).
     - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)** y **[Guía Perfil Candidato](PERFIL_CANDIDATO.md)**.
-  - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter principal del copiloto con 1 solo clic.
-  - **Teclas Rápidas**: `F1` para volver al Copiloto en Vivo, `F2` para abrir tu Pitch y `F3` para la Guía Word.
-- 📖 **Pestaña de Guía Maestra de Entrevista en Formato Word (F3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, integrando los 10 módulos en español y 11 en inglés:
+  - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter dual del copiloto (Español arriba, Inglés abajo) con 1 solo clic.
+  - **Teclas Rápidas**: `1` para volver al Copiloto en Vivo, `2` para abrir tu Pitch y `3` para la Guía Word.
+- 📖 **Pestaña de Guía Maestra de Entrevista en Formato Word (3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, integrando los 10 módulos en español y 11 en inglés:
   - **Diseño Estilo Microsoft Word**: Página en blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), márgenes ejecutivos, cajas de estrategia verde (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques monospace en `Consolas` para comandos Moshell y tablas de parámetros.
   - **Selector Bilingüe**: Alterna al instante entre `🇪🇸 Español (10 Módulos - 31 Temas)` y `🇺🇸 English (11 Modules - 33 Topics)`.
   - **Navegador Lateral de Preguntas**: Índice interactivo con las 31 preguntas en español / 33 en inglés para saltar a cualquier tema en 1 clic.
   - **Buscador en Tiempo Real**: Filtra preguntas por términos técnicos (`RTWP`, `PIM`, `Handover`, `A3`, `PRACH`, `DCR`, `VoLTE`, `MOM`, `Moshell`).
-  - **⚡ Botón "Al Teleprompter"**: Extrae la respuesta modelo seleccionada y la carga de inmediato en el teleprompter en vivo (`F1`).
+  - **⚡ Botón "Al Teleprompter"**: Extrae la respuesta modelo seleccionada y carga simultáneamente la respuesta en español en el panel superior y la respuesta en inglés en el panel inferior (`1`).
   - **📄 Botón "Abrir Word"**: Abre directamente el archivo `.docx` oficial en Microsoft Word mediante integración nativa con Windows.
-  - **Teclas Rápidas**: `F1` (Copiloto en Vivo), `F2` (Mi Pitch & Formación), `F3` (Guía Word).
+  - **Teclas Rápidas**: `1` (Copiloto Dual), `2` (Mi Pitch & Formación), `3` (Guía Word).
 - 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado: +15 años en optimización de radiofrecuencia (RF) y RAN en carriers Tier-1 (AT&T, Nextel, Empire), certificación oficial de Ericsson en LTE Configuration, MBA de Tecmilenio e Ing. en Electrónica (IT Reynosa), además de experiencia en 5G Core (Open5GS/free5GC) y Full-Stack con IA (FastAPI/vLLM), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
-- 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
-  - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
-  - **Botón de Traducción Instantánea (`🌐 Traducir a Inglés` / `🌐 Traducir a Español`)**: ¿La respuesta está en español pero necesitas leerla en inglés (o viceversa)? Con un solo clic, la IA la traduce en tiempo real mediante streaming, manteniendo intacta la estructura, viñetas y emojis (`🎯`, `⚡`, `💡`).
+- 🌐 **Soporte Bilingüe Simultáneo y Selector de Modo (Dual / ES / EN)**:
+  - **Selector de Modo**: Permite elegir entre `⚡ Dual (ES + EN)`, `🇪🇸 Solo Español` o `🇺🇸 Only English`.
 - 📜 **Logs y Registro Automático de Conversaciones**: Cada pregunta formulada y respuesta generada se guarda automáticamente en la carpeta `historial/` en formatos **Markdown (`.md`)** y **JSON (`.json`)** con marcas de tiempo para que puedas repasar lo que te preguntaron después de la entrevista. Incluye un botón **`📜 Ver Historial`** para abrir la carpeta con un solo clic.
 - ✏️ **Modificación Manual de Preguntas en Vivo**: Si el reconocimiento de voz malinterpreta un tecnicismo en inglés o audio ruidoso (por ejemplo: entendió *"ratón"* en vez de *"handover"*), el recuadro de pregunta es **100% editable directamente**. Puedes hacer clic, corregir la palabra y presionar **Enter** o el botón **`⚡ Corregir y Re-preguntar`** para obtener la respuesta correcta al instante.
 - 🤖 **Multi-Motor de IA con Respaldo Automático**:

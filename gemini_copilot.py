@@ -102,9 +102,15 @@ class AICopilot:
         Enruta la pregunta al proveedor seleccionado con streaming continuo y soporte de idioma.
         """
         self._reload_env_if_needed()
-        is_en = str(language).lower().startswith("en")
+        is_en = str(language).lower().startswith("en") and not str(language).lower().startswith("dual")
+        is_dual = str(language).lower().startswith("dual") or language is None or language == "es"
         system_instruction = config.get_system_instruction(language)
-        user_prompt = f"Interview question:\n\"{question}\"" if is_en else f"Pregunta o intervención del entrevistador:\n\"{question}\""
+        if is_dual:
+            user_prompt = f"Pregunta del entrevistador / Interview question:\n\"{question}\"\nRecuerda estructurar tu respuesta con los dos bloques obligatorios: [ESPAÑOL] y [ENGLISH]."
+        elif is_en:
+            user_prompt = f"Interview question:\n\"{question}\""
+        else:
+            user_prompt = f"Pregunta o intervención del entrevistador:\n\"{question}\""
 
         if self.provider == "deepseek":
             if not self.deepseek_key:

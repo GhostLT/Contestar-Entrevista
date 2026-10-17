@@ -14,7 +14,7 @@ from tkinter import ttk, messagebox
 import threading
 import queue
 import time
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 
 import config
 import candidate_profile
@@ -85,16 +85,20 @@ class InterviewPrompterApp:
         self.active_pitch_key = "pitch_rf_es"
         self.pitch_buttons: Dict[str, tk.Button] = {}
 
-        # Componentes de la Guía de Entrevista Word
-        self.rf_word_guide = RFWordGuide("es")
+        # Componentes de la Guía de Entrevista Word (Bilingüe ES y EN en memoria)
+        self.rf_word_guide_es = RFWordGuide("es")
+        self.rf_word_guide_en = RFWordGuide("en")
+        self.rf_word_guide = self.rf_word_guide_es
         self.current_word_lang = "es"
         self.selected_question_item: Optional[QuestionItem] = None
         self.displayed_questions: List[QuestionItem] = []
+        self._stream_full_text = ""
 
         # Construir interfaz
         self._setup_ui()
 
-        # Teclas rápidas para alternar pestañas
+        # Teclas rápidas para alternar pestañas: 1, 2, 3 (y F1, F2, F3 como alternativa)
+        self.root.bind("<KeyPress>", self._on_global_key_press)
         self.root.bind("<F1>", lambda e: self._switch_tab("copilot"))
         self.root.bind("<F2>", lambda e: self._switch_tab("pitch"))
         self.root.bind("<F3>", lambda e: self._switch_tab("word_guide"))
@@ -202,16 +206,16 @@ class InterviewPrompterApp:
         self.opt_ai.bind("<<ComboboxSelected>>", self._on_ai_provider_changed)
 
         # Selector de Idioma de Respuesta
-        lbl_lang = tk.Label(control_bar, text="Idioma:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
+        lbl_lang = tk.Label(control_bar, text="Modo:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 9))
         lbl_lang.pack(side=tk.LEFT, padx=(0, 4))
 
-        self.lang_var = tk.StringVar(value="🇪🇸 Español")
+        self.lang_var = tk.StringVar(value="⚡ Dual (ES + EN)")
         self.opt_lang = ttk.Combobox(
             control_bar,
             textvariable=self.lang_var,
-            values=["🇪🇸 Español", "🇺🇸 English"],
+            values=["⚡ Dual (ES + EN)", "🇪🇸 Solo Español", "🇺🇸 Only English"],
             state="readonly",
-            width=11
+            width=16
         )
         self.opt_lang.pack(side=tk.LEFT, padx=(0, 10))
         self.opt_lang.bind("<<ComboboxSelected>>", self._on_language_changed)
@@ -253,13 +257,13 @@ class InterviewPrompterApp:
         )
         btn_refresh.pack(side=tk.LEFT, padx=(6, 0))
 
-        # 3. BARRA DE NAVEGACIÓN ENTRE PESTAÑAS (TABS)
+        # 3. BARRA DE NAVEGACIÓN ENTRE PESTAÑAS (TABS CON ATAJOS 1, 2, 3)
         tab_nav = tk.Frame(self.root, bg=self.bg_main, padx=12, pady=3)
         tab_nav.pack(fill=tk.X)
 
         self.btn_tab_copilot = tk.Button(
             tab_nav,
-            text="🎙️ Copiloto en Vivo (F1)",
+            text="🎙️ Copiloto en Vivo (1)",
             command=lambda: self._switch_tab("copilot"),
             bg=self.accent_blue,
             fg="#ffffff",
@@ -275,7 +279,7 @@ class InterviewPrompterApp:
 
         self.btn_tab_pitch = tk.Button(
             tab_nav,
-            text="🎯 Mi Pitch & Formación (F2)",
+            text="🎯 Mi Pitch & Formación (2)",
             command=lambda: self._switch_tab("pitch"),
             bg=self.bg_card,
             fg=self.text_dim,
@@ -291,7 +295,7 @@ class InterviewPrompterApp:
 
         self.btn_tab_word_guide = tk.Button(
             tab_nav,
-            text="📖 Guía Entrevista Word (F3)",
+            text="📖 Guía Entrevista Word (3)",
             command=lambda: self._switch_tab("word_guide"),
             bg=self.bg_card,
             fg=self.text_dim,
@@ -372,59 +376,57 @@ class InterviewPrompterApp:
         self.txt_question.insert("1.0", "Esperando pregunta del entrevistador... (puedes hacer clic aquí y editar)")
         self.txt_question.bind("<Return>", self._on_question_box_enter)
 
-        # 4.2 TARJETA TELEPROMPTER DE RESPUESTA
-        ans_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=8)
-        ans_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
+        # 4.2 TARJETA TELEPROMPTER DE RESPUESTA DIVIDIDA EN 2 HORIZONTALMENTE
+        ans_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=6)
+        ans_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 4))
 
         ans_header = tk.Frame(ans_frame, bg=self.bg_card)
-        ans_header.pack(fill=tk.X, pady=(0, 6))
+        ans_header.pack(fill=tk.X, pady=(0, 4))
 
         lbl_ans_title = tk.Label(
             ans_header,
-            text="RESPUESTA DIRECTA (COPILOTO IA - EN VIVO)",
+            text="RESPUESTA DIRECTA TELEPROMPTER (DUAL ES / EN)",
             bg=self.bg_card,
             fg=self.accent_green,
             font=("Segoe UI", 9, "bold")
         )
         lbl_ans_title.pack(side=tk.LEFT)
 
-        btn_copy = tk.Button(
+        btn_copy_en = tk.Button(
             ans_header,
-            text="📋 Copiar",
-            command=self._copy_answer,
-            bg=self.bg_card_inner,
-            fg=self.text_color,
-            relief=tk.FLAT,
-            font=("Segoe UI", 8),
-            padx=6
-        )
-        btn_copy.pack(side=tk.RIGHT)
-
-        self.btn_translate = tk.Button(
-            ans_header,
-            text="🌐 Traducir a Inglés",
-            command=self._translate_current_answer,
-            bg=self.bg_card_inner,
-            fg=self.accent_yellow,
-            activebackground=self.bg_card,
-            activeforeground=self.accent_yellow,
-            relief=tk.FLAT,
-            font=("Segoe UI", 8, "bold"),
-            padx=8
-        )
-        self.btn_translate.pack(side=tk.RIGHT, padx=6)
-
-        btn_hist = tk.Button(
-            ans_header,
-            text="📜 Historial",
-            command=self._open_history,
+            text="📋 Copiar EN",
+            command=self._copy_answer_en,
             bg=self.bg_card_inner,
             fg=self.accent_blue,
             relief=tk.FLAT,
             font=("Segoe UI", 8, "bold"),
             padx=6
         )
-        btn_hist.pack(side=tk.RIGHT, padx=6)
+        btn_copy_en.pack(side=tk.RIGHT)
+
+        btn_copy_es = tk.Button(
+            ans_header,
+            text="📋 Copiar ES",
+            command=self._copy_answer_es,
+            bg=self.bg_card_inner,
+            fg=self.accent_green,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=6
+        )
+        btn_copy_es.pack(side=tk.RIGHT, padx=4)
+
+        btn_hist = tk.Button(
+            ans_header,
+            text="📜 Historial",
+            command=self._open_history,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8),
+            padx=6
+        )
+        btn_hist.pack(side=tk.RIGHT, padx=4)
 
         btn_clear = tk.Button(
             ans_header,
@@ -436,36 +438,107 @@ class InterviewPrompterApp:
             font=("Segoe UI", 8),
             padx=6
         )
-        btn_clear.pack(side=tk.RIGHT, padx=6)
+        btn_clear.pack(side=tk.RIGHT, padx=4)
 
-        # Contenedor del área de respuesta con barra de desplazamiento
-        ans_box_frame = tk.Frame(ans_frame, bg=self.bg_card_inner)
-        ans_box_frame.pack(fill=tk.BOTH, expand=True)
+        # PanedWindow vertical para división horizontal 50/50 ajustable
+        self.ans_paned = tk.PanedWindow(
+            ans_frame,
+            orient=tk.VERTICAL,
+            bg=self.bg_card,
+            sashwidth=4,
+            sashrelief=tk.FLAT,
+            bd=0
+        )
+        self.ans_paned.pack(fill=tk.BOTH, expand=True)
 
-        sb_ans = ttk.Scrollbar(ans_box_frame)
-        sb_ans.pack(side=tk.RIGHT, fill=tk.Y)
+        # SECCIÓN SUPERIOR: RESPUESTA EN ESPAÑOL
+        pane_es = tk.Frame(self.ans_paned, bg=self.bg_card)
 
-        self.txt_answer = tk.Text(
-            ans_box_frame,
+        hdr_es = tk.Frame(pane_es, bg=self.bg_card)
+        hdr_es.pack(fill=tk.X, pady=(0, 2))
+
+        lbl_es = tk.Label(
+            hdr_es,
+            text="🇪🇸 RESPUESTA DIRECTA (ESPAÑOL) — Lectura rápida / Puntos clave",
+            bg=self.bg_card,
+            fg=self.accent_green,
+            font=("Segoe UI", 8, "bold")
+        )
+        lbl_es.pack(side=tk.LEFT)
+
+        box_es = tk.Frame(pane_es, bg=self.bg_card_inner)
+        box_es.pack(fill=tk.BOTH, expand=True)
+
+        sb_es = ttk.Scrollbar(box_es)
+        sb_es.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_answer_es = tk.Text(
+            box_es,
             bg=self.bg_card_inner,
             fg=self.text_color,
             insertbackground=self.text_color,
             relief=tk.FLAT,
-            padx=12,
-            pady=10,
-            font=("Segoe UI", 12),
+            padx=10,
+            pady=6,
+            font=("Segoe UI", 11),
             wrap=tk.WORD,
-            spacing1=3,
-            spacing3=3,
-            yscrollcommand=sb_ans.set
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=sb_es.set
         )
-        self.txt_answer.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        sb_ans.config(command=self.txt_answer.yview)
-        self.txt_answer.insert(
+        self.txt_answer_es.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_es.config(command=self.txt_answer_es.yview)
+        self.txt_answer_es.insert(
             tk.END,
-            "💡 Tu respuesta aparecerá aquí en tiempo real de forma breve y concisa para que puedas leerla fluidamente en la reunión."
+            "💡 Tu respuesta en ESPAÑOL aparecerá aquí en tiempo real (puntos clave directos para leer fluidamente en la reunión)."
         )
-        self.txt_answer.config(state=tk.DISABLED)
+        self.txt_answer_es.config(state=tk.DISABLED)
+
+        # SECCIÓN INFERIOR: RESPUESTA EN INGLÉS
+        pane_en = tk.Frame(self.ans_paned, bg=self.bg_card)
+
+        hdr_en = tk.Frame(pane_en, bg=self.bg_card)
+        hdr_en.pack(fill=tk.X, pady=(3, 2))
+
+        lbl_en = tk.Label(
+            hdr_en,
+            text="🇺🇸 DIRECT RESPONSE (ENGLISH) — Live technical answer for interview",
+            bg=self.bg_card,
+            fg=self.accent_blue,
+            font=("Segoe UI", 8, "bold")
+        )
+        lbl_en.pack(side=tk.LEFT)
+
+        box_en = tk.Frame(pane_en, bg=self.bg_card_inner)
+        box_en.pack(fill=tk.BOTH, expand=True)
+
+        sb_en = ttk.Scrollbar(box_en)
+        sb_en.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_answer_en = tk.Text(
+            box_en,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            insertbackground=self.text_color,
+            relief=tk.FLAT,
+            padx=10,
+            pady=6,
+            font=("Segoe UI", 11),
+            wrap=tk.WORD,
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=sb_en.set
+        )
+        self.txt_answer_en.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_en.config(command=self.txt_answer_en.yview)
+        self.txt_answer_en.insert(
+            tk.END,
+            "💡 Your direct response in ENGLISH will appear here in real time (concise bullet points for video interview)."
+        )
+        self.txt_answer_en.config(state=tk.DISABLED)
+
+        self.ans_paned.add(pane_es)
+        self.ans_paned.add(pane_en)
 
         # 4.3 BARRA DE ENTRADA MANUAL (Al pie de la ventana)
         input_bar = tk.Frame(self.frame_copilot, bg=self.bg_main, padx=12, pady=6)
@@ -695,15 +768,15 @@ class InterviewPrompterApp:
         if tab_name == "copilot":
             self.frame_copilot.pack(fill=tk.BOTH, expand=True)
             self.btn_tab_copilot.config(bg=self.accent_blue, fg="#ffffff")
-            self._update_status("🟢 Copiloto en Vivo activo (F2 Pitch, F3 Guía Word)", self.accent_green)
+            self._update_status("🟢 Copiloto en Vivo activo (Atajos: 2 Pitch, 3 Guía Word)", self.accent_green)
         elif tab_name == "pitch":
             self.frame_pitch.pack(fill=tk.BOTH, expand=True)
             self.btn_tab_pitch.config(bg=self.accent_blue, fg="#ffffff")
-            self._update_status("🎯 Viendo Pitch Personal (F1 Copiloto, F3 Guía Word)", self.accent_blue)
+            self._update_status("🎯 Viendo Pitch Personal (Atajos: 1 Copiloto, 3 Guía Word)", self.accent_blue)
         elif tab_name == "word_guide":
             self.frame_word_guide.pack(fill=tk.BOTH, expand=True)
             self.btn_tab_word_guide.config(bg=self.accent_blue, fg="#ffffff")
-            self._update_status("📖 Guía de Entrevista Word activa (F1 Copiloto, F2 Pitch)", self.accent_yellow)
+            self._update_status("📖 Guía de Entrevista Word activa (Atajos: 1 Copiloto, 2 Pitch)", self.accent_yellow)
 
     def _load_pitch(self, key: str):
         self.active_pitch_key = key
@@ -731,6 +804,11 @@ class InterviewPrompterApp:
         script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
         if script:
             titles = {
+                "pitch_rf_es": "📡 RF Optimization Engineer (Arturo Ramírez / Ericsson RAN - ES)",
+                "pitch_rf_en": "🇺🇸 RF Optimization Engineer (Arturo Ramirez / Ericsson RAN - EN)",
+                "pitch_rf_tech": "⚙️ Ericsson RAN Architecture, KPIs & Layer 3 Deep-Dive",
+                "pitch_rf_rapido": "⚡ Elevator Pitch RF Optimization (30s)",
+                "formacion_rf": "🎓 Formación Académica, MBA & Certificaciones Oficiales",
                 "pitch_5g_en": "🇺🇸 5G Network Engineer & AI Pitch (Speridian / Shubham)",
                 "pitch_5g_tech": "📡 5GC Architecture, Call Flows (N1-N12), SEPP & AI Coding",
                 "pitch_5g_es": "🇪🇸 Pitch 5G Network Engineer & Telecom (Javier Viveros)",
@@ -740,16 +818,35 @@ class InterviewPrompterApp:
                 "formacion_certs": "🎓 Formación Académica & Certificaciones (Javier Viveros)",
                 "fit_pcos": "🎯 Por qué PCoS & Fit Técnico (Javier Viveros)",
             }
+            # Determinar pares español e inglés para el teleprompter dual
+            if self.active_pitch_key in ("pitch_rf_es", "pitch_rf_rapido", "pitch_rf_tech", "formacion_rf"):
+                es_script = candidate_profile.PITCH_SCRIPTS.get(self.active_pitch_key, "")
+                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_en", "")
+            elif self.active_pitch_key == "pitch_rf_en":
+                es_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_es", "")
+                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_rf_en", "")
+            elif self.active_pitch_key in ("pitch_5g_es", "pitch_5g_en", "pitch_5g_tech"):
+                es_script = candidate_profile.PITCH_SCRIPTS.get("pitch_5g_es", "")
+                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_5g_en", candidate_profile.PITCH_SCRIPTS.get("pitch_5g_tech", ""))
+            else:
+                es_script = candidate_profile.PITCH_SCRIPTS.get("pitch_es_completo", script)
+                en_script = candidate_profile.PITCH_SCRIPTS.get("pitch_en", "")
+
             self.txt_question.delete("1.0", tk.END)
             self.txt_question.insert("1.0", titles.get(self.active_pitch_key, "Mi Pitch Personal"))
 
-            self.txt_answer.config(state=tk.NORMAL)
-            self.txt_answer.delete("1.0", tk.END)
-            self.txt_answer.insert(tk.END, script)
-            self.txt_answer.config(state=tk.DISABLED)
+            self.txt_answer_es.config(state=tk.NORMAL)
+            self.txt_answer_es.delete("1.0", tk.END)
+            self.txt_answer_es.insert(tk.END, es_script)
+            self.txt_answer_es.config(state=tk.DISABLED)
+
+            self.txt_answer_en.config(state=tk.NORMAL)
+            self.txt_answer_en.delete("1.0", tk.END)
+            self.txt_answer_en.insert(tk.END, en_script)
+            self.txt_answer_en.config(state=tk.DISABLED)
 
             self._switch_tab("copilot")
-            self._update_status("⚡ Pitch cargado en el Teleprompter principal", self.accent_green)
+            self._update_status("⚡ Pitch cargado en Teleprompter Dual (ES / EN)", self.accent_green)
 
     # ------------------ PESTAÑA 3: GUÍA DE ENTREVISTA EN FORMATO WORD ------------------
 
@@ -990,7 +1087,7 @@ class InterviewPrompterApp:
         new_lang = "en" if "English" in val else "es"
         if new_lang != self.current_word_lang:
             self.current_word_lang = new_lang
-            self.rf_word_guide.load(new_lang)
+            self.rf_word_guide = self.rf_word_guide_en if new_lang == "en" else self.rf_word_guide_es
             self._populate_word_modules()
             self._load_word_module_questions(0)
 
@@ -1091,20 +1188,32 @@ class InterviewPrompterApp:
             return
 
         q = self.selected_question_item
-        ans_text = q.clean_answer_for_teleprompter
-        if not ans_text:
-            ans_text = q.raw_text
+        q_num = q.num
+
+        # Buscar versión en español y versión en inglés por número de pregunta
+        q_es = next((item for item in self.rf_word_guide_es.all_questions if item.num == q_num), None)
+        q_en = next((item for item in self.rf_word_guide_en.all_questions if item.num == q_num), None)
+
+        es_text = q_es.clean_answer_for_teleprompter if q_es and q_es.clean_answer_for_teleprompter else (q_es.raw_text if q_es else q.clean_answer_for_teleprompter)
+        en_text = q_en.clean_answer_for_teleprompter if q_en and q_en.clean_answer_for_teleprompter else (q_en.raw_text if q_en else q.clean_answer_for_teleprompter)
 
         self.txt_question.delete("1.0", tk.END)
         self.txt_question.insert("1.0", q.title)
 
-        self.txt_answer.config(state=tk.NORMAL)
-        self.txt_answer.delete("1.0", tk.END)
-        self.txt_answer.insert(tk.END, ans_text)
-        self.txt_answer.config(state=tk.DISABLED)
+        # Cargar panel superior (Español)
+        self.txt_answer_es.config(state=tk.NORMAL)
+        self.txt_answer_es.delete("1.0", tk.END)
+        self.txt_answer_es.insert(tk.END, es_text)
+        self.txt_answer_es.config(state=tk.DISABLED)
+
+        # Cargar panel inferior (Inglés)
+        self.txt_answer_en.config(state=tk.NORMAL)
+        self.txt_answer_en.delete("1.0", tk.END)
+        self.txt_answer_en.insert(tk.END, en_text)
+        self.txt_answer_en.config(state=tk.DISABLED)
 
         self._switch_tab("copilot")
-        self._update_status(f"⚡ Q{q.num} cargada en el Teleprompter principal", self.accent_green)
+        self._update_status(f"⚡ Q{q.num} cargada en Teleprompter Dual (ES / EN)", self.accent_green)
 
     def _copy_word_answer(self):
         if not self.selected_question_item:
@@ -1188,34 +1297,74 @@ class InterviewPrompterApp:
         if color:
             self.lbl_status.config(fg=color)
 
+    @property
+    def txt_answer(self) -> tk.Text:
+        """Compatibilidad para acceder al teleprompter superior en español."""
+        return self.txt_answer_es
+
+    def _on_global_key_press(self, event):
+        focused = getattr(event, "widget", None) or self.root.focus_get()
+        if focused is not None:
+            w_class = focused.__class__.__name__
+            if isinstance(focused, (tk.Entry, tk.Text, ttk.Entry, ttk.Combobox)) or w_class in (
+                "Entry", "Text", "Combobox", "TCombobox", "TEntry"
+            ):
+                return  # Permitir escritura normal del dígito 1, 2 o 3 en cuadros de texto
+
+        ks = getattr(event, "keysym", "")
+        ch = getattr(event, "char", "")
+        if ks in ("1", "KP_1", "F1") or ch == "1":
+            self._switch_tab("copilot")
+            return "break"
+        elif ks in ("2", "KP_2", "F2") or ch == "2":
+            self._switch_tab("pitch")
+            return "break"
+        elif ks in ("3", "KP_3", "F3") or ch == "3":
+            self._switch_tab("word_guide")
+            return "break"
+
     def _copy_answer(self):
-        content = self.txt_answer.get("1.0", tk.END).strip()
+        self._copy_answer_es()
+
+    def _copy_answer_es(self):
+        content = self.txt_answer_es.get("1.0", tk.END).strip()
         if content:
             self.root.clipboard_clear()
             self.root.clipboard_append(content)
-            self._update_status("📋 ¡Respuesta copiada!", self.accent_blue)
+            self._update_status("📋 ¡Respuesta en Español copiada!", self.accent_green)
+
+    def _copy_answer_en(self):
+        content = self.txt_answer_en.get("1.0", tk.END).strip()
+        if content:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(content)
+            self._update_status("📋 ¡Respuesta en Inglés copiada!", self.accent_blue)
 
     def _clear_screen(self):
         self.txt_question.delete("1.0", tk.END)
         self.txt_question.insert("1.0", "Esperando que el entrevistador haga una pregunta...")
         self.entry_manual.delete(0, tk.END)
         self.entry_manual.insert(0, "O pega/escribe una pregunta del chat aquí...")
-        self.txt_answer.config(state=tk.NORMAL)
-        self.txt_answer.delete("1.0", tk.END)
-        self.txt_answer.insert(tk.END, "Esperando nueva intervención...")
-        self.txt_answer.config(state=tk.DISABLED)
-        self.current_answer_lang = "es"
-        if hasattr(self, "btn_translate"):
-            self.btn_translate.config(state=tk.NORMAL, text="🌐 Traducir a Inglés")
+
+        self.txt_answer_es.config(state=tk.NORMAL)
+        self.txt_answer_es.delete("1.0", tk.END)
+        self.txt_answer_es.insert(tk.END, "Esperando nueva intervención...")
+        self.txt_answer_es.config(state=tk.DISABLED)
+
+        self.txt_answer_en.config(state=tk.NORMAL)
+        self.txt_answer_en.delete("1.0", tk.END)
+        self.txt_answer_en.insert(tk.END, "Waiting for new question...")
+        self.txt_answer_en.config(state=tk.DISABLED)
+        self.current_answer_lang = "dual"
 
     def _on_language_changed(self, event=None):
         sel = self.lang_var.get()
-        is_en = "English" in sel or "en" in sel.lower()
-        lang_name = "Inglés (English)" if is_en else "Español"
-        self._update_status(f"🌐 Idioma de respuesta: {lang_name}", self.accent_blue)
-        next_target = "Español" if is_en else "Inglés"
-        if hasattr(self, "btn_translate"):
-            self.btn_translate.config(text=f"🌐 Traducir a {next_target}")
+        if "Solo Español" in sel:
+            self._update_status("🌐 Modo de respuesta: Solo Español", self.accent_blue)
+        elif "Only English" in sel:
+            self._update_status("🌐 Mode: English only", self.accent_blue)
+        else:
+            self._update_status("⚡ Modo de respuesta: Teleprompter Dual (ES + EN)", self.accent_green)
 
     def _translate_current_answer(self):
         content = self.txt_answer.get("1.0", tk.END).strip()
@@ -1323,41 +1472,39 @@ class InterviewPrompterApp:
                 elif kind == "SPEECH":
                     self._handle_detected_text(data)
                 elif kind == "STREAM_START":
-                    self.txt_answer.config(state=tk.NORMAL)
-                    self.txt_answer.delete("1.0", tk.END)
-                    self.txt_answer.config(state=tk.DISABLED)
+                    self._stream_full_text = ""
+                    self.txt_answer_es.config(state=tk.NORMAL)
+                    self.txt_answer_es.delete("1.0", tk.END)
+                    self.txt_answer_es.config(state=tk.DISABLED)
+
+                    self.txt_answer_en.config(state=tk.NORMAL)
+                    self.txt_answer_en.delete("1.0", tk.END)
+                    self.txt_answer_en.config(state=tk.DISABLED)
                 elif kind == "STREAM_CHUNK":
                     self._append_answer_chunk(data)
                 elif kind == "STREAM_ERROR":
-                    self.txt_answer.config(state=tk.NORMAL)
-                    self.txt_answer.delete("1.0", tk.END)
-                    self.txt_answer.insert(tk.END, f"{data}\n\n💡 Tip: Puedes cambiar a DeepSeek o configurar tus claves en '🔑 API Keys / Modelos' arriba.")
-                    self.txt_answer.config(state=tk.DISABLED)
+                    self.txt_answer_es.config(state=tk.NORMAL)
+                    self.txt_answer_es.delete("1.0", tk.END)
+                    self.txt_answer_es.insert(tk.END, f"{data}\n\n💡 Tip: Puedes cambiar a DeepSeek o configurar tus claves en '🔑 API Keys / Modelos' arriba.")
+                    self.txt_answer_es.config(state=tk.DISABLED)
+
+                    self.txt_answer_en.config(state=tk.NORMAL)
+                    self.txt_answer_en.delete("1.0", tk.END)
+                    self.txt_answer_en.insert(tk.END, f"Error generating response: {data}\n\n💡 Tip: You can switch to DeepSeek or configure your API Keys above.")
+                    self.txt_answer_en.config(state=tk.DISABLED)
                     self._update_status("⚠️ Error consultando IA", self.accent_red)
                 elif kind == "STREAM_DONE":
-                    active_lang = data if data else "es"
-                    self.current_answer_lang = active_lang
-                    next_target = "Español" if active_lang == "en" else "Inglés"
-                    if hasattr(self, "btn_translate"):
-                        self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
-                elif kind == "TRANSLATE_SUCCESS":
-                    target_lang, _ = data
-                    self.current_answer_lang = target_lang
-                    next_target = "Español" if target_lang == "en" else "Inglés"
-                    if hasattr(self, "btn_translate"):
-                        self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
-                    self._update_status(f"🟢 Traducido con éxito a {'Inglés' if target_lang == 'en' else 'Español'}", self.accent_green)
-                elif kind == "TRANSLATE_FAIL":
-                    next_target = "Español" if self.current_answer_lang == "en" else "Inglés"
-                    if hasattr(self, "btn_translate"):
-                        self.btn_translate.config(state=tk.NORMAL, text=f"🌐 Traducir a {next_target}")
-                    self._update_status("⚠️ No se pudo completar la traducción", self.accent_red)
                 elif kind == "STREAM_IGNORED":
-                    self.txt_answer.config(state=tk.NORMAL)
-                    self.txt_answer.delete("1.0", tk.END)
-                    self.txt_answer.insert(tk.END, "🔇 Charla casual ignorada (saludo o ruido cotidiano).\nEsperando una pregunta técnica...")
-                    self.txt_answer.config(state=tk.DISABLED)
+                    self.txt_answer_es.config(state=tk.NORMAL)
+                    self.txt_answer_es.delete("1.0", tk.END)
+                    self.txt_answer_es.insert(tk.END, "🔇 Charla casual ignorada (saludo o ruido cotidiano).\nEsperando una pregunta técnica...")
+                    self.txt_answer_es.config(state=tk.DISABLED)
+
+                    self.txt_answer_en.config(state=tk.NORMAL)
+                    self.txt_answer_en.delete("1.0", tk.END)
+                    self.txt_answer_en.insert(tk.END, "🔇 Casual chatter ignored (greeting or background noise).\nWaiting for technical question...")
+                    self.txt_answer_en.config(state=tk.DISABLED)
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
         except Exception as e:
             print(f"Error procesando cola: {e}")
@@ -1376,17 +1523,27 @@ class InterviewPrompterApp:
         self.entry_manual.delete(0, tk.END)
         self.entry_manual.insert(0, text)
 
-        self._update_status("⚡ Consultando a IA...", self.accent_blue)
+        self._update_status("⚡ Consultando a IA (Dual ES / EN)...", self.accent_blue)
 
-        self.txt_answer.config(state=tk.NORMAL)
-        self.txt_answer.delete("1.0", tk.END)
-        self.txt_answer.insert(tk.END, "⚡ Generando respuesta instantánea...")
-        self.txt_answer.config(state=tk.DISABLED)
+        self._stream_full_text = ""
+        self.txt_answer_es.config(state=tk.NORMAL)
+        self.txt_answer_es.delete("1.0", tk.END)
+        self.txt_answer_es.insert(tk.END, "⚡ Generando respuesta en español...")
+        self.txt_answer_es.config(state=tk.DISABLED)
 
-        # Obtener idioma seleccionado en el hilo principal
+        self.txt_answer_en.config(state=tk.NORMAL)
+        self.txt_answer_en.delete("1.0", tk.END)
+        self.txt_answer_en.insert(tk.END, "⚡ Generating response in English...")
+        self.txt_answer_en.config(state=tk.DISABLED)
+
+        # Obtener modo de idioma seleccionado en el hilo principal
         sel_lang = self.lang_var.get()
-        is_en = "English" in sel_lang or "en" in sel_lang.lower()
-        active_lang = "en" if is_en else "es"
+        if "Solo Español" in sel_lang:
+            active_lang = "es"
+        elif "Only English" in sel_lang:
+            active_lang = "en"
+        else:
+            active_lang = "dual"
 
         threading.Thread(target=self._ask_ai_worker, args=(text, active_lang), daemon=True).start()
 
@@ -1401,7 +1558,7 @@ class InterviewPrompterApp:
         self.logger.open_history_folder()
         self._update_status("📂 Carpeta de historial abierta", self.accent_blue)
 
-    def _ask_ai_worker(self, question: str, active_lang: str = "es"):
+    def _ask_ai_worker(self, question: str, active_lang: str = "dual"):
         first_chunk = True
         collected_chunks = []
 
@@ -1440,11 +1597,35 @@ class InterviewPrompterApp:
                     provider=f"{self.copilot.provider} ({active_lang.upper()})"
                 )
 
+    def _split_dual_text(self, text: str) -> Tuple[str, str]:
+        en_pattern = r'\[(?:ENGLISH|INGL[EÉ]S|EN)\]'
+        parts = re.split(en_pattern, text, maxsplit=1, flags=re.IGNORECASE)
+        es_raw = parts[0]
+        es_clean = re.sub(r'^\s*\[(?:ESPA[ÑN]OL|ES)\]\s*', '', es_raw, flags=re.IGNORECASE)
+        es_clean = re.sub(r'\[(?:E|EN|ENG|ENGL|ENGLI|ENGLIS|ENGLISH|I|IN|ING|INGL|INGLE|INGLES|INGLÉ|INGLÉS)?$', '', es_clean, flags=re.IGNORECASE).rstrip()
+
+        en_clean = ""
+        if len(parts) > 1:
+            en_clean = parts[1].lstrip("\r\n \t")
+
+        return es_clean, en_clean
+
     def _append_answer_chunk(self, chunk: str):
-        self.txt_answer.config(state=tk.NORMAL)
-        self.txt_answer.insert(tk.END, chunk)
-        self.txt_answer.see(tk.END)
-        self.txt_answer.config(state=tk.DISABLED)
+        self._stream_full_text += chunk
+        es_text, en_text = self._split_dual_text(self._stream_full_text)
+
+        self.txt_answer_es.config(state=tk.NORMAL)
+        self.txt_answer_es.delete("1.0", tk.END)
+        self.txt_answer_es.insert(tk.END, es_text)
+        self.txt_answer_es.see(tk.END)
+        self.txt_answer_es.config(state=tk.DISABLED)
+
+        if en_text:
+            self.txt_answer_en.config(state=tk.NORMAL)
+            self.txt_answer_en.delete("1.0", tk.END)
+            self.txt_answer_en.insert(tk.END, en_text)
+            self.txt_answer_en.see(tk.END)
+            self.txt_answer_en.config(state=tk.DISABLED)
 
     # ------------------ CONFIGURACIÓN DE CLAVES ------------------
 
