@@ -5,83 +5,106 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://microsoft.com/windows)
 
-Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en vivo las preguntas de un entrevistador durante una reunión virtual (**Google Meet, Microsoft Teams, Zoom, Skype, Discord, etc.**) y generar respuestas estructuradas, precisas y de alto nivel técnico al instante mediante el SDK oficial de **Google Gemini 3.8 Flash**.
+Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en vivo las preguntas de un entrevistador durante una reunión virtual (**Google Meet, Microsoft Teams, Zoom, Skype, Discord, etc.**) y generar respuestas estructuradas, precisas y de alto nivel técnico al instante mediante el SDK oficial de **Google Gemini 3.8 Flash**, con soporte multi-motor (**DeepSeek** y **OpenRouter**).
+
+Especializado en **Senior RF Optimization & Performance Engineer (Ericsson 4G/5G)**, integrando la Guía Oficial de Entrevista (10 Módulos / 31 Preguntas maestras) con sincronización bilingüe en paralelo (Español / Inglés).
 
 ---
 
 ## 🌟 Características Destacadas
 
-- ⚡ **Teleprompter Dual Dividido Horizontalmente (🇪🇸 Español Arriba / 🇺🇸 Inglés Abajo)**:
-  - **Pantalla Superior**: Muestra la respuesta directa y sintetizada en **Español** (`🇪🇸`), lista para leer en voz alta de inmediato con viñetas técnicas, parámetros y casos reales.
-  - **Pantalla Inferior**: Muestra la respuesta correspondiente en **Inglés** (`🇺🇸`), ideal para entrevistas técnicas en video o cuando el cliente internacional realiza la llamada en inglés.
-  - **Generación en Vivo Simultánea**: En llamadas con el entrevistador, los motores de IA (Gemini / DeepSeek) generan y transmiten en tiempo real ambos bloques de idioma a sus paneles respectivos sin demora.
-  - **Inyección Bilingüe desde Cualquier Pestaña**: Al hacer clic en *"Al Teleprompter"* desde la pestaña de Pitch (`2`) o la Guía Word (`3`), la aplicación carga automáticamente la versión en español arriba y la versión en inglés abajo.
-  - **Acciones Rápidas en Cabecera**: Botones independientes `📋 Copiar ES`, `📋 Copiar EN`, `📜 Historial` y `🗑️ Limpiar`.
-- ⌨️ **Nuevos Atajos Rápidos Ergonómicos (`1`, `2`, `3`)**:
-  - **`1`**: Ir a **🎙️ Copiloto en Vivo (Teleprompter Dual)**.
-  - **`2`**: Ir a **🎯 Mi Pitch & Formación (Javier Viveros Huesca)**.
-  - **`3`**: Ir a **📖 Guía Entrevista Word (31 temas ES / 33 temas EN)**.
-  - **Salvaguarda Inteligente de Escritura**: Si estás editando una pregunta en el recuadro editable, buscando en la guía Word o pegando texto en la barra manual, presionar `1`, `2` o `3` escribe el número normalmente sin cambiar de pestaña.
-  - *(Se mantiene también compatibilidad con las teclas `F1`, `F2`, `F3` y teclado numérico `KP_1`, `KP_2`, `KP_3`)*.
-- 🎯 **Pestaña de Pitch Personal Dual (2)**: Vista interactiva dividida horizontalmente en 2 paneles simétricos al 50%:
-  - **Panel Superior (🇪🇸 Español)**: Muestra el pitch principal en español para lectura inmediata, con +15 años de experiencia en RAN, optimización de LTE L15, Baseband 5212/5216/6630, Radio Dot, NodeB/eNodeB/gNodeB y auditoría de KPIs críticos (RTWP, PIM, DCR, Handover).
-  - **Panel Inferior (🇺🇸 English)**: Muestra simultáneamente la versión en inglés técnico (60s) con terminología estándar 3GPP, ideal para entrevistas en video o clientes internacionales.
-  - **Opciones de Guión RF**:
-    - **`📡 RF Pitch (Dual ES / EN)`**: Carga el pitch principal en español arriba y el pitch profesional en inglés abajo.
-    - **`⚙️ KPIs & Ericsson Tech`**: Análisis técnico profundo de resolución de interferencias, pilot pollution, colisiones/confusiones PCI mod 3/mod 30, eventos de handover A1-A5/B1-B2 y Layer 3 signaling.
-    - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
-    - **`🎓 Formación & MBA`**: Ingeniería en Electrónica (IT Reynosa) + MBA (Tecmilenio) + Certificación Oficial Ericsson LTE Configuration.
-    - 📖 **[Guía Maestra RF Ericsson](GUIA_ENTREVISTA_RF_ERICSSON.md)**: Banco completo con 8 preguntas y respuestas técnicas avanzadas y matriz de parámetros Ericsson LTE.
-  - **⚡ Botón "Al Teleprompter"**: Inyecta instantáneamente el pitch seleccionado en el teleprompter dual del copiloto (`1`) con 1 solo clic.
-  - **Botones de Copiado**: `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos`.
-  - **Teclas Rápidas**: `1` (Copiloto en Vivo), `2` (Mi Pitch Dual), `3` (Guía Word).
-- 📖 **Pestaña de Guía Maestra de Entrevista Word Dividida Verticalmente al 50/50 (3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, dividido a la mitad verticalmente con sincronización exacta:
-  - **Lado Izquierdo (50% de ancho - 🇪🇸 Español)**: Muestra la hoja de Microsoft Word con la pregunta, estrategia de respuesta, respuesta modelo y tablas/comandos en **Español**.
-  - **Lado Derecho (50% de ancho - 🇺🇸 English)**: Muestra simultáneamente la misma pregunta y hoja de Microsoft Word traducida y adaptada profesionalmente en **Inglés**.
-  - **Diseño Estilo Microsoft Word**: Páginas en blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), márgenes ejecutivos, cajas de estrategia verde (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques monospace en `Consolas` para comandos Moshell y tablas de parámetros.
-  - **Índice Interactivo Lateral Colapsable**: Panel lateral con las 31 preguntas técnicas ordenadas por módulo, con botón **`📑 Ocultar / Mostrar Índice`** para expandir la lectura al ancho completo de la pantalla.
-  - **Navegación Rápida**: Botones **`◀ Ant`** y **`Sig ▶`** para avanzar o retroceder pregunta por pregunta sin perder el enfoque.
-  - **Buscador en Tiempo Real**: Filtra preguntas por términos técnicos (`RTWP`, `PIM`, `Handover`, `A3`, `PRACH`, `DCR`, `VoLTE`, `MOM`, `Moshell`).
-  - **⚡ Botón "Al Teleprompter"**: Inyecta simultáneamente la respuesta en español arriba y la respuesta en inglés abajo en el teleprompter del Copiloto (`1`).
-  - **🔄 Scroll Sincronizado Bidireccional**: Al mover el scroll o la rueda del ratón en la hoja en español, la hoja en inglés se desplaza automáticamente a la par (y viceversa), permitiendo comparar párrafos, respuestas y tablas técnicas sin perder el alineamiento visual.
-  - **Botones de Copiado**: `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos`.
-  - **📄 Botón "Abrir Word"**: Abre directamente el archivo `.docx` oficial en Microsoft Word mediante integración nativa con Windows.
-  - **Teclas Rápidas**: `1` (Copiloto Dual), `2` (Mi Pitch Dual), `3` (Guía Word Dual).
-- 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado: +15 años en optimización de radiofrecuencia (RF) y RAN en carriers Tier-1 (AT&T, Nextel, Empire), certificación oficial de Ericsson en LTE Configuration, MBA de Tecmilenio e Ing. en Electrónica (IT Reynosa), además de experiencia en 5G Core (Open5GS/free5GC) y Full-Stack con IA (FastAPI/vLLM), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
-- 🌐 **Soporte Bilingüe Simultáneo y Selector de Modo (Dual / ES / EN)**:
-  - **Selector de Modo**: Permite elegir entre `⚡ Dual (ES + EN)`, `🇪🇸 Solo Español` o `🇺🇸 Only English`.
-- 📜 **Logs y Registro Automático de Conversaciones**: Cada pregunta formulada y respuesta generada se guarda automáticamente en la carpeta `historial/` en formatos **Markdown (`.md`)** y **JSON (`.json`)** con marcas de tiempo para que puedas repasar lo que te preguntaron después de la entrevista. Incluye un botón **`📜 Ver Historial`** para abrir la carpeta con un solo clic.
-- ✏️ **Modificación Manual de Preguntas en Vivo**: Si el reconocimiento de voz malinterpreta un tecnicismo en inglés o audio ruidoso (por ejemplo: entendió *"ratón"* en vez de *"handover"*), el recuadro de pregunta es **100% editable directamente**. Puedes hacer clic, corregir la palabra y presionar **Enter** o el botón **`⚡ Corregir y Re-preguntar`** para obtener la respuesta correcta al instante.
-- 🤖 **Multi-Motor de IA con Respaldo Automático**:
-  - **Google Gemini**: Con auto-conmutación a `gemini-3.5-flash-lite` para evitar errores 503 por alta demanda.
-  - **DeepSeek Oficial**: Soporte nativo para `deepseek-chat` vía API oficial (`api.deepseek.com`).
-  - **OpenRouter (Gratis)**: Soporte para modelos `deepseek-r1` y `deepseek-chat` sin costo.
-- ⚡ **Respuestas en Tiempo Real (Streaming)**: Las palabras aparecen progresivamente en pantalla en menos de 1 segundo mediante streaming token a token.
-- 🎯 **Estructura Diseñada para Hablar en Voz Alta**:
-  - **Definición Inmediata**: 1 o 2 oraciones concisas y directas para que empieces a hablar sin titubear.
-  - **Puntos Clave**: 2 o 3 viñetas técnicas con los conceptos esenciales o arquitectura interna.
-  - **Caso Práctico**: 1 ejemplo o estándar de la industria que proyecta experiencia senior.
-- 🔇 **Filtro Inteligente Anti-Ruido**: Discrimina automáticamente la charla casual y los saludos cotidianos (*"¿me escuchas?", "buenos días", "espera que comparto pantalla"*) para evitar spam en pantalla.
-- 🔊 **Captura de Audio Dual (Micrófono o Loopback)**:
-  - **Modo Micrófono**: Captura tu voz o el sonido ambiente si escuchas la reunión por altavoces.
-  - **Modo Audio de Reunión (WASAPI Loopback)**: Captura directamente el audio digital que sale por tus audífonos o altavoces sin captar eco ni ruidos de tu habitación.
-- 📌 **Teleprompter Flotante (Always-on-Top)**: Ventana compacta con tema oscuro que permanece siempre visible sobre Zoom o Teams. Colócala justo debajo de la lente de tu cámara web para mantener contacto visual continuo con el entrevistador.
-- 💬 **Barra de Entrada Manual**: Si el entrevistador escribe la pregunta en el chat de la videollamada, puedes pegarla en la barra inferior y presionar `Enter` para responder de inmediato.
-- 💻 **Modo Terminal / Consola**: También incluye un modo CLI con texto a color para programadores que prefieran trabajar desde la terminal.
+### 1. 📖 Vinculación Inteligente en Vivo Copiloto ➔ Guía Word (Multi-Coincidencias)
+- **Detección Automática por Palabras Clave**: Cuando el copiloto escucha una pregunta o cuando escribes en la caja de preguntas o en la barra manual, el motor semántico analiza los conceptos técnicos en tiempo real (`<KeyRelease>`).
+- **Soporte de Términos Individuales**: Reconoce palabras clave técnicas individuales sin exigir frases exactas completas (por ejemplo: `dynamic`, `B2`, `RTWP`, `handover`, `A3`, `PRACH`, `carrier aggregation`, `5G`, `MIMO`, etc.).
+- **Múltiples Posibilidades Interactivas (Multi-Match)**:
+  - Si un término técnico abarca varios tópicos (por ejemplo, `B2` aplica para **Eventos de Handover B1/B2** en el Módulo 3 y para **Carrier Aggregation con Banda 2** en el Módulo 5), el copiloto presenta **todas las opciones detectadas como botones interactivos directos**.
+  - Ejemplo visual:
+    ```
+    📖 COINCIDENCIAS EN GUÍA WORD (2 POSIBILIDADES ENCONTRADAS):
+    [ 📖 Q10: Handover B1/B2 (Mód 3) ➔ ]   [ 📖 Q17: Carrier Aggregation B2 (Mód 5) ➔ ]
+    ```
+- **Navegación Instantánea con 1 Clic (`_jump_to_matched_word_question`)**:
+  - Al hacer clic en cualquiera de los botones/chips, la interfaz se traslada automáticamente a la **Pestaña 3 (Guía Word)**.
+  - Selecciona de forma autónoma el módulo correspondiente en el selector.
+  - Resalta y enfoca la pregunta exacta en el índice lateral.
+  - Carga y posiciona ambas hojas (Español e Inglés) desde el inicio para lectura inmediata.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+### 2. ⚡ Teleprompter Dual Dividido Horizontalmente (🇪🇸 Español Arriba / 🇺🇸 Inglés Abajo)
+- **Pantalla Superior**: Muestra la respuesta directa y sintetizada en **Español** (`🇪🇸`), lista para leer en voz alta de inmediato con viñetas técnicas, parámetros y casos reales.
+- **Pantalla Inferior**: Muestra simultáneamente la respuesta correspondiente en **Inglés** (`🇺🇸`), ideal para entrevistas bilingües, clientes internacionales o videollamadas técnicas.
+- **Generación Simultánea en Vivo**: Los motores de IA generan y transmiten en tiempo real ambos bloques de idioma en streaming token a token.
+- **Caja de Pregunta Limpia y 100% Editable**: Recuadro de pregunta vacío y listo para editar al instante (sin textos de placeholder molestos que haya que borrar manualmente).
+- **Acciones Rápidas Ergonómicas Reubicadas**: Botones `🗑️ Limpiar`, `📜 Historial`, `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos` situados estratégicamente debajo de la pregunta para acceso inmediato sin tapar la respuesta.
+- **Selección y Copiado Total (`Ctrl + C`)**: Soporte nativo para seleccionar cualquier fragmento de texto con el cursor y copiarlo con el atajo de teclado `Ctrl + C`, `Ctrl + A` o mediante menú contextual de clic derecho en todas las pantallas.
+
+---
+
+### 3. 📖 Guía Word Dividida al 50/50 Vertical con Scroll Sincronizado
+- **División Vertical al 50/50**:
+  - **Lado Izquierdo (50% - 🇪🇸 Español)**: Hoja de Microsoft Word con la pregunta, estrategia de respuesta, respuesta modelo y comandos/tablas en español.
+  - **Lado Derecho (50% - 🇺🇸 English)**: Hoja simétrica idéntica con el contenido equivalente traducido y adaptado profesionalmente al inglés técnico.
+- **🔄 Scroll Sincronizado Bidireccional**: Al desplazar la rueda del ratón o la barra de scroll en el lado español, el lado en inglés se mueve exactamente al mismo tiempo y proporción (y viceversa), permitiendo comparar párrafos y tablas técnicas sin desfasarse jamás.
+- **Estilo Ejecutivo Microsoft Word**: Páginas en fondo blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), cajas de estrategia verdes (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques en tipografía `Consolas` para comandos Moshell y tablas de parámetros.
+- **Índice Lateral Colapsable**: Panel lateral interactivo con las 31 preguntas maestras ordenadas por módulo, con botón **`📑 Ocultar / Mostrar Índice`** para maximizar el área de lectura a pantalla completa.
+- **Navegación Rápida**: Botones **`◀ Ant`** y **`Sig ▶`** para saltar de pregunta en pregunta.
+- **⚡ Botón "Al Teleprompter"**: Inyecta en 1 solo clic la respuesta de la guía en el teleprompter dual del copiloto (`1`).
+- **📄 Botón "Abrir Word"**: Abre el archivo original `.docx` en Microsoft Word con integración nativa en Windows.
+
+---
+
+### 4. 🎯 Pestaña de Pitch Personal Dual (2)
+- **Estructura Dividida en 2 Paneles**:
+  - **Panel Superior (🇪🇸 Español)**: Pitch principal en español destacando +15 años de trayectoria en RAN, optimización LTE L15, Baseband Ericsson 5212/5216/6630, Radio Dot y auditoría de KPIs críticos (RTWP, PIM, DCR, Handover).
+  - **Panel Inferior (🇺🇸 English)**: Versión técnica equivalente en inglés (60s) con terminología estándar 3GPP.
+- **Opciones de Guión Rápido**:
+  - **`📡 RF Pitch (Dual ES / EN)`**: Carga el pitch principal en español arriba y el pitch profesional en inglés abajo.
+  - **`⚙️ KPIs & Ericsson Tech`**: Análisis técnico profundo de interferencias, pilot pollution, colisión/confusión PCI mod 3/mod 30, eventos de handover A1-A5/B1-B2 y Layer 3 signaling.
+  - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
+  - **`🎓 Formación & MBA`**: Trayectoria académica (Ingeniería en Electrónica + MBA en Finanzas y Estrategia + Certificación Oficial Ericsson LTE Configuration).
+- **Enfoque 100% Especializado**: Eliminación de postulaciones irrelevantes para mantener un perfil sólido, coherente y de máxima autoridad técnica en Ericsson RF.
+
+---
+
+### 5. ⌨️ Atajos Rápidos Ergonómicos (`1`, `2`, `3`)
+- **`1`**: Ir a **🎙️ Copiloto en Vivo (Teleprompter Dual)**.
+- **`2`**: Ir a **🎯 Mi Pitch & Formación (Javier Viveros Huesca)**.
+- **`3`**: Ir a **📖 Guía Entrevista Word (31 temas ES / EN)**.
+- **Salvaguarda Inteligente de Escritura**: Si estás escribiendo en el recuadro de pregunta o en la barra manual, presionar `1`, `2` o `3` escribe el número normalmente sin cambiar de pestaña.
+- *(Mantiene compatibilidad total con `F1`, `F2`, `F3` y el teclado numérico `KP_1`, `KP_2`, `KP_3`)*.
+
+---
+
+## 🏗️ Flujo de Vinculación y Arquitectura
 
 ```mermaid
 flowchart TD
-    A["Audio de Reunión (Zoom / Meet / Teams)"] -->|Micrófono o WASAPI Loopback| B["audio_listener.py (VAD + SpeechRecognition)"]
-    B -->|Texto Transcrito en Vivo| C["gemini_copilot.py (Gemini / DeepSeek)"]
-    C -->|Filtro Casual| D{"¿Pregunta Técnica?"}
-    D -->|No (Saludos/Ruidos)| E["[IGNORAR]"]
-    D -->|Sí| F["Generación Streaming (Token-a-Token)"]
-    F --> G["Teleprompter Flotante (gui_prompter.py)"]
-    G --> H["history_logger.py (Guardado en historial/ .md y .json)"]
+    subgraph AudioYEntrada["1. Captura de Audio o Texto"]
+        A["Audio de Reunión (Meet / Teams / Zoom)"] -->|WASAPI Loopback o Mic| B["audio_listener.py (VAD + Speech)"]
+        T["Entrada Manual / Pregunta Editada"] --> B
+    end
+
+    subgraph DeteccionTematica["2. Motor Semántico de Guía Word"]
+        B -->|Texto Detectado / Escrito| W["rf_word_guide.py (find_all_matches)"]
+        W -->|Palabras Clave: dynamic, B2, RTWP, etc.| M{"¿Hay coincidencias en Guía Word?"}
+        M -->|1 Coincidencia| C1["[ 📖 Q20: DSS (Mód 5) ➔ ]"]
+        M -->|Multi-Match| C2["[ 📖 Q10: Handover B1/B2 ➔ ] [ 📖 Q17: Carrier Aggr ➔ ]"]
+        M -->|No técnico / Saludos| NH["Ocultar Banner"]
+    end
+
+    subgraph NavegacionInteractiva["3. Salto con 1 Clic a Guía Word"]
+        C1 -->|Clic en Opción| G["gui_prompter.py (_jump_to_matched_word_question)"]
+        C2 -->|Clic en Opción| G
+        G --> Tab3["Pestaña 3: Guía Word Dividida 50/50"]
+        Tab3 --> Sync["Módulo Automático + Pregunta Seleccionada + Scroll Sincronizado ES / EN"]
+    end
+
+    subgraph GeneracionDual["4. Teleprompter Dual en Tiempo Real"]
+        B -->|Pregunta| AI["gemini_copilot.py (Gemini 3.8 / DeepSeek)"]
+        AI -->|Streaming Simultáneo| P1["Panel Superior: 🇪🇸 Español"]
+        AI -->|Streaming Simultáneo| P2["Panel Inferior: 🇺🇸 English"]
+    end
 ```
 
 ---
@@ -90,7 +113,7 @@ flowchart TD
 
 1. **Windows 10 / 11**.
 2. **Python 3.10 o superior** (probado y optimizado en Python 3.12).
-3. **Clave de API de Google Gemini** (gratuita).
+3. **Clave de API de Google Gemini** (gratuita vía Google AI Studio) o **DeepSeek / OpenRouter**.
 
 ---
 
@@ -118,12 +141,12 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### 3. Configurar tu API Key
+### 3. Configurar tu Clave de API
 Copia el archivo de plantilla `.env.example` como `.env`:
 ```bash
 copy .env.example .env
 ```
-Edita `.env` con tu editor favorito y coloca tu clave:
+Edita `.env` con tu clave:
 ```env
 GEMINI_API_KEY=AIzaSyTuClaveReal...
 GEMINI_MODEL=gemini-3.8-flash
@@ -131,17 +154,17 @@ AUDIO_LANGUAGE=es-ES
 ALWAYS_ON_TOP=True
 WINDOW_OPACITY=0.95
 ```
-*(También puedes configurarla directamente desde la interfaz gráfica haciendo clic en el botón `🔑 API Key`)*.
+*(También puedes configurarla directamente en la GUI haciendo clic en el botón `🔑 API Key`)*.
 
 ---
 
 ## ▶️ Modos de Ejecución
 
 ### Opción A: Doble Clic (Windows)
-- Haz doble clic en **`iniciar.bat`**: Abre la ventana flotante en modo Teleprompter.
-- O doble clic en el acceso directo de tu Escritorio **`Copiloto de Entrevista`**.
+- Doble clic en **`iniciar.bat`**: Inicia la interfaz gráfica flotante con teleprompter dual.
+- O mediante el acceso directo en tu Escritorio **`Copiloto de Entrevista`**.
 
-### Opción B: Ventana Flotante por Terminal
+### Opción B: Ejecución por Terminal
 ```bash
 .\venv\Scripts\python.exe main.py
 ```
@@ -149,75 +172,28 @@ WINDOW_OPACITY=0.95
 ### Opción C: Modo Consola (CLI con Colores)
 ```bash
 .\venv\Scripts\python.exe main.py --cli
-# O doble clic en iniciar_consola.bat
 ```
 
-### Opción D: Prueba Directa sin Micrófono
+### Opción D: Prueba Rápida con Pregunta Simulada
 ```bash
-.\venv\Scripts\python.exe main.py --test-question "¿Qué es un switch Cisco?"
+.\venv\Scripts\python.exe main.py --test-question "Explica cómo configuras eventos B1 y B2 para handover inter-RAT"
 ```
 
 ---
 
 ## 💡 Consejos de Uso Durante una Entrevista Real
 
-1. **Posición de la Ventana**:
-   - Arrastra la ventana flotante y colócala en el centro superior de tu pantalla, justo debajo de tu webcam.
-   - De esta manera, cuando estés leyendo la respuesta, tus ojos estarán mirando casi directo a la cámara, transmitiendo total seguridad y atención.
-2. **Selección del Dispositivo**:
-   - **Si usas audífonos en la llamada**: En el menú desplegable de la aplicación, elige la opción que dice `[Audio Reunion (Loopback)]` (por ejemplo: *Speakers/Headphones (Realtek(R) Audio) [Loopback]*). Esto permitirá que el programa escuche lo que dice el entrevistador por tus audífonos sin captar ruidos de tu casa.
-   - **Si usas altavoces**: Selecciona tu micrófono habitual (`[Microfono]`).
-3. **Flujo de Lectura Natural**:
-   - En cuanto aparezca la primera frase en verde, empieza a leerla pausadamente en voz alta.
-   - Mientras terminas de decir esa frase, tus ojos pueden escanear las viñetas técnicas para complementar tu respuesta con total naturalidad y autoridad.
-
----
-
-## 🎯 Pestaña de Pitch de Presentación y Formación (F2)
-
-Para las preguntas abiertas donde el entrevistador te pide presentarte (*"Háblame de ti", "Cuéntame sobre tu trayectoria profesional", "Walk me through your background"*), la aplicación incluye una pestaña dedicada con guiones preparados organizados en dos filas temáticas para conmutar con un solo clic:
-
-1. **Fila 1: 📡 RF Optimization (Ericsson RAN / Arturo Ramírez)**:
-   - **`🇪🇸 RF Pitch (60–90s)`**: Resumen profesional de +15 años en optimización de radiofrecuencia en carriers Tier-1 (AT&T, Nextel, Empire), plataformas Ericsson Baseband 5212/5216/6630, Radio Dot, LTE L15, auditoría de KPIs (RTWP, PIM, DCR, Handover) y automatización con Python/SQL.
-   - **`🇺🇸 RF Pitch (60s)`**: Versión en inglés técnico para clientes internacionales o fabricantes de infraestructura celular.
-   - **`⚙️ Deep Dive Ericsson & KPIs`**: Análisis técnico profundo de troubleshooting L3, interferencias, pilot pollution, colisión/confusión PCI mod 3/30 y eventos A1-A5/B1-B2.
-   - **`⚡ RF Rápido (30s)`**: Elevator pitch ultra conciso de 30 segundos.
-   - **`🎓 Formación & Certs`**: Título de Ing. en Electrónica (IT Reynosa), MBA (Tecmilenio) y Certificación Oficial Ericsson LTE Configuration.
-2. **Fila 2: 🌐 Telecom (5G Core Speridian) & 💻 Full-Stack con IA (PCoS)**:
-   - **`🇺🇸 5G Pitch (Speridian)`**: Pitch en inglés para 5G Core Network Engineer (SA/NSA, N1-N12, SEPP, Open5GS/free5GC con IA asistida).
-   - **`⚙️ 5GC Call-Flows`**: Deep dive en call-flows 5G, N32-c/N32-f, SCTP y Kubernetes.
-   - **`💻 Full-Stack IA (PCoS)`**: Pitch full-stack con FastAPI, vLLM en AWS GPU (-65% costos) y RAG con pgvector.
-   - **`🎯 Fit PCoS`**: Los 3 pilares técnicos de ajuste inmediato para PCoS.
-3. **Acciones y Navegación**:
-   - **`F1` / `F2`**: Alterna al instante entre el **Copiloto en Vivo (`F1`)** y tu **Pitch (`F2`)** con una sola tecla sin mover el cursor.
-   - **`⚡ Al Teleprompter`**: Carga el pitch seleccionado como respuesta activa en la ventana principal del copiloto y te regresa automáticamente a la vista de escucha.
-   - **`📋 Copiar`**: Copia el texto al portapapeles por si solicitan un resumen en el chat de la videollamada.
-   - **Métricas Rápidas al Pie**: Badges visuales con tus datos clave (`📶 +15 Años RF & RAN`, `📡 Ericsson Specialist`, `📊 KPIs: RTWP/PIM/DCR`, `🛠️ TEMS / Nemo / Actix`, `🎓 Ing. Electrónica + MBA`, `📜 Cert. Ericsson LTE`, `🚀 Disp. Inmediata (México)`).
-
----
-
-## 🌐 Manejo Bilingüe (Español / Inglés) y Traducción en Vivo
-
-Diseñado especialmente para candidatos que aplican a empresas internacionales o vacantes con rondas técnicas mixtas:
-
-1. **Preselección de Idioma**:
-   - En la barra de controles, junto al selector de IA, dispones del selector **`Idioma:`** con las opciones **`🇪🇸 Español`** y **`🇺🇸 English`**.
-   - Si seleccionas `🇺🇸 English`, el copiloto generará todas las respuestas futuras en inglés técnico nativo con vocabulario y sintaxis senior.
-2. **Traducción Instantánea de Respuestas Existentes**:
-   - Si una respuesta se generó en español y necesitas decirla en inglés (o viceversa), presiona el botón **`🌐 Traducir a Inglés`** (o **`🌐 Traducir a Español`**) en la cabecera de la respuesta.
-   - La IA traducirá el texto en vivo vía streaming preservando intactas las viñetas, emojis (`🎯`, `⚡`, `💡`) y precisión técnica sin perder tiempo.
-   - Ambas versiones (original y traducción) quedan registradas en tu historial para repaso posterior.
-
----
-
-## 📜 Historial y Registro Automático de Conversaciones
-
-Cada vez que el entrevistador hace una pregunta y se genera una respuesta, la sesión se guarda **automáticamente en segundo plano** dentro del directorio `historial/`:
-
-- **Formato Markdown (`.md`)**: Notas legibles con fecha, hora, pregunta formulada, motor de IA utilizado y la respuesta generada con viñetas. Ideal para abrir con Obsidian, Notion, VS Code o el Bloc de notas.
-- **Formato JSON (`.json`)**: Estructura de datos completa para análisis o integraciones futuras.
-- **Acceso Directo en 1 Clic**: En la cabecera de la respuesta dentro de la aplicación, haz clic en el botón azul **`📜 Ver Historial`** y se abrirá la carpeta de tus entrevistas en el Explorador de Windows.
-- **100% Privado**: Tus registros se almacenan exclusivamente en tu computadora local y están excluidos en `.gitignore` para no compartirse jamás en GitHub.
+1. **Ubicación de la Ventana**:
+   - Arrastra la ventana flotante y colócala en el centro superior de la pantalla, justo debajo de tu cámara web.
+   - Al leer las respuestas en el teleprompter, tus ojos estarán mirando fijamente a la cámara, transmitiendo total contacto visual y seguridad.
+2. **Selección del Dispositivo de Audio**:
+   - **Con audífonos puestos**: Selecciona la opción que contenga `[Loopback]` (por ejemplo: *Speakers/Headphones [Loopback]*). El sistema capturará con nitidez digital lo que dice el entrevistador sin captar ruido ambiental ni eco de tu cuarto.
+   - **Con altavoces externos**: Selecciona tu micrófono (`[Microfono]`).
+3. **Uso de la Guía Word en Vivo**:
+   - Cuando el entrevistador mencione conceptos como `B2`, `handover`, `RTWP` o `dynamic spectrum`, observa la barra interactiva que aparece debajo de la pregunta.
+   - Si deseas consultar la fórmula, los comandos Moshell o la tabla técnica exacta de la guía oficial, haz clic sobre el chip correspondiente y repasa la respuesta modelo mientras la IA formula la respuesta en el copiloto.
+4. **Copiado Rápido al Chat**:
+   - Si el entrevistador solicita compartir texto o comandos por el chat de Zoom/Teams, utiliza los botones `📋 Copiar ES` o `📋 Copiar EN`, o bien selecciona el fragmento y presiona `Ctrl + C`.
 
 ---
 
@@ -226,42 +202,40 @@ Cada vez que el entrevistador hace una pregunta y se genera una respuesta, la se
 ```
 Contestar-Entrevista/
 ├── .env.example          # Plantilla para variables de entorno
-├── .gitignore            # Archivos excluidos del control de versiones (protege .env y historial)
+├── .gitignore            # Archivos excluidos (protege .env e historial privado)
 ├── requirements.txt      # Dependencias oficiales de Python
 ├── iniciar.bat           # Lanzador rápido de la ventana flotante
 ├── iniciar_consola.bat   # Lanzador rápido del modo terminal
 ├── main.py               # Punto de entrada principal (GUI, CLI y Tests)
-├── config.py             # Configuración centralizada y System Prompts
-├── candidate_profile.py  # Perfil y base de conocimiento técnico de Javier Viveros Huesca
-├── rf_word_guide.py      # Gestor y parser de la Guía de Entrevista RF en formato Word/Markdown
-├── PERFIL_CANDIDATO.md   # Documento de referencia con las 7 respuestas para PCoS y CV
-├── GUIA_ENTREVISTA_RF_ERICSSON.md # Guía técnica de preparación para RF Optimization Engineer (Ericsson RAN)
-├── Guia_Entrevista_Senior_RF_Ericsson_4G_5G_ES.docx # Documento oficial Microsoft Word (10 Módulos - Español)
-├── Guia_Entrevista_Senior_RF_Ericsson_4G_5G_ES.md   # Fuente Markdown enriquecida (10 Módulos - Español)
-├── Interview_Guide_Senior_RF_Ericsson_4G_5G_EN.docx # Official Microsoft Word Document (11 Modules - English)
-├── Interview_Guide_Senior_RF_Ericsson_4G_5G_EN.md   # Enriched Markdown Source (11 Modules - English)
-├── GUIA_ENTREVISTA_5G.md   # Guía completa de preparación técnica para 5G Network Engineer (Speridian)
+├── config.py             # Configuración centralizada y System Prompts bilingües
+├── candidate_profile.py  # Base de conocimiento y perfil de Senior RF Engineer (Javier Viveros)
+├── rf_word_guide.py      # Motor de indexación, parsing y matching multi-coincidencia de Guía Word
+├── GUIA_ENTREVISTA_RF_ERICSSON.md # Guía técnica de preparación para RF Optimization Engineer
+├── Guia_Entrevista_Senior_RF_Ericsson_4G_5G_ES.docx # Documento oficial Microsoft Word (10 Módulos - ES)
+├── Guia_Entrevista_Senior_RF_Ericsson_4G_5G_ES.md   # Fuente Markdown enriquecida (10 Módulos - ES)
+├── Interview_Guide_Senior_RF_Ericsson_4G_5G_EN.docx # Official Microsoft Word Document (11 Modules - EN)
+├── Interview_Guide_Senior_RF_Ericsson_4G_5G_EN.md   # Enriched Markdown Source (11 Modules - EN)
 ├── audio_listener.py     # Captura de audio y transcripción continua (Mic / Loopback)
 ├── gemini_copilot.py     # Cliente multi-IA (Gemini con auto-fallback, DeepSeek y OpenRouter)
-├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top con visor Word (F3) y teleprompter
+├── gui_prompter.py       # GUI flotante con teleprompter dual, visor Word 50/50 y enlaces dinámicos
 ├── cli_prompter.py       # Interfaz para terminal interactiva con Colorama
-├── history_logger.py     # Motor de guardado y persistencia en Markdown y JSON
+├── history_logger.py     # Registro automático en Markdown y JSON
 ├── historial/            # Carpeta local privada con las notas de cada entrevista
-└── README.md             # Esta documentación
+└── README.md             # Documentación exhaustiva del sistema
 ```
 
 ---
 
 ## ⚙️ Tecnologías Utilizadas
 
-- **[Google GenAI SDK](https://github.com/googleapis/python-genai)** (`google-genai`): Integración oficial con Gemini 3.8 Flash.
-- **[SpeechRecognition](https://github.com/Uberi/speech_recognition)**: Detección y transcripción de voz en tiempo real.
-- **[PyAudioWPatch](https://github.com/s0d3s/PyAudioWPatch)**: Soporte nativo para captura de bucle invertido (WASAPI Loopback) en Windows.
-- **[Tkinter](https://docs.python.org/3/library/tkinter.html)**: Interfaz gráfica nativa ultraligera (0% consumo de CPU).
+- **[Google GenAI SDK](https://github.com/googleapis/python-genai)** (`google-genai`): Integración con Gemini 3.8 Flash.
+- **[SpeechRecognition](https://github.com/Uberi/speech_recognition)**: Detección y transcripción continua de voz.
+- **[PyAudioWPatch](https://github.com/s0d3s/PyAudioWPatch)**: Captura digital de bucle invertido (WASAPI Loopback) sin eco en Windows.
+- **[Tkinter](https://docs.python.org/3/library/tkinter.html)**: Interfaz gráfica nativa ultraligera de baja latencia.
 - **[Colorama](https://github.com/tartley/colorama)**: Formato de consola para PowerShell y CMD.
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está distribuido bajo la licencia MIT. Diseñado con fines educativos y de asistencia personal en procesos de selección.
+Este proyecto está distribuido bajo la licencia MIT. Diseñado con fines educativos y de asistencia técnica en tiempo real durante entrevistas laborales de alta exigencia.
