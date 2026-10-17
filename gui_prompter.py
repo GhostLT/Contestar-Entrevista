@@ -7,6 +7,8 @@ Soporta:
 - Always-on-Top, soporte para micrófono y loopback de reuniones.
 """
 
+import os
+import re
 import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
@@ -19,6 +21,7 @@ import candidate_profile
 from audio_listener import AudioListener, get_audio_devices, get_default_device_index
 from gemini_copilot import AICopilot
 from history_logger import HistoryLogger
+from rf_word_guide import RFWordGuide, QuestionItem, ModuleItem
 
 
 class InterviewPrompterApp:
@@ -29,8 +32,8 @@ class InterviewPrompterApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Copiloto de Entrevistas | Gemini & DeepSeek")
-        self.root.geometry("700x640+350+80")
-        self.root.minsize(500, 440)
+        self.root.geometry("780x680+280+50")
+        self.root.minsize(550, 480)
 
         # Configuración de apariencia
         self.bg_main = "#121214"
@@ -82,12 +85,19 @@ class InterviewPrompterApp:
         self.active_pitch_key = "pitch_rf_es"
         self.pitch_buttons: Dict[str, tk.Button] = {}
 
+        # Componentes de la Guía de Entrevista Word
+        self.rf_word_guide = RFWordGuide("es")
+        self.current_word_lang = "es"
+        self.selected_question_item: Optional[QuestionItem] = None
+        self.displayed_questions: List[QuestionItem] = []
+
         # Construir interfaz
         self._setup_ui()
 
         # Teclas rápidas para alternar pestañas
         self.root.bind("<F1>", lambda e: self._switch_tab("copilot"))
         self.root.bind("<F2>", lambda e: self._switch_tab("pitch"))
+        self.root.bind("<F3>", lambda e: self._switch_tab("word_guide"))
 
         # Iniciar ciclo de mensajes de hilos
         self.root.after(100, self._process_queue)
@@ -277,7 +287,23 @@ class InterviewPrompterApp:
             pady=3,
             cursor="hand2"
         )
-        self.btn_tab_pitch.pack(side=tk.LEFT)
+        self.btn_tab_pitch.pack(side=tk.LEFT, padx=(0, 6))
+
+        self.btn_tab_word_guide = tk.Button(
+            tab_nav,
+            text="📖 Guía Entrevista Word (F3)",
+            command=lambda: self._switch_tab("word_guide"),
+            bg=self.bg_card,
+            fg=self.text_dim,
+            activebackground=self.bg_card_inner,
+            activeforeground=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 9, "bold"),
+            padx=12,
+            pady=3,
+            cursor="hand2"
+        )
+        self.btn_tab_word_guide.pack(side=tk.LEFT)
 
         # 4. CONTENEDOR PESTAÑA 1: COPILOTO EN VIVO
         self.frame_copilot = tk.Frame(self.root, bg=self.bg_main)
@@ -285,6 +311,9 @@ class InterviewPrompterApp:
 
         # 5. CONTENEDOR PESTAÑA 2: MI PITCH & FORMACIÓN
         self.frame_pitch = tk.Frame(self.root, bg=self.bg_main)
+
+        # 6. CONTENEDOR PESTAÑA 3: GUÍA DE ENTREVISTA EN FORMATO WORD
+        self.frame_word_guide = tk.Frame(self.root, bg=self.bg_main)
 
         # --- CONTENIDO DE PESTAÑA 1 (COPILOTO) ---
         # 4.1 TARJETA DE PREGUNTA DETECTADA (EDITABLE DIRECTAMENTE)
@@ -472,6 +501,9 @@ class InterviewPrompterApp:
         # Construir contenido de Pestaña 2 (Pitch)
         self._setup_pitch_ui()
 
+        # Construir contenido de Pestaña 3 (Guía Word)
+        self._setup_word_guide_ui()
+
     def _setup_pitch_ui(self):
         # 1. Fila 1 de Pitch: RF Optimization Engineer (Ericsson RAN / Arturo Ramírez) + Acciones
         nav_row1 = tk.Frame(self.frame_pitch, bg=self.bg_main, padx=12, pady=3)
@@ -652,18 +684,26 @@ class InterviewPrompterApp:
 
     def _switch_tab(self, tab_name: str):
         self.active_tab = tab_name
+        self.frame_copilot.pack_forget()
+        self.frame_pitch.pack_forget()
+        self.frame_word_guide.pack_forget()
+
+        self.btn_tab_copilot.config(bg=self.bg_card, fg=self.text_dim)
+        self.btn_tab_pitch.config(bg=self.bg_card, fg=self.text_dim)
+        self.btn_tab_word_guide.config(bg=self.bg_card, fg=self.text_dim)
+
         if tab_name == "copilot":
-            self.frame_pitch.pack_forget()
             self.frame_copilot.pack(fill=tk.BOTH, expand=True)
             self.btn_tab_copilot.config(bg=self.accent_blue, fg="#ffffff")
-            self.btn_tab_pitch.config(bg=self.bg_card, fg=self.text_dim)
-            self._update_status("🟢 Copiloto en Vivo activo (F2 para ver tu Pitch)", self.accent_green)
-        else:
-            self.frame_copilot.pack_forget()
+            self._update_status("🟢 Copiloto en Vivo activo (F2 Pitch, F3 Guía Word)", self.accent_green)
+        elif tab_name == "pitch":
             self.frame_pitch.pack(fill=tk.BOTH, expand=True)
             self.btn_tab_pitch.config(bg=self.accent_blue, fg="#ffffff")
-            self.btn_tab_copilot.config(bg=self.bg_card, fg=self.text_dim)
-            self._update_status("🎯 Viendo Pitch Personal (F1 para volver al Copiloto)", self.accent_blue)
+            self._update_status("🎯 Viendo Pitch Personal (F1 Copiloto, F3 Guía Word)", self.accent_blue)
+        elif tab_name == "word_guide":
+            self.frame_word_guide.pack(fill=tk.BOTH, expand=True)
+            self.btn_tab_word_guide.config(bg=self.accent_blue, fg="#ffffff")
+            self._update_status("📖 Guía de Entrevista Word activa (F1 Copiloto, F2 Pitch)", self.accent_yellow)
 
     def _load_pitch(self, key: str):
         self.active_pitch_key = key
@@ -710,6 +750,380 @@ class InterviewPrompterApp:
 
             self._switch_tab("copilot")
             self._update_status("⚡ Pitch cargado en el Teleprompter principal", self.accent_green)
+
+    # ------------------ PESTAÑA 3: GUÍA DE ENTREVISTA EN FORMATO WORD ------------------
+
+    def _setup_word_guide_ui(self):
+        # 1. Barra Ribbon Superior (Filtros, Selector de Módulo, Buscador y Botones de Acción)
+        ribbon_frame = tk.Frame(self.frame_word_guide, bg=self.bg_main, padx=12, pady=4)
+        ribbon_frame.pack(fill=tk.X)
+
+        # Selector de Idioma de Guía
+        lbl_w_lang = tk.Label(ribbon_frame, text="📄 Idioma:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
+        lbl_w_lang.pack(side=tk.LEFT, padx=(0, 3))
+
+        self.var_word_lang = tk.StringVar(value="🇪🇸 Español (10 Módulos)")
+        self.combo_word_lang = ttk.Combobox(
+            ribbon_frame,
+            textvariable=self.var_word_lang,
+            values=["🇪🇸 Español (10 Módulos)", "🇺🇸 English (11 Modules)"],
+            state="readonly",
+            width=20
+        )
+        self.combo_word_lang.pack(side=tk.LEFT, padx=(0, 8))
+        self.combo_word_lang.bind("<<ComboboxSelected>>", self._on_word_lang_changed)
+
+        # Selector de Módulo
+        lbl_w_mod = tk.Label(ribbon_frame, text="📚 Módulo:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
+        lbl_w_mod.pack(side=tk.LEFT, padx=(0, 3))
+
+        self.var_word_module = tk.StringVar()
+        self.combo_word_module = ttk.Combobox(
+            ribbon_frame,
+            textvariable=self.var_word_module,
+            state="readonly",
+            width=26
+        )
+        self.combo_word_module.pack(side=tk.LEFT, padx=(0, 8))
+        self.combo_word_module.bind("<<ComboboxSelected>>", self._on_word_module_changed)
+
+        # Buscador dinámico en tiempo real
+        lbl_w_search = tk.Label(ribbon_frame, text="🔍:", bg=self.bg_main, fg=self.text_dim, font=("Segoe UI", 8, "bold"))
+        lbl_w_search.pack(side=tk.LEFT, padx=(0, 2))
+
+        self.var_word_search = tk.StringVar()
+        self.entry_word_search = tk.Entry(
+            ribbon_frame,
+            textvariable=self.var_word_search,
+            bg=self.bg_card,
+            fg=self.text_color,
+            insertbackground=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 9),
+            width=18
+        )
+        self.entry_word_search.pack(side=tk.LEFT, padx=(0, 6), ipady=2)
+        self.entry_word_search.bind("<KeyRelease>", self._on_word_search_changed)
+
+        # Botones de Acción (Lado Derecho)
+        btn_open_docx = tk.Button(
+            ribbon_frame,
+            text="📄 Abrir Word",
+            command=self._open_word_docx,
+            bg="#1d4ed8",
+            fg="#ffffff",
+            activebackground="#2563eb",
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=7,
+            pady=2,
+            cursor="hand2"
+        )
+        btn_open_docx.pack(side=tk.RIGHT, padx=2)
+
+        btn_copy_w = tk.Button(
+            ribbon_frame,
+            text="📋 Copiar",
+            command=self._copy_word_answer,
+            bg=self.bg_card_inner,
+            fg=self.text_color,
+            relief=tk.FLAT,
+            font=("Segoe UI", 8),
+            padx=7,
+            pady=2,
+            cursor="hand2"
+        )
+        btn_copy_w.pack(side=tk.RIGHT, padx=2)
+
+        btn_to_prompt = tk.Button(
+            ribbon_frame,
+            text="⚡ Al Teleprompter",
+            command=self._send_word_answer_to_teleprompter,
+            bg=self.accent_green,
+            fg="#000000",
+            activebackground="#16a34a",
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=8,
+            pady=2,
+            cursor="hand2"
+        )
+        btn_to_prompt.pack(side=tk.RIGHT, padx=2)
+
+        # 2. Contenedor Split (Izquierda: Navegador de preguntas | Derecha: Hoja de Documento Word)
+        split_frame = tk.Frame(self.frame_word_guide, bg=self.bg_main, padx=12, pady=4)
+        split_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Panel Izquierdo: Lista de Preguntas
+        left_panel = tk.Frame(split_frame, bg=self.bg_card, width=240, padx=6, pady=6)
+        left_panel.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 6))
+        left_panel.pack_propagate(False)
+
+        self.lbl_q_nav_header = tk.Label(
+            left_panel,
+            text="📋 ÍNDICE DE PREGUNTAS:",
+            bg=self.bg_card,
+            fg=self.accent_blue,
+            font=("Segoe UI", 8, "bold")
+        )
+        self.lbl_q_nav_header.pack(fill=tk.X, pady=(0, 4))
+
+        list_box_frame = tk.Frame(left_panel, bg=self.bg_card_inner)
+        list_box_frame.pack(fill=tk.BOTH, expand=True)
+
+        sb_list = ttk.Scrollbar(list_box_frame)
+        sb_list.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.list_word_questions = tk.Listbox(
+            list_box_frame,
+            bg=self.bg_card_inner,
+            fg="#ffffff",
+            selectbackground=self.accent_blue,
+            selectforeground="#ffffff",
+            relief=tk.FLAT,
+            bd=0,
+            activestyle="none",
+            font=("Segoe UI", 9),
+            yscrollcommand=sb_list.set
+        )
+        self.list_word_questions.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_list.config(command=self.list_word_questions.yview)
+        self.list_word_questions.bind("<<ListboxSelect>>", self._on_word_question_selected)
+
+        # Panel Derecho: Visualizador Estilo Documento Word (Página Blanca con márgenes)
+        right_panel = tk.Frame(split_frame, bg=self.bg_card, padx=6, pady=6)
+        right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Marco que simula la página de Microsoft Word
+        page_card = tk.Frame(right_panel, bg="#FFFFFF", padx=14, pady=10)
+        page_card.pack(fill=tk.BOTH, expand=True)
+
+        # Encabezado superior de página Word
+        word_header_strip = tk.Frame(page_card, bg="#FFFFFF")
+        word_header_strip.pack(fill=tk.X, pady=(0, 4))
+
+        lbl_hdr_left = tk.Label(
+            word_header_strip,
+            text="AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G",
+            bg="#FFFFFF",
+            fg="#64748B",
+            font=("Calibri", 8, "italic")
+        )
+        lbl_hdr_left.pack(side=tk.LEFT)
+
+        lbl_hdr_right = tk.Label(
+            word_header_strip,
+            text="Confidencial | Javier Viveros Huesca",
+            bg="#FFFFFF",
+            fg="#64748B",
+            font=("Calibri", 8, "italic")
+        )
+        lbl_hdr_right.pack(side=tk.RIGHT)
+
+        div_line = tk.Frame(page_card, bg="#CBD5E1", height=1)
+        div_line.pack(fill=tk.X, pady=(2, 6))
+
+        # Cuadro de Texto de la Página Word
+        doc_box_frame = tk.Frame(page_card, bg="#FFFFFF")
+        doc_box_frame.pack(fill=tk.BOTH, expand=True)
+
+        sb_doc = ttk.Scrollbar(doc_box_frame)
+        sb_doc.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.txt_word_doc = tk.Text(
+            doc_box_frame,
+            bg="#FFFFFF",
+            fg="#0F172A",
+            insertbackground="#0F172A",
+            relief=tk.FLAT,
+            bd=0,
+            font=("Calibri", 10),
+            wrap=tk.WORD,
+            spacing1=2,
+            spacing3=2,
+            yscrollcommand=sb_doc.set
+        )
+        self.txt_word_doc.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb_doc.config(command=self.txt_word_doc.yview)
+
+        # Configurar estilos de tags para formato idéntico a Word
+        self.txt_word_doc.tag_configure("doc_main_title", font=("Calibri", 14, "bold"), foreground="#002561", spacing1=4, spacing3=2)
+        self.txt_word_doc.tag_configure("doc_subtitle", font=("Calibri", 11, "bold"), foreground="#102A43", spacing1=1, spacing3=4)
+        self.txt_word_doc.tag_configure("doc_meta", font=("Calibri", 9), foreground="#475569", background="#F8FAFC", lmargin1=12, lmargin2=12, rmargin=12, spacing1=2, spacing3=2)
+        self.txt_word_doc.tag_configure("mod_title", font=("Calibri", 12, "bold"), foreground="#002561", background="#EEF2FF", lmargin1=8, lmargin2=8, rmargin=8, spacing1=6, spacing3=4)
+        self.txt_word_doc.tag_configure("q_title", font=("Calibri", 11, "bold"), foreground="#1E3A8A", spacing1=6, spacing3=3)
+        self.txt_word_doc.tag_configure("strategy_hdr", font=("Calibri", 10, "bold"), background="#F0FFF4", foreground="#166534", lmargin1=16, lmargin2=16, rmargin=16, spacing1=4, spacing3=2)
+        self.txt_word_doc.tag_configure("strategy_body", font=("Calibri", 10), background="#F0FFF4", foreground="#14532D", lmargin1=16, lmargin2=16, rmargin=16, spacing1=2, spacing3=4)
+        self.txt_word_doc.tag_configure("answer_hdr", font=("Calibri", 11, "bold"), background="#F0F4F8", foreground="#002561", lmargin1=16, lmargin2=16, rmargin=16, spacing1=5, spacing3=2)
+        self.txt_word_doc.tag_configure("answer_body", font=("Calibri", 10), background="#F0F4F8", foreground="#0F172A", lmargin1=16, lmargin2=16, rmargin=16, spacing1=2, spacing3=5)
+        self.txt_word_doc.tag_configure("sec_hdr", font=("Calibri", 10, "bold"), foreground="#1E293B", spacing1=5, spacing3=2)
+        self.txt_word_doc.tag_configure("code_block", font=("Consolas", 9), background="#F1F5F9", foreground="#0F172A", lmargin1=16, lmargin2=16, rmargin=16, spacing1=2, spacing3=4)
+        self.txt_word_doc.tag_configure("footer", font=("Calibri", 8, "italic"), foreground="#94A3B8", justify="center", spacing1=8)
+
+        # Pie inferior de la página Word
+        div_line_bot = tk.Frame(page_card, bg="#CBD5E1", height=1)
+        div_line_bot.pack(fill=tk.X, pady=(6, 2))
+
+        word_footer_strip = tk.Frame(page_card, bg="#FFFFFF")
+        word_footer_strip.pack(fill=tk.X)
+
+        lbl_foot = tk.Label(
+            word_footer_strip,
+            text="Confidencial | Preparación de Entrevista Técnica – Javier Viveros Huesca",
+            bg="#FFFFFF",
+            fg="#94A3B8",
+            font=("Calibri", 8, "italic")
+        )
+        lbl_foot.pack(fill=tk.X)
+
+        # Inicializar datos en la vista
+        self._populate_word_modules()
+        self._load_word_module_questions(0)
+
+    def _on_word_lang_changed(self, event=None):
+        val = self.var_word_lang.get()
+        new_lang = "en" if "English" in val else "es"
+        if new_lang != self.current_word_lang:
+            self.current_word_lang = new_lang
+            self.rf_word_guide.load(new_lang)
+            self._populate_word_modules()
+            self._load_word_module_questions(0)
+
+    def _populate_word_modules(self):
+        mod_titles = ["📖 [Todos los Módulos / All]"]
+        for m in self.rf_word_guide.modules:
+            mod_titles.append(f"M{m.num}: {m.title[:38]}...")
+        self.combo_word_module.config(values=mod_titles)
+        self.combo_word_module.current(1 if len(mod_titles) > 1 else 0)
+
+    def _on_word_module_changed(self, event=None):
+        idx = self.combo_word_module.current()
+        if idx == 0:
+            self.displayed_questions = list(self.rf_word_guide.all_questions)
+        else:
+            mod_idx = idx - 1
+            if 0 <= mod_idx < len(self.rf_word_guide.modules):
+                self.displayed_questions = list(self.rf_word_guide.modules[mod_idx].questions)
+            else:
+                self.displayed_questions = list(self.rf_word_guide.all_questions)
+        self._populate_word_questions_list(self.displayed_questions)
+
+    def _on_word_search_changed(self, event=None):
+        q = self.var_word_search.get().strip()
+        if not q:
+            self._on_word_module_changed()
+            return
+        results = self.rf_word_guide.search(q)
+        self.displayed_questions = results
+        self._populate_word_questions_list(results)
+
+    def _populate_word_questions_list(self, questions: List[QuestionItem]):
+        self.list_word_questions.delete(0, tk.END)
+        self.lbl_q_nav_header.config(text=f"📋 PREGUNTAS ({len(questions)}):")
+        for q in questions:
+            self.list_word_questions.insert(tk.END, q.short_title)
+        if questions:
+            self.list_word_questions.selection_set(0)
+            self._render_word_question(questions[0])
+
+    def _on_word_question_selected(self, event=None):
+        sel = self.list_word_questions.curselection()
+        if not sel:
+            return
+        idx = sel[0]
+        if 0 <= idx < len(self.displayed_questions):
+            self.selected_question_item = self.displayed_questions[idx]
+            self._render_word_question(self.selected_question_item)
+
+    def _render_word_question(self, q: QuestionItem):
+        self.selected_question_item = q
+        self.txt_word_doc.config(state=tk.NORMAL)
+        self.txt_word_doc.delete("1.0", tk.END)
+
+        # Módulo Header
+        self.txt_word_doc.insert(tk.END, f"📌 {q.module_title}\n\n", "mod_title")
+
+        # Título de Pregunta
+        self.txt_word_doc.insert(tk.END, f"{q.title}\n\n", "q_title")
+
+        # Estrategia y Tono
+        if q.strategy:
+            strat_label = "🎯 ESTRATEGIA Y TONO:\n" if self.current_word_lang == "es" else "🎯 STRATEGY & TONE:\n"
+            self.txt_word_doc.insert(tk.END, strat_label, "strategy_hdr")
+            self.txt_word_doc.insert(tk.END, f"{q.strategy}\n\n", "strategy_body")
+
+        # Respuesta Modelo
+        if q.answer:
+            header_label = "💬 RESPUESTA MODELO (Lo que debes responder):\n" if self.current_word_lang == "es" else "💬 MODEL ANSWER (What you should say):\n"
+            self.txt_word_doc.insert(tk.END, header_label, "answer_hdr")
+            ans_clean = "\n".join(re.sub(r'^\s*>\s?', '', line) for line in q.answer.splitlines())
+            self.txt_word_doc.insert(tk.END, f"{ans_clean}\n\n", "answer_body")
+
+        # Secciones extra (fórmulas, tablas, comandos, troubleshooting)
+        for s_title, s_body in q.extra_sections:
+            s_clean = "\n".join(re.sub(r'^\s*>\s?', '', line) for line in s_body.splitlines())
+            if any(k in s_title.lower() for k in ["comando", "tabla", "fórmula", "parámetro", "command", "table", "cheat", "phrases", "pronunciation"]):
+                self.txt_word_doc.insert(tk.END, f"{s_title}\n", "sec_hdr")
+                self.txt_word_doc.insert(tk.END, f"{s_clean}\n\n", "code_block")
+            else:
+                self.txt_word_doc.insert(tk.END, f"{s_title}\n", "sec_hdr")
+                self.txt_word_doc.insert(tk.END, f"{s_clean}\n\n", "strategy_body")
+
+        self.txt_word_doc.insert(tk.END, "―" * 65 + "\n", "doc_meta")
+        self.txt_word_doc.insert(tk.END, "Preparación de Entrevista Técnica – Javier Viveros Huesca | Formato Oficial Word\n", "footer")
+        self.txt_word_doc.config(state=tk.DISABLED)
+
+    def _load_word_module_questions(self, mod_idx: int):
+        if 0 <= mod_idx < len(self.rf_word_guide.modules):
+            self.displayed_questions = list(self.rf_word_guide.modules[mod_idx].questions)
+        else:
+            self.displayed_questions = list(self.rf_word_guide.all_questions)
+        self._populate_word_questions_list(self.displayed_questions)
+
+    def _send_word_answer_to_teleprompter(self):
+        if not self.selected_question_item:
+            messagebox.showinfo("Guía Word", "Selecciona una pregunta de la lista primero.")
+            return
+
+        q = self.selected_question_item
+        ans_text = q.clean_answer_for_teleprompter
+        if not ans_text:
+            ans_text = q.raw_text
+
+        self.txt_question.delete("1.0", tk.END)
+        self.txt_question.insert("1.0", q.title)
+
+        self.txt_answer.config(state=tk.NORMAL)
+        self.txt_answer.delete("1.0", tk.END)
+        self.txt_answer.insert(tk.END, ans_text)
+        self.txt_answer.config(state=tk.DISABLED)
+
+        self._switch_tab("copilot")
+        self._update_status(f"⚡ Q{q.num} cargada en el Teleprompter principal", self.accent_green)
+
+    def _copy_word_answer(self):
+        if not self.selected_question_item:
+            return
+        ans_text = self.selected_question_item.clean_answer_for_teleprompter
+        if not ans_text:
+            ans_text = self.selected_question_item.raw_text
+        self.root.clipboard_clear()
+        self.root.clipboard_append(ans_text)
+        self._update_status("📋 Respuesta copiada al portapapeles", self.accent_green)
+
+    def _open_word_docx(self):
+        success = self.rf_word_guide.open_docx_in_word()
+        if success:
+            self._update_status("📄 Abriendo documento oficial en Microsoft Word...", self.accent_blue)
+        else:
+            messagebox.showwarning("Microsoft Word", "No se encontró el archivo .docx o Microsoft Word en este equipo.")
+
+    def _open_word_md(self):
+        success = self.rf_word_guide.open_md_in_editor()
+        if success:
+            self._update_status("📑 Abriendo documento Markdown...", self.accent_blue)
+        else:
+            messagebox.showwarning("Markdown", "No se encontró el archivo .md.")
 
     # ------------------ EVENTOS Y CALLBACKS ------------------
 

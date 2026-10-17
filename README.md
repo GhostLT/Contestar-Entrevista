@@ -26,7 +26,15 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
     - **`🎯 Fit PCoS`**: Los 3 pilares técnicos de fit inmediato (estrategia Open Source, RLS y flujos agénticos).
     - 📖 **[Guía Maestra 5G](GUIA_ENTREVISTA_5G.md)** y **[Guía Perfil Candidato](PERFIL_CANDIDATO.md)**.
   - **⚡ Botón "Al Teleprompter"**: Carga cualquier pitch seleccionado en el teleprompter principal del copiloto con 1 solo clic.
-  - **Teclas Rápidas**: `F1` para volver al Copiloto en Vivo y `F2` para abrir tu Pitch en cualquier momento.
+  - **Teclas Rápidas**: `F1` para volver al Copiloto en Vivo, `F2` para abrir tu Pitch y `F3` para la Guía Word.
+- 📖 **Pestaña de Guía Maestra de Entrevista en Formato Word (F3)**: Visor de lectura interactivo diseñado idéntico a las especificaciones visuales de un documento formal de **Microsoft Word**, integrando los 10 módulos en español y 11 en inglés:
+  - **Diseño Estilo Microsoft Word**: Página en blanco con encabezado institucional (`AMDOCS MX | Senior RF Optimization Engineer – Ericsson 4G/5G`), márgenes ejecutivos, cajas de estrategia verde (`🎯 Estrategia y Tono`), cajas de respuesta modelo azul marino (`💬 Respuesta Modelo`), y bloques monospace en `Consolas` para comandos Moshell y tablas de parámetros.
+  - **Selector Bilingüe**: Alterna al instante entre `🇪🇸 Español (10 Módulos - 31 Temas)` y `🇺🇸 English (11 Modules - 33 Topics)`.
+  - **Navegador Lateral de Preguntas**: Índice interactivo con las 31 preguntas en español / 33 en inglés para saltar a cualquier tema en 1 clic.
+  - **Buscador en Tiempo Real**: Filtra preguntas por términos técnicos (`RTWP`, `PIM`, `Handover`, `A3`, `PRACH`, `DCR`, `VoLTE`, `MOM`, `Moshell`).
+  - **⚡ Botón "Al Teleprompter"**: Extrae la respuesta modelo seleccionada y la carga de inmediato en el teleprompter en vivo (`F1`).
+  - **📄 Botón "Abrir Word"**: Abre directamente el archivo `.docx` oficial en Microsoft Word mediante integración nativa con Windows.
+  - **Teclas Rápidas**: `F1` (Copiloto en Vivo), `F2` (Mi Pitch & Formación), `F3` (Guía Word).
 - 👤 **Alter Ego y Perfil Profesional Integrado (Javier Viveros Huesca)**: El copiloto está preconfigurado con el historial verificado: +15 años en optimización de radiofrecuencia (RF) y RAN en carriers Tier-1 (AT&T, Nextel, Empire), certificación oficial de Ericsson en LTE Configuration, MBA de Tecmilenio e Ing. en Electrónica (IT Reynosa), además de experiencia en 5G Core (Open5GS/free5GC) y Full-Stack con IA (FastAPI/vLLM), respondiendo siempre en primera persona ("yo") con autoridad técnica senior.
 - 🌐 **Soporte Bilingüe (Español 🇪🇸 / Inglés 🇺🇸) y Traducción en 1 Clic**:
   - **Selector de Idioma**: Configura el idioma de respuesta en `🇪🇸 Español` o `🇺🇸 English` desde la barra de controles para entrevistas nacionales o internacionales.
@@ -214,12 +222,17 @@ Contestar-Entrevista/
 ├── main.py               # Punto de entrada principal (GUI, CLI y Tests)
 ├── config.py             # Configuración centralizada y System Prompts
 ├── candidate_profile.py  # Perfil y base de conocimiento técnico de Javier Viveros Huesca
+├── rf_word_guide.py      # Gestor y parser de la Guía de Entrevista RF en formato Word/Markdown
 ├── PERFIL_CANDIDATO.md   # Documento de referencia con las 7 respuestas para PCoS y CV
 ├── GUIA_ENTREVISTA_RF_ERICSSON.md # Guía técnica de preparación para RF Optimization Engineer (Ericsson RAN)
+├── Guia_Entrevista_Senior_RF_Ericsson_4G_5G_ES.docx # Documento oficial Microsoft Word (10 Módulos - Español)
+├── Guia_Entrevista_Senior_RF_Ericsson_4G_5G_ES.md   # Fuente Markdown enriquecida (10 Módulos - Español)
+├── Interview_Guide_Senior_RF_Ericsson_4G_5G_EN.docx # Official Microsoft Word Document (11 Modules - English)
+├── Interview_Guide_Senior_RF_Ericsson_4G_5G_EN.md   # Enriched Markdown Source (11 Modules - English)
 ├── GUIA_ENTREVISTA_5G.md   # Guía completa de preparación técnica para 5G Network Engineer (Speridian)
 ├── audio_listener.py     # Captura de audio y transcripción continua (Mic / Loopback)
 ├── gemini_copilot.py     # Cliente multi-IA (Gemini con auto-fallback, DeepSeek y OpenRouter)
-├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top con edición en vivo
+├── gui_prompter.py       # Interfaz gráfica flotante Always-on-Top con visor Word (F3) y teleprompter
 ├── cli_prompter.py       # Interfaz para terminal interactiva con Colorama
 ├── history_logger.py     # Motor de guardado y persistencia en Markdown y JSON
 ├── historial/            # Carpeta local privada con las notas de cada entrevista
