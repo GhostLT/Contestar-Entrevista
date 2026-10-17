@@ -207,11 +207,12 @@ class RFWordGuide:
         results.sort(key=lambda x: x[0], reverse=True)
         return [item[1] for item in results]
 
-    def match_question(self, query: str, min_threshold: int = 15) -> Optional[Dict[str, Any]]:
+    def find_all_matches(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         """
-        Analiza inteligentemente una consulta o pregunta detectada por el copiloto
-        y encuentra la mejor coincidencia temática dentro de la guía Word oficial.
-        Retorna un diccionario con detalles del módulo, pregunta, score y palabras clave.
+        Analiza una consulta o pregunta detectada por el copiloto y encuentra
+        todas las coincidencias temáticas relevantes dentro de la guía Word oficial.
+        Soporta términos individuales técnicos (como 'dynamic', 'B2', 'RTWP') y
+        retorna hasta `limit` opciones ordenadas por relevancia con score.
         """
         def _norm(txt: str) -> str:
             if not txt:
@@ -220,7 +221,10 @@ class RFWordGuide:
             txt = unicodedata.normalize('NFKD', txt).encode('ASCII', 'ignore').decode('utf-8')
             return re.sub(r'[^a-z0-9\s\-_]', ' ', txt)
 
-        q_norm = _norm(query)
+        q_norm = _norm(query).strip()
+        if not q_norm or len(q_norm) < 2:
+            return []
+
         stop_words = {
             'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'de', 'del', 'a', 'al', 'en', 'con',
             'por', 'para', 'que', 'como', 'cual', 'cuales', 'es', 'son', 'fue', 'era', 'tu', 'tus',
@@ -230,106 +234,115 @@ class RFWordGuide:
             'does', 'did', 'how', 'what', 'why', 'when', 'where', 'which', 'who', 'tell', 'explain',
             'explica', 'cuentame', 'dime', 'hablame', 'describe', 'sabes', 'conoces', 'experiencia'
         }
-        q_tokens = [w for w in q_norm.split() if w not in stop_words and len(w) > 1]
-        if not q_tokens:
-            return None
 
         tech_keywords = {
-            'moshell': 15, 'amos': 15, 'kpi': 10, 'kpis': 10, 'handover': 12, 'ho': 8,
-            'drop': 12, 'drop rate': 15, 'retainability': 12, 'retenibilidad': 12,
-            'accessibility': 12, 'accesibilidad': 12, 'mobility': 10, 'movilidad': 10,
+            'moshell': 15, 'amos': 15, 'kpi': 10, 'kpis': 10, 'handover': 15, 'ho': 10,
+            'drop': 15, 'drop rate': 18, 'retainability': 12, 'retenibilidad': 12,
+            'accessibility': 12, 'accesibilidad': 12, 'mobility': 12, 'movilidad': 12,
             'throughput': 12, 'integridad': 10, 'integrity': 10, 'availability': 10,
             'disponibilidad': 10, 'sleeping': 12, 'dormidas': 12, 'durmientes': 12,
-            'carrier aggregation': 18, 'agregacion': 12, 'ca': 8, 'mimo': 14,
-            'massive mimo': 18, 'beamforming': 16, 'dss': 16, 'dynamic spectrum': 16,
-            'mlb': 16, 'load balancing': 16, 'balanceo': 12, '5g': 8, 'nsa': 12, 'option 3x': 16,
-            'opcion 3x': 16, 'endc': 15, 'en-dc': 15, 'sgnb': 16, 'x2': 12, 'prach': 12,
+            'carrier aggregation': 18, 'agregacion': 12, 'ca': 10, 'mimo': 14,
+            'massive mimo': 18, 'beamforming': 16, 'dss': 16, 'dynamic': 14, 'dynamic spectrum': 18,
+            'spectrum': 12, 'espectro': 12,
+            'mlb': 16, 'load balancing': 16, 'balanceo': 12, '5g': 10, 'nsa': 14, 'option 3x': 16,
+            'opcion 3x': 16, 'endc': 15, 'en-dc': 15, 'sgnb': 16, 'x2': 12, 'prach': 14,
             'pci': 14, 'collision': 14, 'colision': 14, 'confusion': 14, 'rtwp': 18,
-            'pim': 18, 'interferencia': 12, 'interference': 12, 'pre-post': 16, 'pre post': 16,
+            'pim': 18, 'interferencia': 14, 'interference': 14, 'pre-post': 16, 'pre post': 16,
             'star': 12, 'python': 14, 'sql': 14, 'enm': 14, 'oss': 12, 'hardware': 10,
             'bb6630': 15, 'bb5216': 15, 'dus': 12, 'radio 4415': 15, 'radio 2219': 15,
             'air 3264': 15, 'air 6449': 15, 'volte': 12, 'srvcc': 14, 'qci': 10, '5qi': 10,
             'cqi': 12, 'mcs': 12, 'bler': 12, 'prb': 12, 'sinr': 10, 'rsrp': 10, 'rsrq': 10,
-            'a1': 10, 'a2': 10, 'a3': 14, 'a4': 10, 'a5': 10, 'b1': 14, 'b2': 12,
+            'a1': 12, 'a2': 12, 'a3': 15, 'a4': 12, 'a5': 12, 'b1': 15, 'b2': 15,
+            'b4': 12, 'b7': 12, 'b28': 12, 'b66': 12, 'n78': 14, 'n77': 14,
+            'vswr': 16, 'rssi': 12, 'anr': 14, 'tilt': 12, 'ret': 12, 'azimuth': 12,
             'trayectoria': 12, 'amdocs': 12, 'metodologia': 10, 'fit': 10, 'desacuerdos': 12,
             'preguntas entrevistador': 14
         }
 
-        best_q = None
-        best_score = 0
-        best_reasons = []
+        tokens = [w for w in q_norm.split() if w not in stop_words]
+        if not tokens:
+            tokens = [w for w in q_norm.split() if len(w) > 1]
+        if not tokens:
+            return []
 
+        is_single_term = len(tokens) == 1
+        min_score = 10 if is_single_term else 15
+
+        results = []
         for q in self.all_questions:
-            score = 0
-            reasons = []
-
             title_norm = _norm(q.title)
+            mod_norm = _norm(q.module_title)
             strat_norm = _norm(q.strategy)
             ans_norm = _norm(q.clean_answer_for_teleprompter)
             raw_norm = _norm(q.raw_text)
 
-            # 1. Coincidencias de palabras clave técnicas con límites de palabra completa
-            for kw, weight in tech_keywords.items():
-                kw_norm = _norm(kw)
-                pattern = r'\b' + re.escape(kw_norm) + r'\b' if len(kw_norm) <= 3 else re.escape(kw_norm)
-                if re.search(pattern, q_norm):
-                    if re.search(pattern, title_norm):
-                        score += weight * 3
-                        reasons.append(kw)
-                    elif re.search(pattern, strat_norm) or re.search(pattern, ans_norm):
-                        score += weight * 2
-                        reasons.append(kw)
-                    elif re.search(pattern, raw_norm):
-                        score += weight
-                        reasons.append(kw)
+            score = 0
+            matched_kws = []
 
-            # 2. Solapamiento de tokens con el título
-            title_tokens = set(title_norm.split())
-            overlap = set(q_tokens).intersection(title_tokens)
-            if overlap:
-                score += len(overlap) * 8
-                for tok in overlap:
-                    if tok not in reasons:
-                        reasons.append(tok)
+            # 1. Frase exacta completa si hay más de 1 token
+            if len(tokens) > 1 and q_norm in title_norm:
+                score += 40
+                matched_kws.append(q_norm)
+            elif len(tokens) > 1 and (q_norm in strat_norm or q_norm in ans_norm):
+                score += 25
+                matched_kws.append(q_norm)
 
-            # 3. Frases exactas de 2 o más palabras
-            for length in range(min(4, len(q_tokens)), 1, -1):
-                for i in range(len(q_tokens) - length + 1):
-                    phrase = " ".join(q_tokens[i:i+length])
-                    if phrase in title_norm:
-                        score += 25
-                        if phrase not in reasons:
-                            reasons.append(phrase)
-                    elif phrase in strat_norm or phrase in ans_norm:
-                        score += 15
-                        if phrase not in reasons:
-                            reasons.append(phrase)
+            # 2. Análisis por tokens individuales con frontera de palabra para abreviaturas cortas
+            for tok in tokens:
+                pattern = r'\b' + re.escape(tok) + r'\b' if len(tok) <= 3 else re.escape(tok)
+                bonus = tech_keywords.get(tok, 0)
 
-            if score > best_score:
-                best_score = score
-                best_q = q
-                best_reasons = reasons
+                # Coincidencia en título (peso mayor)
+                if re.search(pattern, title_norm):
+                    score += 35 + bonus
+                    matched_kws.append(tok)
+                # Coincidencia en estrategia
+                elif re.search(pattern, strat_norm):
+                    score += 15 + bonus
+                    matched_kws.append(tok)
+                # Coincidencia en respuesta principal
+                elif re.search(pattern, ans_norm):
+                    score += 12 + bonus
+                    matched_kws.append(tok)
+                # Coincidencia en título del módulo
+                elif re.search(pattern, mod_norm):
+                    score += 10 + bonus
+                    matched_kws.append(tok)
+                # Coincidencia en texto en crudo
+                elif re.search(pattern, raw_norm):
+                    score += 6 + bonus
+                    matched_kws.append(tok)
 
-        if best_q and best_score >= min_threshold:
-            # Encontrar número de módulo
-            mod_num = 1
-            for m in self.modules:
-                if any(x.num == best_q.num for x in m.questions):
-                    mod_num = m.num
-                    break
+            if score >= min_score:
+                mod_num = 1
+                for m in self.modules:
+                    if any(x.num == q.num for x in m.questions):
+                        mod_num = m.num
+                        break
 
-            return {
-                "question": best_q,
-                "q_num": best_q.num,
-                "module_num": mod_num,
-                "module_title": best_q.module_title,
-                "title": best_q.title,
-                "short_title": best_q.short_title,
-                "score": best_score,
-                "matched_keywords": list(dict.fromkeys(best_reasons))[:5]
-            }
+                mod_clean = re.sub(r'^M[ÓO]DULO\s+\d+:\s*', '', q.module_title, flags=re.IGNORECASE).strip()
+                results.append({
+                    "question": q,
+                    "q_num": q.num,
+                    "module_num": mod_num,
+                    "module_title": q.module_title,
+                    "module_title_clean": mod_clean,
+                    "title": q.title,
+                    "short_title": q.short_title,
+                    "score": score,
+                    "matched_keywords": list(dict.fromkeys(matched_kws))[:4]
+                })
 
-        return None
+        results.sort(key=lambda x: x["score"], reverse=True)
+        return results[:limit]
+
+    def match_question(self, query: str, min_threshold: int = 15) -> Optional[Dict[str, Any]]:
+        """
+        Analiza inteligentemente una consulta o pregunta detectada por el copiloto
+        y encuentra la mejor coincidencia temática dentro de la guía Word oficial.
+        """
+        matches = self.find_all_matches(query, limit=1)
+        return matches[0] if matches else None
 
     def get_docx_path(self) -> Optional[str]:
         return get_existing_file(DOCS_PATHS[self.lang]["docx"])

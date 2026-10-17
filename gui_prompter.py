@@ -380,76 +380,37 @@ class InterviewPrompterApp:
         )
         self.txt_question.pack(fill=tk.X, pady=(2, 0))
         self.txt_question.bind("<Return>", self._on_question_box_enter)
+        self.txt_question.bind("<KeyRelease>", self._on_question_key_release)
 
-        # Banner interactivo de coincidencia temática con la Guía Word Oficial (Oculto hasta detectar relación)
+        # Banner interactivo de coincidencias temáticas con la Guía Word Oficial (Oculto hasta detectar relación)
         self.frame_word_match = tk.Frame(q_frame, bg="#0f172a", relief=tk.SOLID, bd=1, padx=10, pady=5)
         self.current_matched_word_q = None
+        self.current_matched_word_list = []
 
-        match_left = tk.Frame(self.frame_word_match, bg="#0f172a")
-        match_left.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.word_match_header_frame = tk.Frame(self.frame_word_match, bg="#0f172a")
+        self.word_match_header_frame.pack(fill=tk.X, pady=(0, 4))
 
-        match_top_row = tk.Frame(match_left, bg="#0f172a")
-        match_top_row.pack(fill=tk.X)
-
-        lbl_badge_w = tk.Label(
-            match_top_row,
-            text="📖 GUÍA WORD OFICIAL DETECTADA:",
+        self.lbl_word_match_header = tk.Label(
+            self.word_match_header_frame,
+            text="📖 GUÍA WORD OFICIAL:",
             bg="#0f172a",
             fg=self.accent_green,
             font=("Segoe UI", 8, "bold")
         )
-        lbl_badge_w.pack(side=tk.LEFT, padx=(0, 6))
+        self.lbl_word_match_header.pack(side=tk.LEFT, padx=(0, 6))
 
-        self.lbl_word_match_module = tk.Label(
-            match_top_row,
-            text="",
-            bg="#0f172a",
-            fg=self.accent_yellow,
-            font=("Segoe UI", 8, "bold")
-        )
-        self.lbl_word_match_module.pack(side=tk.LEFT)
-
-        match_bot_row = tk.Frame(match_left, bg="#0f172a")
-        match_bot_row.pack(fill=tk.X, pady=(2, 0))
-
-        self.lbl_word_match_q = tk.Label(
-            match_bot_row,
-            text="",
-            bg="#0f172a",
-            fg="#ffffff",
-            font=("Segoe UI", 9, "bold")
-        )
-        self.lbl_word_match_q.pack(side=tk.LEFT, padx=(0, 8))
-
-        self.lbl_word_match_kws = tk.Label(
-            match_bot_row,
-            text="",
+        self.lbl_word_match_hint = tk.Label(
+            self.word_match_header_frame,
+            text="(Haz clic en cualquier opción para ir directo a esa pregunta)",
             bg="#0f172a",
             fg="#94a3b8",
             font=("Segoe UI", 8, "italic")
         )
-        self.lbl_word_match_kws.pack(side=tk.LEFT)
+        self.lbl_word_match_hint.pack(side=tk.LEFT)
 
-        self.btn_word_match_go = tk.Button(
-            self.frame_word_match,
-            text="📖 Ver en Guía Word (3) ➔",
-            command=self._jump_to_matched_word_question,
-            bg=self.accent_blue,
-            fg="#ffffff",
-            activebackground="#2563eb",
-            activeforeground="#ffffff",
-            relief=tk.FLAT,
-            font=("Segoe UI", 8, "bold"),
-            padx=10,
-            pady=2,
-            cursor="hand2"
-        )
-        self.btn_word_match_go.pack(side=tk.RIGHT, padx=4)
-
-        # Vincular clics en todo el banner para navegar a la guía Word
-        for w in (self.frame_word_match, match_left, match_top_row, match_bot_row, lbl_badge_w, self.lbl_word_match_module, self.lbl_word_match_q, self.lbl_word_match_kws):
-            w.bind("<Button-1>", lambda e: self._jump_to_matched_word_question())
-            w.config(cursor="hand2")
+        # Contenedor dinámico de chips/botones de posibilidades encontradas
+        self.chips_word_container = tk.Frame(self.frame_word_match, bg="#0f172a")
+        self.chips_word_container.pack(fill=tk.X)
 
         # 4.2 TARJETA TELEPROMPTER DE RESPUESTA DIVIDIDA EN 2 HORIZONTALMENTE
         ans_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=6)
@@ -633,6 +594,7 @@ class InterviewPrompterApp:
         self.entry_manual.insert(0, "O pega/escribe una pregunta del chat aquí...")
         self.entry_manual.bind("<FocusIn>", self._clear_placeholder)
         self.entry_manual.bind("<Return>", lambda e: self._send_manual_question())
+        self.entry_manual.bind("<KeyRelease>", self._on_manual_entry_key_release)
 
         self.btn_send = tk.Button(
             input_bar,
@@ -1882,6 +1844,10 @@ class InterviewPrompterApp:
         self.entry_manual.insert(0, "O pega/escribe una pregunta del chat aquí...")
 
         self.current_matched_word_q = None
+        self.current_matched_word_list = []
+        if hasattr(self, 'chips_word_container'):
+            for child in self.chips_word_container.winfo_children():
+                child.destroy()
         if hasattr(self, 'frame_word_match'):
             self.frame_word_match.pack_forget()
 
@@ -1896,28 +1862,91 @@ class InterviewPrompterApp:
         self.txt_answer_en.config(state=tk.DISABLED)
         self.current_answer_lang = "dual"
 
+    def _on_question_key_release(self, event=None):
+        if event and event.keysym in ("Up", "Down", "Left", "Right", "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R", "Tab"):
+            return
+        text = self.txt_question.get("1.0", tk.END).strip()
+        self._check_and_display_word_match(text)
+
+    def _on_manual_entry_key_release(self, event=None):
+        if event and event.keysym in ("Up", "Down", "Left", "Right", "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R", "Tab"):
+            return
+        text = self.entry_manual.get().strip()
+        if text and text != "O pega/escribe una pregunta del chat aquí...":
+            self._check_and_display_word_match(text)
+        else:
+            if hasattr(self, 'frame_word_match'):
+                self.frame_word_match.pack_forget()
+
     def _check_and_display_word_match(self, text: str):
-        """Busca relación temática con la Guía Word y despliega el banner con el resultado."""
-        if not text or len(text.strip()) < 3:
+        """Busca todas las coincidencias temáticas con la Guía Word y despliega botones de enlace."""
+        if not text or len(text.strip()) < 2:
             self.current_matched_word_q = None
+            self.current_matched_word_list = []
             if hasattr(self, 'frame_word_match'):
                 self.frame_word_match.pack_forget()
             return
 
-        match = self.rf_word_guide_es.match_question(text)
-        if match:
-            self.current_matched_word_q = match
-            mod_title = match["module_title"]
-            mod_clean = re.sub(r'^M[ÓO]DULO\s+\d+:\s*', '', mod_title, flags=re.IGNORECASE)
-            if len(mod_clean) > 42:
-                mod_clean = mod_clean[:40] + "..."
-            self.lbl_word_match_module.config(text=f"📚 Módulo {match['module_num']}: {mod_clean}")
-            self.lbl_word_match_q.config(text=f"{match['short_title']}")
-            kws = ", ".join(f"'{k}'" for k in match['matched_keywords'])
-            self.lbl_word_match_kws.config(text=f"• Temas: {kws} (Score: {match['score']})")
-            self.frame_word_match.pack(fill=tk.X, pady=(4, 0))
+        matches = self.rf_word_guide_es.find_all_matches(text, limit=4)
+        if matches:
+            self.current_matched_word_list = matches
+            self.current_matched_word_q = matches[0]
+
+            # Limpiar botones/chips anteriores
+            if hasattr(self, 'chips_word_container'):
+                for child in self.chips_word_container.winfo_children():
+                    child.destroy()
+
+            count = len(matches)
+            if count == 1:
+                self.lbl_word_match_header.config(
+                    text="📖 COINCIDENCIA EN GUÍA WORD OFICIAL:"
+                )
+                self.lbl_word_match_hint.config(
+                    text="(Haz clic para abrir el tema en Guía Word 3)"
+                )
+            else:
+                self.lbl_word_match_header.config(
+                    text=f"📖 COINCIDENCIAS EN GUÍA WORD ({count} POSIBILIDADES ENCONTRADAS):"
+                )
+                self.lbl_word_match_hint.config(
+                    text="(Haz clic en cualquier opción para ir directo a esa pregunta)"
+                )
+
+            for m in matches:
+                q_num = m["q_num"]
+                mod_num = m["module_num"]
+                title_clean = re.sub(r'^(Pregunta|Question)\s*\d+:\s*', '', m["title"], flags=re.IGNORECASE)
+                title_clean = title_clean.strip('"?¿!¡\' ')
+                if len(title_clean) > 34:
+                    title_clean = title_clean[:32] + "..."
+
+                btn_text = f"📖 Q{q_num}: {title_clean} (Mód {mod_num}) ➔"
+
+                btn_chip = tk.Button(
+                    self.chips_word_container,
+                    text=btn_text,
+                    command=lambda qn=q_num: self._jump_to_matched_word_question(qn),
+                    bg="#1e293b",
+                    fg="#38bdf8",
+                    activebackground=self.accent_blue,
+                    activeforeground="#ffffff",
+                    relief=tk.GROOVE,
+                    bd=1,
+                    font=("Segoe UI", 8, "bold"),
+                    padx=8,
+                    pady=2,
+                    cursor="hand2"
+                )
+                btn_chip.pack(side=tk.LEFT, padx=(0, 6), pady=2)
+
+                btn_chip.bind("<Enter>", lambda e, b=btn_chip: b.config(bg=self.accent_blue, fg="#ffffff"))
+                btn_chip.bind("<Leave>", lambda e, b=btn_chip: b.config(bg="#1e293b", fg="#38bdf8"))
+
+            self.frame_word_match.pack(fill=tk.X, pady=(3, 0))
         else:
             self.current_matched_word_q = None
+            self.current_matched_word_list = []
             if hasattr(self, 'frame_word_match'):
                 self.frame_word_match.pack_forget()
 
