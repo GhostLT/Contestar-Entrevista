@@ -43,6 +43,7 @@ Un copiloto y teleprompter inteligente de escritorio diseñado para escuchar en 
   - **Navegación Rápida**: Botones **`◀ Ant`** y **`Sig ▶`** para avanzar o retroceder pregunta por pregunta sin perder el enfoque.
   - **Buscador en Tiempo Real**: Filtra preguntas por términos técnicos (`RTWP`, `PIM`, `Handover`, `A3`, `PRACH`, `DCR`, `VoLTE`, `MOM`, `Moshell`).
   - **⚡ Botón "Al Teleprompter"**: Inyecta simultáneamente la respuesta en español arriba y la respuesta en inglés abajo en el teleprompter del Copiloto (`1`).
+  - **🔄 Scroll Sincronizado Bidireccional**: Al mover el scroll o la rueda del ratón en la hoja en español, la hoja en inglés se desplaza automáticamente a la par (y viceversa), permitiendo comparar párrafos, respuestas y tablas técnicas sin perder el alineamiento visual.
   - **Botones de Copiado**: `📋 Copiar ES`, `📋 Copiar EN` y `📋 Copiar Ambos`.
   - **📄 Botón "Abrir Word"**: Abre directamente el archivo `.docx` oficial en Microsoft Word mediante integración nativa con Windows.
   - **Teclas Rápidas**: `1` (Copiloto Dual), `2` (Mi Pitch Dual), `3` (Guía Word Dual).

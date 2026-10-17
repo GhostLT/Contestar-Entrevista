@@ -92,6 +92,7 @@ class InterviewPrompterApp:
         self.current_word_lang = "es"
         self.selected_question_item: Optional[QuestionItem] = None
         self.displayed_questions: List[QuestionItem] = []
+        self._is_syncing_word_scroll = False
         self._stream_full_text = ""
 
         # Construir interfaz
@@ -1127,8 +1128,8 @@ class InterviewPrompterApp:
         doc_box_es = tk.Frame(page_card_es, bg="#FFFFFF")
         doc_box_es.pack(fill=tk.BOTH, expand=True)
 
-        sb_doc_es = ttk.Scrollbar(doc_box_es)
-        sb_doc_es.pack(side=tk.RIGHT, fill=tk.Y)
+        self.sb_doc_es = ttk.Scrollbar(doc_box_es)
+        self.sb_doc_es.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.txt_word_doc_es = tk.Text(
             doc_box_es,
@@ -1142,10 +1143,10 @@ class InterviewPrompterApp:
             wrap=tk.WORD,
             spacing1=2,
             spacing3=2,
-            yscrollcommand=sb_doc_es.set
+            yscrollcommand=self._sync_scroll_es
         )
         self.txt_word_doc_es.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        sb_doc_es.config(command=self.txt_word_doc_es.yview)
+        self.sb_doc_es.config(command=self._on_word_scrollbar_scroll)
 
         div_line_bot_es = tk.Frame(page_card_es, bg="#CBD5E1", height=1)
         div_line_bot_es.pack(fill=tk.X, pady=(4, 2))
@@ -1198,8 +1199,8 @@ class InterviewPrompterApp:
         doc_box_en = tk.Frame(page_card_en, bg="#FFFFFF")
         doc_box_en.pack(fill=tk.BOTH, expand=True)
 
-        sb_doc_en = ttk.Scrollbar(doc_box_en)
-        sb_doc_en.pack(side=tk.RIGHT, fill=tk.Y)
+        self.sb_doc_en = ttk.Scrollbar(doc_box_en)
+        self.sb_doc_en.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.txt_word_doc_en = tk.Text(
             doc_box_en,
@@ -1213,10 +1214,14 @@ class InterviewPrompterApp:
             wrap=tk.WORD,
             spacing1=2,
             spacing3=2,
-            yscrollcommand=sb_doc_en.set
+            yscrollcommand=self._sync_scroll_en
         )
         self.txt_word_doc_en.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        sb_doc_en.config(command=self.txt_word_doc_en.yview)
+        self.sb_doc_en.config(command=self._on_word_scrollbar_scroll)
+
+        # Vincular rueda del ratón (MouseWheel) para scroll sincronizado simultáneo
+        self.txt_word_doc_es.bind("<MouseWheel>", self._on_word_mousewheel)
+        self.txt_word_doc_en.bind("<MouseWheel>", self._on_word_mousewheel)
 
         div_line_bot_en = tk.Frame(page_card_en, bg="#CBD5E1", height=1)
         div_line_bot_en.pack(fill=tk.X, pady=(4, 2))
@@ -1251,6 +1256,40 @@ class InterviewPrompterApp:
         txt_widget.tag_configure("sec_hdr", font=("Calibri", 9, "bold"), foreground="#1E293B", spacing1=4, spacing3=2)
         txt_widget.tag_configure("code_block", font=("Consolas", 8), background="#F1F5F9", foreground="#0F172A", lmargin1=10, lmargin2=10, rmargin=10, spacing1=2, spacing3=3)
         txt_widget.tag_configure("footer", font=("Calibri", 8, "italic"), foreground="#94A3B8", justify="center", spacing1=6)
+
+    def _on_word_scrollbar_scroll(self, *args):
+        self.txt_word_doc_es.yview(*args)
+        self.txt_word_doc_en.yview(*args)
+
+    def _sync_scroll_es(self, first, last):
+        if hasattr(self, 'sb_doc_es'):
+            self.sb_doc_es.set(first, last)
+        if not self._is_syncing_word_scroll:
+            self._is_syncing_word_scroll = True
+            try:
+                self.txt_word_doc_en.yview_moveto(first)
+                if hasattr(self, 'sb_doc_en'):
+                    self.sb_doc_en.set(first, last)
+            finally:
+                self._is_syncing_word_scroll = False
+
+    def _sync_scroll_en(self, first, last):
+        if hasattr(self, 'sb_doc_en'):
+            self.sb_doc_en.set(first, last)
+        if not self._is_syncing_word_scroll:
+            self._is_syncing_word_scroll = True
+            try:
+                self.txt_word_doc_es.yview_moveto(first)
+                if hasattr(self, 'sb_doc_es'):
+                    self.sb_doc_es.set(first, last)
+            finally:
+                self._is_syncing_word_scroll = False
+
+    def _on_word_mousewheel(self, event):
+        delta = int(-1 * (event.delta / 120))
+        self.txt_word_doc_es.yview_scroll(delta, "units")
+        self.txt_word_doc_en.yview_scroll(delta, "units")
+        return "break"
 
     def _toggle_word_nav(self):
         if self.left_panel.winfo_ismapped():
