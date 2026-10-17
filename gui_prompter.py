@@ -32,8 +32,8 @@ class InterviewPrompterApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Copiloto de Entrevistas | Gemini & DeepSeek")
-        self.root.geometry("780x680+280+50")
-        self.root.minsize(550, 480)
+        self.root.geometry("820x750+240+20")
+        self.root.minsize(580, 520)
 
         # Configuración de apariencia
         self.bg_main = "#121214"
@@ -440,19 +440,12 @@ class InterviewPrompterApp:
         )
         btn_clear.pack(side=tk.RIGHT, padx=4)
 
-        # PanedWindow vertical para división horizontal 50/50 ajustable
-        self.ans_paned = tk.PanedWindow(
-            ans_frame,
-            orient=tk.VERTICAL,
-            bg=self.bg_card,
-            sashwidth=4,
-            sashrelief=tk.FLAT,
-            bd=0
-        )
-        self.ans_paned.pack(fill=tk.BOTH, expand=True)
+        # Contenedor dividido en 2 paneles simétricos al 50% de altura cada uno
+        self.ans_paned = ans_frame
 
-        # SECCIÓN SUPERIOR: RESPUESTA EN ESPAÑOL
-        pane_es = tk.Frame(self.ans_paned, bg=self.bg_card)
+        # SECCIÓN SUPERIOR: RESPUESTA EN ESPAÑOL (50% de altura)
+        pane_es = tk.Frame(ans_frame, bg=self.bg_card)
+        pane_es.pack(fill=tk.BOTH, expand=True, pady=(0, 3))
 
         hdr_es = tk.Frame(pane_es, bg=self.bg_card)
         hdr_es.pack(fill=tk.X, pady=(0, 2))
@@ -474,6 +467,7 @@ class InterviewPrompterApp:
 
         self.txt_answer_es = tk.Text(
             box_es,
+            height=5,
             bg=self.bg_card_inner,
             fg=self.text_color,
             insertbackground=self.text_color,
@@ -494,11 +488,12 @@ class InterviewPrompterApp:
         )
         self.txt_answer_es.config(state=tk.DISABLED)
 
-        # SECCIÓN INFERIOR: RESPUESTA EN INGLÉS
-        pane_en = tk.Frame(self.ans_paned, bg=self.bg_card)
+        # SECCIÓN INFERIOR: RESPUESTA EN INGLÉS (50% de altura)
+        pane_en = tk.Frame(ans_frame, bg=self.bg_card)
+        pane_en.pack(fill=tk.BOTH, expand=True, pady=(3, 0))
 
         hdr_en = tk.Frame(pane_en, bg=self.bg_card)
-        hdr_en.pack(fill=tk.X, pady=(3, 2))
+        hdr_en.pack(fill=tk.X, pady=(0, 2))
 
         lbl_en = tk.Label(
             hdr_en,
@@ -517,6 +512,7 @@ class InterviewPrompterApp:
 
         self.txt_answer_en = tk.Text(
             box_en,
+            height=5,
             bg=self.bg_card_inner,
             fg=self.text_color,
             insertbackground=self.text_color,
@@ -536,9 +532,6 @@ class InterviewPrompterApp:
             "💡 Your direct response in ENGLISH will appear here in real time (concise bullet points for video interview)."
         )
         self.txt_answer_en.config(state=tk.DISABLED)
-
-        self.ans_paned.add(pane_es)
-        self.ans_paned.add(pane_en)
 
         # 4.3 BARRA DE ENTRADA MANUAL (Al pie de la ventana)
         input_bar = tk.Frame(self.frame_copilot, bg=self.bg_main, padx=12, pady=6)
@@ -1479,6 +1472,7 @@ class InterviewPrompterApp:
 
                     self.txt_answer_en.config(state=tk.NORMAL)
                     self.txt_answer_en.delete("1.0", tk.END)
+                    self.txt_answer_en.insert(tk.END, "⏳ Generando respuesta en inglés...")
                     self.txt_answer_en.config(state=tk.DISABLED)
                 elif kind == "STREAM_CHUNK":
                     self._append_answer_chunk(data)
@@ -1494,6 +1488,11 @@ class InterviewPrompterApp:
                     self.txt_answer_en.config(state=tk.DISABLED)
                     self._update_status("⚠️ Error consultando IA", self.accent_red)
                 elif kind == "STREAM_DONE":
+                    # Verificar si el panel en inglés quedó poblado; si no, autotraducir en segundo plano
+                    es_curr = self.txt_answer_es.get("1.0", tk.END).strip()
+                    en_curr = self.txt_answer_en.get("1.0", tk.END).strip()
+                    if not en_curr or en_curr.startswith("⚡") or en_curr.startswith("⏳") or en_curr.startswith("💡"):
+                        self._auto_translate_to_en(es_curr)
                     self._update_status("🟢 Escuchando la reunión...", self.accent_green)
                 elif kind == "STREAM_IGNORED":
                     self.txt_answer_es.config(state=tk.NORMAL)
@@ -1598,15 +1597,16 @@ class InterviewPrompterApp:
                 )
 
     def _split_dual_text(self, text: str) -> Tuple[str, str]:
-        en_pattern = r'\[(?:ENGLISH|INGL[EÉ]S|EN)\]'
+        en_pattern = r'(?:\*{1,2}|#{1,4}\s*)?\[(?:ENGLISH|INGL[EÉ]S|EN)(?:\s+(?:RESPONSE|VERSION|ANSWER))?\](?:\*{1,2}|:)?'
         parts = re.split(en_pattern, text, maxsplit=1, flags=re.IGNORECASE)
         es_raw = parts[0]
-        es_clean = re.sub(r'^\s*\[(?:ESPA[ÑN]OL|ES)\]\s*', '', es_raw, flags=re.IGNORECASE)
+        es_clean = re.sub(r'^\s*(?:\*{1,2}|#{1,4}\s*)?\[(?:ESPA[ÑN]OL|ES)(?:\s+(?:RESPUESTA|VERSI[OÓ]N))?\](?:\*{1,2}|:)?\s*', '', es_raw, flags=re.IGNORECASE)
         es_clean = re.sub(r'\[(?:E|EN|ENG|ENGL|ENGLI|ENGLIS|ENGLISH|I|IN|ING|INGL|INGLE|INGLES|INGLÉ|INGLÉS)?$', '', es_clean, flags=re.IGNORECASE).rstrip()
 
         en_clean = ""
         if len(parts) > 1:
-            en_clean = parts[1].lstrip("\r\n \t")
+            en_raw = parts[1]
+            en_clean = re.sub(r'^\s*[:\*\-]*\s*', '', en_raw).strip()
 
         return es_clean, en_clean
 
@@ -1626,6 +1626,26 @@ class InterviewPrompterApp:
             self.txt_answer_en.insert(tk.END, en_text)
             self.txt_answer_en.see(tk.END)
             self.txt_answer_en.config(state=tk.DISABLED)
+
+    def _auto_translate_to_en(self, es_text: str):
+        if not es_text or es_text.startswith("💡") or es_text.startswith("⚡") or es_text.startswith("🔇") or es_text.startswith("❌"):
+            return
+
+        def _worker():
+            try:
+                res = self.copilot.translate_text_stream(text=es_text, target_lang="en")
+                if res and not res.startswith("❌") and not res.startswith("⚠️"):
+                    def _update_ui():
+                        self.txt_answer_en.config(state=tk.NORMAL)
+                        self.txt_answer_en.delete("1.0", tk.END)
+                        self.txt_answer_en.insert(tk.END, res)
+                        self.txt_answer_en.see(tk.END)
+                        self.txt_answer_en.config(state=tk.DISABLED)
+                    self.root.after(0, _update_ui)
+            except Exception as e:
+                print(f"Error en auto-traducción a inglés: {e}")
+
+        threading.Thread(target=_worker, daemon=True).start()
 
     # ------------------ CONFIGURACIÓN DE CLAVES ------------------
 
