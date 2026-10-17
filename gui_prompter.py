@@ -381,6 +381,76 @@ class InterviewPrompterApp:
         self.txt_question.pack(fill=tk.X, pady=(2, 0))
         self.txt_question.bind("<Return>", self._on_question_box_enter)
 
+        # Banner interactivo de coincidencia temática con la Guía Word Oficial (Oculto hasta detectar relación)
+        self.frame_word_match = tk.Frame(q_frame, bg="#0f172a", relief=tk.SOLID, bd=1, padx=10, pady=5)
+        self.current_matched_word_q = None
+
+        match_left = tk.Frame(self.frame_word_match, bg="#0f172a")
+        match_left.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        match_top_row = tk.Frame(match_left, bg="#0f172a")
+        match_top_row.pack(fill=tk.X)
+
+        lbl_badge_w = tk.Label(
+            match_top_row,
+            text="📖 GUÍA WORD OFICIAL DETECTADA:",
+            bg="#0f172a",
+            fg=self.accent_green,
+            font=("Segoe UI", 8, "bold")
+        )
+        lbl_badge_w.pack(side=tk.LEFT, padx=(0, 6))
+
+        self.lbl_word_match_module = tk.Label(
+            match_top_row,
+            text="",
+            bg="#0f172a",
+            fg=self.accent_yellow,
+            font=("Segoe UI", 8, "bold")
+        )
+        self.lbl_word_match_module.pack(side=tk.LEFT)
+
+        match_bot_row = tk.Frame(match_left, bg="#0f172a")
+        match_bot_row.pack(fill=tk.X, pady=(2, 0))
+
+        self.lbl_word_match_q = tk.Label(
+            match_bot_row,
+            text="",
+            bg="#0f172a",
+            fg="#ffffff",
+            font=("Segoe UI", 9, "bold")
+        )
+        self.lbl_word_match_q.pack(side=tk.LEFT, padx=(0, 8))
+
+        self.lbl_word_match_kws = tk.Label(
+            match_bot_row,
+            text="",
+            bg="#0f172a",
+            fg="#94a3b8",
+            font=("Segoe UI", 8, "italic")
+        )
+        self.lbl_word_match_kws.pack(side=tk.LEFT)
+
+        self.btn_word_match_go = tk.Button(
+            self.frame_word_match,
+            text="📖 Ver en Guía Word (3) ➔",
+            command=self._jump_to_matched_word_question,
+            bg=self.accent_blue,
+            fg="#ffffff",
+            activebackground="#2563eb",
+            activeforeground="#ffffff",
+            relief=tk.FLAT,
+            font=("Segoe UI", 8, "bold"),
+            padx=10,
+            pady=2,
+            cursor="hand2"
+        )
+        self.btn_word_match_go.pack(side=tk.RIGHT, padx=4)
+
+        # Vincular clics en todo el banner para navegar a la guía Word
+        for w in (self.frame_word_match, match_left, match_top_row, match_bot_row, lbl_badge_w, self.lbl_word_match_module, self.lbl_word_match_q, self.lbl_word_match_kws):
+            w.bind("<Button-1>", lambda e: self._jump_to_matched_word_question())
+            w.config(cursor="hand2")
+
         # 4.2 TARJETA TELEPROMPTER DE RESPUESTA DIVIDIDA EN 2 HORIZONTALMENTE
         ans_frame = tk.Frame(self.frame_copilot, bg=self.bg_card, padx=12, pady=6)
         ans_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 4))
@@ -1811,6 +1881,10 @@ class InterviewPrompterApp:
         self.entry_manual.delete(0, tk.END)
         self.entry_manual.insert(0, "O pega/escribe una pregunta del chat aquí...")
 
+        self.current_matched_word_q = None
+        if hasattr(self, 'frame_word_match'):
+            self.frame_word_match.pack_forget()
+
         self.txt_answer_es.config(state=tk.NORMAL)
         self.txt_answer_es.delete("1.0", tk.END)
         self.txt_answer_es.insert(tk.END, "Esperando nueva intervención...")
@@ -1821,6 +1895,76 @@ class InterviewPrompterApp:
         self.txt_answer_en.insert(tk.END, "Waiting for new question...")
         self.txt_answer_en.config(state=tk.DISABLED)
         self.current_answer_lang = "dual"
+
+    def _check_and_display_word_match(self, text: str):
+        """Busca relación temática con la Guía Word y despliega el banner con el resultado."""
+        if not text or len(text.strip()) < 3:
+            self.current_matched_word_q = None
+            if hasattr(self, 'frame_word_match'):
+                self.frame_word_match.pack_forget()
+            return
+
+        match = self.rf_word_guide_es.match_question(text)
+        if match:
+            self.current_matched_word_q = match
+            mod_title = match["module_title"]
+            mod_clean = re.sub(r'^M[ÓO]DULO\s+\d+:\s*', '', mod_title, flags=re.IGNORECASE)
+            if len(mod_clean) > 42:
+                mod_clean = mod_clean[:40] + "..."
+            self.lbl_word_match_module.config(text=f"📚 Módulo {match['module_num']}: {mod_clean}")
+            self.lbl_word_match_q.config(text=f"{match['short_title']}")
+            kws = ", ".join(f"'{k}'" for k in match['matched_keywords'])
+            self.lbl_word_match_kws.config(text=f"• Temas: {kws} (Score: {match['score']})")
+            self.frame_word_match.pack(fill=tk.X, pady=(4, 0))
+        else:
+            self.current_matched_word_q = None
+            if hasattr(self, 'frame_word_match'):
+                self.frame_word_match.pack_forget()
+
+    def _jump_to_matched_word_question(self, q_num: Optional[int] = None):
+        """Desplaza la interfaz directamente a la pregunta correspondiente en la Guía Word."""
+        target_num = q_num
+        if target_num is None and self.current_matched_word_q:
+            target_num = self.current_matched_word_q.get("q_num")
+        if not target_num:
+            self._switch_tab("word_guide")
+            return
+
+        # 1. Cambiar a la pestaña de Guía Word (3)
+        self._switch_tab("word_guide")
+
+        # 2. Localizar el objeto de pregunta en español
+        q_item = next((q for q in self.rf_word_guide_es.all_questions if q.num == target_num), None)
+        if not q_item:
+            return
+
+        # 3. Encontrar y seleccionar el módulo correspondiente en combo_word_module
+        mod_idx = 0
+        for i, m in enumerate(self.rf_word_guide_es.modules):
+            if any(q.num == target_num for q in m.questions):
+                mod_idx = i + 1  # 1-indexed porque index 0 es "Todos los módulos"
+                break
+
+        if hasattr(self, 'combo_word_module') and 0 <= mod_idx < len(self.combo_word_module["values"]):
+            self.combo_word_module.current(mod_idx)
+            self._on_word_module_changed()
+
+        # 4. Seleccionar y hacer scroll a la pregunta en el índice list_word_questions
+        try:
+            list_idx = next(i for i, q in enumerate(self.displayed_questions) if q.num == target_num)
+            self.list_word_questions.selection_clear(0, tk.END)
+            self.list_word_questions.selection_set(list_idx)
+            self.list_word_questions.see(list_idx)
+        except StopIteration:
+            pass
+
+        # 5. Renderizar en ambos documentos (ES y EN) y desplazar al inicio
+        self._render_word_question(q_item)
+        self.txt_word_doc_es.yview_moveto(0.0)
+        self.txt_word_doc_en.yview_moveto(0.0)
+
+        # 6. Notificación visual en status bar
+        self._update_status(f"📖 Guía Word: Mostrando Q{target_num} ({q_item.short_title})", self.accent_green)
 
     def _on_language_changed(self, event=None):
         sel = self.lang_var.get()
@@ -1993,6 +2137,9 @@ class InterviewPrompterApp:
         # Sincronizar también con la barra inferior
         self.entry_manual.delete(0, tk.END)
         self.entry_manual.insert(0, text)
+
+        # Detectar coincidencia temática con la Guía de Entrevista Word Oficial
+        self._check_and_display_word_match(text)
 
         self._update_status("⚡ Consultando a IA (Dual ES / EN)...", self.accent_blue)
 
