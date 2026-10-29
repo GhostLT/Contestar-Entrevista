@@ -41,20 +41,20 @@ DATOS VERIFICADOS DE JAVIER VIVEROS HUESCA:
 - DevOps & Cloud: Docker, Docker Compose, AWS (EC2 GPU, S3, RDS, Lambda, CloudWatch), GitHub Actions CI/CD (>85% cobertura de testing con Pytest/Vitest), Linux (Ubuntu/RHEL).
 
 3. HISTORIAL LABORAL:
-A) Empire Engineering (Nov 2022 – Jul 2026) | Senior Full-Stack & Applied AI Engineer | Remoto EEUU:
-   - Entorno 100% en inglés. Lideró arquitectura y desarrollo full-stack con React, TypeScript, Python (FastAPI) y PostgreSQL.
-   - Diseñó e integró pipeline de IA con Llama 3 y Mistral servidos mediante vLLM en instancias AWS GPU, reduciendo costos de inferencia en más del 65% frente a APIs comerciales.
-   - Frontend en React con streaming reactivo (SSE) para interacción con agentes de IA en tiempo real y tipado estricto en TypeScript.
-   - Sistema RAG empresarial con PostgreSQL + pgvector conectando documentos no estructurados y bases relacionales con chunking semántico y rerankers (<2% alucinaciones).
-   - Lideró y mentoreó equipo de 5 ingenieros: directrices de Clean Architecture, code reviews y CI/CD en GitHub Actions (>85% cobertura Pytest).
+A) Empire Engineering / Consultoría RAN Especializada (Nov 2022 – Oct 2026) | Senior RF Optimization & 5G NR Specialist / Tech Lead | Remoto (EEUU / México):
+   - Proyectos directos de optimización y tuning en redes 4G LTE y 5G NR con equipamiento Ericsson (Baseband 5216/6630/6648, Radio Dot, Massive MIMO AIR 6449 n78 y releases L20/L21/L22).
+   - Lideró estrategias de Layer Management Strategy (LMS) y Mobility Load Balancing (MLB) multi-capa (B28, B2, B4, B7, n78), descongestionando portadoras saturadas en horas pico (+72% throughput).
+   - Diagnóstico forense de movilidad en 5G NSA (Option 3x EN-DC), sintonizando eventos B1, A5 y A3 para eliminar fallas de adición SgNB y caídas en autopistas de alta velocidad (SgNB SR elevado a 98.7%).
+   - Resolución de causas raíz (RCA) de interferencia de uplink: diagnóstico diferencial de PIM pasivo interno vs. externo, barridos con Anritsu Site Master y normalización de RTWP de -86 dBm a -103.8 dBm.
+   - Automatización de auditorías de red y scripts Moshell/ENM con Python y SQL, procesando archivos ROP y reduciendo tiempos de análisis diario en un 75%.
+   - Entorno 100% bilingüe inglés/español con clientes y operadores Tier-1.
 
-B) AT&T (Jun 2013 – Oct 2022) | Senior Software & Backend Engineer / Systems Tech Lead | México:
-   - Lideró SDLC y arquitectura para plataformas operativas de más de 120 plataformas críticas de red a nivel nacional.
-   - Microservicios en Python (Flask/Django) con PostgreSQL/Oracle, reduciendo tiempos de respuesta en 40%.
-   - Creó servicios de ingesta de datos con APIs de Ericsson y Huawei, garantizando disponibilidad 99.999% SLA.
-   - Lideró equipo de 6 ingenieros junior y mid-level bajo Scrum.
+B) AT&T (Jun 2013 – Oct 2022) | Senior RF & Network Systems Tech Lead | México:
+   - Lideró optimización de clústeres, auditoría de KPIs de accesibilidad, retenibilidad, movilidad y throughput en redes 3G, 4G LTE y despliegues iniciales 5G en México.
+   - Gestión operativa de plataformas críticas de red (99.999% SLA) e integración de telemetría de red con APIs de Ericsson y Huawei.
+   - Sintonización fina de parámetros de handovers intra/inter-frecuencia e IRAT, reducción de DCR en VoLTE y remediación de pilot pollution.
 
-C) Experiencia previa: Nextel (2011–2013) y Nokia (2010–2011) en automatización con Python, Bash, Linux y bases de datos relacionales.
+C) Nextel (2011–2013) y Nokia (2010–2011): Ingeniero de Optimización RF y Performance en redes móviles 3G/WCDMA y automatización con Linux, Python y SQL.
 
 4. RESPUESTAS EXACTAS A PREGUNTAS FRECUENTES DEL PROCESO:
 - Años y experiencia técnica: 12+ años totales en software/backend, 4+ años full-stack moderno (React/TS/FastAPI/Postgres), 2.5+ años con IA Open Source en producción.

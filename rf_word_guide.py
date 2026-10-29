@@ -254,9 +254,17 @@ class RFWordGuide:
             'cqi': 12, 'mcs': 12, 'bler': 12, 'prb': 12, 'sinr': 10, 'rsrp': 10, 'rsrq': 10,
             'a1': 12, 'a2': 12, 'a3': 15, 'a4': 12, 'a5': 12, 'b1': 15, 'b2': 15,
             'b4': 12, 'b7': 12, 'b28': 12, 'b66': 12, 'n78': 14, 'n77': 14,
-            'vswr': 16, 'rssi': 12, 'anr': 14, 'tilt': 12, 'ret': 12, 'azimuth': 12,
+            'vswr': 16, 'rssi': 12, 'anr': 16, 'tilt': 12, 'ret': 12, 'azimuth': 12,
             'trayectoria': 12, 'amdocs': 12, 'metodologia': 10, 'fit': 10, 'desacuerdos': 12,
-            'preguntas entrevistador': 14
+            'preguntas entrevistador': 14,
+            'lms': 20, 'layer management': 18, 'traffic steering': 18, 'spectral efficiency': 16,
+            'eficiencia espectral': 16, 'anchor': 16, 'ancla': 16, 'anchor selection': 18,
+            'en-dc mobility': 18, 'pscell': 16, 'sgnb addition': 18, 'rs power': 16,
+            'reference signal power': 18, 'harq': 16, 'maxharqtx': 16,
+            'case 1': 16, 'case 2': 16, 'case 3': 16, 'caso 1': 16, 'caso 2': 16, 'caso 3': 16,
+            'recommendations': 14, 'recomendaciones': 14, 'rca': 16, 'root cause': 16, 'causa raiz': 16,
+            'prb utilization': 16, 'utilizacion prb': 16, 'pronunciation': 14, 'pronunciacion': 14,
+            'transition phrases': 14, 'frases de transicion': 14
         }
 
         tokens = [w for w in q_norm.split() if w not in stop_words]
